@@ -1,0 +1,26 @@
+/* ==========================================================================
+   Reboot
+   ========================================================================== */
+*,
+*::before,
+*::after {
+    box-sizing: inherit;
+}
+
+html,
+body {}
+
+html {
+    font-family: Segoe UI, Arial, sans-serif;
+    font-size: 14px;
+    font-weight: 400;
+    line-height: calc(20 / 14);
+    -ms-text-size-adjust: 100%;
+    -webkit-text-size-adjust: 100%;
+    -webkit-tap-highlight-color: transparent;
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+}

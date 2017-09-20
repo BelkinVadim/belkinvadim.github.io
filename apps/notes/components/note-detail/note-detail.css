@@ -1,0 +1,14 @@
+:host {
+	position: relative;
+	display: block;
+	padding: 16px;
+	background-color: #fff;
+}
+
+:host .title {
+	display: block;
+	font-size: 24px;
+	margin-bottom: 16px;
+}
+
+:host .text {}

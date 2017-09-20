@@ -1,0 +1,9 @@
+:host {
+	position: relative;
+	display: block;
+	margin: 8px;
+}
+
+:host note-item:not(:last-child) {
+	margin-bottom: 8px;
+}

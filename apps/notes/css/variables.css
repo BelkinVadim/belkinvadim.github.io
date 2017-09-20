@@ -1,0 +1,102 @@
+/* ==========================================================================
+   Variables
+   ========================================================================== */
+:root {
+	/* Theme color */
+	--color-50:   #e8eaf6;
+	--color-100:  #c5cae9;
+	--color-200:  #9fa8da;
+	--color-300:  #7986cb;
+	--color-400:  #5C6bc0;
+	--color-500:  #3f51b5;
+	--color-600:  #3949ab;
+	--color-700:  #303f9f;
+	--color-800:  #283593;
+	--color-900:  #1a237e;
+	--color-A100: #ff80ab;
+	--color-A200: #ff4081;
+	--color-A400: #f50057;
+	--color-A700: #c51162;
+
+	--color-50-contrast:   rgba(0, 0, 0, .87);
+	--color-100-contrast:  rgba(0, 0, 0, .87);
+	--color-200-contrast:  rgba(0, 0, 0, .87);
+	--color-300-contrast:  rgba(255, 255, 255, .87);
+	--color-400-contrast:  rgba(255, 255, 255, .87);
+	--color-500-contrast:  rgba(255, 255, 255, .87);
+	--color-600-contrast:  rgba(255, 255, 255, .87);
+	--color-700-contrast:  rgba(255, 255, 255, .87);
+	--color-800-contrast:  rgba(255, 255, 255, .87);
+	--color-900-contrast:  rgba(255, 255, 255, .87);
+	--color-A100-contrast: rgba(0, 0, 0, .87);
+	--color-A200-contrast: rgba(255, 255, 255, .87);
+	--color-A400-contrast: rgba(255, 255, 255, .87);
+	--color-A700-contrast: rgba(255, 255, 255, .87);
+
+
+	/* Color */
+	--primary-color: 			var(--color-500);
+	--primary-color-contrast: 	var(--color-500-contrast);
+	--primary-background-color: #fefefe;
+	--primary-text-color: 		rgba(0, 0, 0, .87);
+	--secondary-text-color: 	rgba(0, 0, 0, .54);
+	--disabled-text-color: 		rgba(0, 0, 0, .38);
+	--accent-color: 			var(--color-A700);
+	--accent-color-contrast: 	var(--color-A700-contrast);
+
+
+	/* Shadow */
+	--shadow-elevation-1:
+			0 0 2px rgba(0, 0, 0, .14),
+			0 2px 2px rgba(0, 0, 0, .12),
+			0 1px 3px rgba(0, 0, 0, .2);
+	--shadow-elevation-2:
+			0 0 4px rgba(0, 0, 0, .14),
+			0 3px 4px rgba(0, 0, 0, .12),
+			0 1px 5px rgba(0, 0, 0, .2);
+	--shadow-elevation-3:
+			0 3px 3px rgba(0, 0, 0, .14),
+			0 3px 4px rgba(0, 0, 0, .12),
+			0 1px 8px rgba(0, 0, 0, .2);
+	--shadow-elevation-4:
+			0 2px 4px rgba(0, 0, 0, .14),
+			0 4px 5px rgba(0, 0, 0, .12),
+			0 1px 10px rgba(0, 0, 0, .2);
+	--shadow-elevation-6:
+			0 6px 10px rgba(0, 0, 0, .14),
+			0 1px 18px rgba(0, 0, 0, .12),
+			0 3px 5px rgba(0, 0, 0, .2);
+	--shadow-elevation-8:
+			0 8px 10px 1px rgba(0, 0, 0, .14),
+			0 3px 14px 3px rgba(0, 0, 0, .12),
+			0 4px 15px rgba(0, 0, 0, .2);
+	--shadow-elevation-9:
+			0 9px 12px 1px rgba(0, 0, 0, .14),
+			0 3px 16px 2px rgba(0, 0, 0, .12),
+			0 5px 6px rgba(0, 0, 0, .2);
+	--shadow-elevation-12:
+			0 12px 17px 2px rgba(0, 0, 0, .14),
+			0 5px 22px 4px rgba(0, 0, 0, .12),
+			0 7px 8px rgba(0, 0, 0, .2);
+	--shadow-elevation-16:
+			0 16px 24px 2px rgba(0, 0, 0, .14),
+			0 6px 30px 5px rgba(0, 0, 0, .12),
+			0 8px 10px rgba(0, 0, 0, .2);
+	--shadow-elevation-24:
+			0 24px 38px 3px rgba(0, 0, 0, .14),
+			0 9px 46px 8px rgba(0, 0, 0, .12),
+			0 11px 15px rgba(0, 0, 0, .2);
+
+
+	/* Transition */
+	--transition-standart-easing: 	  cubic-bezier(.4, 0, .2, 1);
+	--transition-deceleration-easing: cubic-bezier(0, 0, .2, 1);
+	--transition-acceleration-easing: cubic-bezier(.4, 0, 1, 1);
+	--transition-sharp-easing: 		  cubic-bezier(.4, 0, .6, 1);
+}
+
+/* Tablet */
+@media (min-width: 768px) {}
+
+/* Desktop */
+@media (min-width: 1200px) {}

@@ -1,0 +1,57 @@
+:host {
+	position: relative;
+	display: flex;
+	align-items: center;
+	height: 56px;
+	padding: 0 8px;
+	font-size: 20px;
+	pointer-events: none;
+}
+
+:host > ::slotted(*:not([disabled])) {
+	pointer-events: auto;
+}
+
+:host > ::slotted(.title) {
+	flex: 1 1 auto;
+	margin-left: 24px;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	overflow: hidden;
+	pointer-events: none;
+}
+
+:host > ::slotted(.title:first-child) {
+	margin-left: 64px;
+}
+
+:host ::slotted(icon-button) {
+	--custom-icon-opacity: .7;
+}
+
+:host ::slotted(icon-button:focus),
+:host ::slotted(icon-button:active) {
+	--custom-icon-opacity: 1;
+}
+
+:host ::slotted(icon-button[disabled]) {
+	--custom-icon-opacity: .5;
+}
+
+:host(.primary) {
+	color: var(--primary-color-contrast);
+	background-color: var(--primary-color);
+}
+
+:host(.accent) {
+	color: var(--accent-color-contrast);
+	background-color: var(--accent-color);
+}
+
+/* Tablet */
+@media (min-width: 768px) {
+	:host {
+		height: 64px;
+		padding: 0 16px;
+	}
+}

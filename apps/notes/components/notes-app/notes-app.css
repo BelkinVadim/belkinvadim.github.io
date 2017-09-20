@@ -1,0 +1,29 @@
+:host {
+	position: relative;
+	display: block;
+	height: 100%;
+}
+
+app-pages {}
+
+/*
+app-page[data-name="detail"] {
+	visibility: hidden;
+	animation-name: fadeIn;
+	animation-duration: .3s;
+	animation-delay: 5s;
+	animation-fill-mode: forwards;
+}
+
+@keyframes fadeIn {
+	from {
+		opacity: 0;
+		transform: translateY(50%);
+		visibility: visible;
+	}
+	to {
+		opacity: 1;
+		transform: translateY(0%);
+		visibility: visible;
+	}
+}*/

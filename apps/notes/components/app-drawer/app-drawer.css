@@ -1,0 +1,61 @@
+:host {
+    position: fixed;
+    top: 0;
+    left: 0;
+    display: block;
+    width: 100%;
+    height: 100%;
+    z-index: 160;
+}
+
+:host(:not([open])) {
+    pointer-events: none;
+}
+
+:host .backdrop {
+    position: fixed;
+    display: block;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, .7);
+    opacity: 1;
+    z-index: 1;
+    cursor: pointer;
+    transition: opacity .3s ease;
+}
+
+:host(:not([open])) .backdrop {
+    opacity: 0;
+}
+
+:host .content {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 56px;
+    display: block;
+    max-width: 280px;
+    height: 100%;
+    background-color: #fff;
+    box-shadow: var(--shadow-elevation-16);
+    overflow: auto;
+    z-index: 2;
+    transition:
+            box-shadow .3s ease,
+            transform .3s ease;
+    will-change: transform;
+}
+
+:host(:not([open])) .content {
+    box-shadow: none;
+    transform: translateX(-100%);
+}
+
+/* Tablet */
+@media (min-width: 768px) {
+    :host .content {
+        max-width: 320px;
+    }
+}

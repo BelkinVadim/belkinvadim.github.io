@@ -1,0 +1,24 @@
+:host {
+	position: relative;
+	display: block;
+	padding: 16px;
+	background-color: #fff;
+	box-shadow: var(--shadow-elevation-2);
+	border-radius: 2px;
+	transition: box-shadow .3s var(--transition-standart-easing);
+}
+
+:host(:hover) {
+	box-shadow: var(--shadow-elevation-8);
+}
+
+:host .title {
+	display: block;
+	margin-bottom: 8px;
+	font-size: 16px;
+	font-weight: 500;
+}
+
+:host .text {
+	display: block;
+}
