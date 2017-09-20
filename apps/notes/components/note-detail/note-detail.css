@@ -1,14 +1,51 @@
 :host {
 	position: relative;
-	display: block;
-	padding: 16px;
+	display: grid;
+	grid-auto-flow: row;
+	grid-template-rows: min-content;
+	color: rgba(0, 0, 0, .87);
 	background-color: #fff;
 }
 
-:host .title {
+:host .title,
+:host .text {
+	position: relative;
 	display: block;
-	font-size: 24px;
-	margin-bottom: 16px;
+	padding: 16px;
+	outline: none;
 }
 
-:host .text {}
+:host .title:empty::before,
+:host .text:empty::before {
+	position: absolute;
+	top: 16px;
+	left: 16px;
+	max-width: 100%;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	overflow: hidden;
+	opacity: .54;
+	pointer-events: none;
+}
+
+:host .title {
+	align-self: start;
+	min-height: 32px;
+	font-size: 24px;
+	font-weight: 500;
+	line-height: 32px;
+}
+
+:host .title:empty::before {
+	content: "Заголовок";
+}
+
+:host .text {
+	min-height: 20px;
+	font-size: 14px;
+	line-height: 20px;
+}
+
+:host .text:empty::before {
+	content: "Текст";
+}

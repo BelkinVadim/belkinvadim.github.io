@@ -2,6 +2,7 @@
 	position: relative;
 	display: block;
 	padding: 16px;
+	color: rgba(0, 0, 0, .87);
 	background-color: #fff;
 	box-shadow: var(--shadow-elevation-2);
 	border-radius: 2px;
@@ -14,11 +15,13 @@
 
 :host .title {
 	display: block;
-	margin-bottom: 8px;
 	font-size: 16px;
 	font-weight: 500;
+	line-height: 24px;
 }
 
 :host .text {
 	display: block;
+	font-size: 14px;
+	line-height: 20px;
 }

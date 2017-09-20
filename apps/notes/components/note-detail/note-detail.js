@@ -11,8 +11,8 @@ class NoteDetail extends HTMLElement {
         this.shadow = this.attachShadow({mode: 'open'});
         this.shadow.innerHTML = `
 	        <link rel="stylesheet" href="components/note-detail/note-detail.css">
-	        <div class="title" contenteditable>${this.note.title}</div>
-	        <div class="text" contenteditable>${this.note.text}</div>
+	        <div class="title" contenteditable>${this.note.title || ''}</div>
+	        <div class="text" contenteditable>${this.note.text || ''}</div>
         `;
 
         this.handleChange = this.handleChange.bind(this);
@@ -51,8 +51,8 @@ class NoteDetail extends HTMLElement {
         const title = this.shadow.querySelector('.title');
         const text = this.shadow.querySelector('.text');
 
-        title.innerHTML = this.note.title;
-        text.innerHTML = this.note.text;
+        title.innerHTML = this.note.title || '';
+        text.innerHTML = this.note.text || '';
     }
 
     handleChange() {

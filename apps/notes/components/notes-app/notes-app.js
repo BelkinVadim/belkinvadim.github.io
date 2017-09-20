@@ -1,69 +1,3 @@
-const AppStore = {};
-
-const DataBase = idb.open('Notes', 1, upgradeDB => {
-    upgradeDB.createObjectStore('notes', {
-        keyPath: 'id',
-        autoIncrement: true
-    });
-});
-
-class Store {
-    constructor(name) {
-        this.name = name;
-    }
-
-    get(key) {
-        return DataBase.then(db => {
-            const transaction = db.transaction(this.name);
-            const store = transaction.objectStore(this.name);
-
-            return store.get(key);
-        });
-        }
-
-    set(key, value) {
-        return DataBase.then(db => {
-            const transaction = db.transaction(this.name, 'readwrite');
-            const store = transaction.objectStore(this.name);
-            store.put(value, key);
-
-            return transaction.complete;
-        });
-    }
-
-    put(record) {
-        return DataBase.then(db => {
-            const transaction = db.transaction(this.name, 'readwrite');
-            const store = transaction.objectStore(this.name);
-            store.put(record);
-
-            return transaction.complete;
-        });
-    }
-
-    delete(key) {
-        return DataBase.then(db => {
-            const transaction = db.transaction(this.name, 'readwrite');
-            const store = transaction.objectStore(this.name);
-
-            store.delete(key);
-
-            return transaction.complete;
-        });
-    }
-
-    getAll() {
-        return DataBase.then(db => {
-            const transaction = db.transaction(this.name);
-            const store = transaction.objectStore(this.name);
-
-            return store.getAll();
-        })
-    }
-}
-
-const Notes = new Store('notes');
-
 class NotesApp extends HTMLElement {
     static get is() {
         return 'notes-app';
@@ -91,20 +25,14 @@ class NotesApp extends HTMLElement {
 
     renderScreenMain() {
         const content = this.shadow.querySelector('.content');
-        const screenMain = document.createElement('screen-main');
-        screenMain.handleCreate = '';
 
-        content.innerHTML = '';
-        content.append(screenMain);
+        content.innerHTML = `<screen-main></screen-main>`;
     }
 
     renderScreenDetail(id) {
         const content = this.shadow.querySelector('.content');
-        const screenDetail = document.createElement('screen-detail');
-        screenDetail.setAttribute('data-id', id);
 
-        content.innerHTML = '';
-        content.append(screenDetail);
+        content.innerHTML = `<screen-detail data-id="${id}"></screen-detail>`;
     }
 }
 

@@ -49,8 +49,8 @@ class ScreenMain extends HTMLElement {
         const notesApp = document.querySelector('notes-app');
 
         await Notes.put({
-            title: 'Заголовок',
-            text: 'Текст'
+            title: '',
+            text: ''
         });
 
         await Notes

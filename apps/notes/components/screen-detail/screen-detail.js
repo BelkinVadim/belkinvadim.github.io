@@ -57,12 +57,24 @@ class ScreenDetail extends HTMLElement {
         return ['data-id'];
     }
 
+    get isEmpty() {
+        const notesDetail = this.shadow.querySelector('note-detail');
+        const note = notesDetail.note;
+
+        return !note.title && !note.text;
+    }
+
     async handleBack() {
         const notesApp = document.querySelector('notes-app');
         const notesDetail = this.shadow.querySelector('note-detail');
         const note = notesDetail.note;
 
-        await Notes.put(note);
+        if (this.isEmpty) {
+            await Notes.delete(note.id);
+        }
+        else {
+            await Notes.put(note);
+        }
         notesApp.renderScreenMain();
     }
 

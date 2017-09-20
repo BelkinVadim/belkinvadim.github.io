@@ -11,8 +11,8 @@ class NoteItem extends HTMLElement {
         this.shadow = this.attachShadow({mode: 'open'});
         this.shadow.innerHTML = `
 	        <link rel="stylesheet" href="components/note-item/note-item.css">
-	        <div class="title">${this.note.title}</div>
-	        <div class="text">${this.note.text}</div>
+	        <div class="title">${this.note.title || ''}</div>
+	        <div class="text">${this.note.text || ''}</div>
         `;
 
         this.handleClick = this.handleClick.bind(this);
@@ -43,8 +43,8 @@ class NoteItem extends HTMLElement {
         const title = this.shadow.querySelector('.title');
         const text = this.shadow.querySelector('.text');
 
-        title.innerHTML = this.note.title;
-        text.innerHTML = this.note.text;
+        title.innerHTML = this.note.title || '';
+        text.innerHTML = this.note.text.length > 150 ? `${this.note.text.substr(0, 120)}&hellip;` : this.note.text || '';
     }
 
     handleClick() {
