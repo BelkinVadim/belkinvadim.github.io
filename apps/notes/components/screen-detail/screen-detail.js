@@ -23,7 +23,11 @@ class ScreenDetail extends HTMLElement {
                     </app-toolbar>
                 </app-header>
                 <note-detail></note-detail>
-                ${SpeechRecognition && '<floating-button class="accent fixed js-record" data-icon="mic" role="button"></floating-button>'}
+                ${SpeechRecognition ?
+                    '<floating-button class="accent fixed js-record" data-icon="mic" role="button"></floating-button>'
+                    :
+                    ''
+                }
             </app-screen>
         `;
 
@@ -125,15 +129,28 @@ class ScreenDetail extends HTMLElement {
     handleRecordStart() {
         const buttonRecord = this.shadow.querySelector('.js-record');
 
-        buttonRecord.dataset.icon = 'record_voice_over';
-        this.recognition.start();
+        if (localStorage.getItem('audio_access')) {
+            buttonRecord.dataset.icon = 'record_voice_over';
+            this.recognition.start();
+        }
+        else {
+            navigator.mediaDevices
+                .getUserMedia({audio: true})
+                .then(stream => {
+                    localStorage.setItem('audio_access', true);
+                    stream.getAudioTracks()[0].muted;
+                })
+                .catch(error => console.log(error));
+        }
     }
 
     handleRecordEnd() {
         const buttonRecord = this.shadow.querySelector('.js-record');
 
-        buttonRecord.dataset.icon = 'mic';
-        this.recognition.stop();
+        if (localStorage.getItem('audio_access')) {
+            buttonRecord.dataset.icon = 'mic';
+            this.recognition.stop();
+        }
     }
 
     handleRecordResult(event) {
