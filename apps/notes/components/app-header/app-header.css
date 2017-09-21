@@ -2,4 +2,5 @@
     position: relative;
     display: block;
     box-shadow: var(--shadow-elevation-4);
+    z-index: 4;
 }

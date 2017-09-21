@@ -1,3 +1,5 @@
+const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+
 class ScreenDetail extends HTMLElement {
     static get is() {
         return 'screen-detail';
@@ -5,6 +7,10 @@ class ScreenDetail extends HTMLElement {
 
     constructor() {
         super();
+
+        if (SpeechRecognition) {
+            this.recognition = new SpeechRecognition();
+        }
 
         this.shadow = this.attachShadow({mode: 'open'});
         this.shadow.innerHTML = `
@@ -17,27 +23,55 @@ class ScreenDetail extends HTMLElement {
                     </app-toolbar>
                 </app-header>
                 <note-detail></note-detail>
+                ${SpeechRecognition && '<floating-button class="accent fixed js-record" data-icon="mic" role="button"></floating-button>'}
             </app-screen>
         `;
 
         this.handleBack = this.handleBack.bind(this);
         this.handleDelete = this.handleDelete.bind(this);
+        this.handleRecordStart = this.handleRecordStart.bind(this);
+        this.handleRecordEnd = this.handleRecordEnd.bind(this);
+        this.handleRecordResult = this.handleRecordResult.bind(this);
     }
 
     connectedCallback() {
         const buttonBack = this.shadow.querySelector('.js-back');
         const buttonDelete = this.shadow.querySelector('.js-delete');
+        const buttonRecord = this.shadow.querySelector('.js-record');
 
         buttonBack.addEventListener('click', this.handleBack);
         buttonDelete.addEventListener('click', this.handleDelete);
+
+        if (SpeechRecognition) {
+            // Mouse events
+            buttonRecord.addEventListener('mousedown', this.handleRecordStart);
+            buttonRecord.addEventListener('mouseup', this.handleRecordEnd);
+            // Touch events
+            buttonRecord.addEventListener('touchstart', this.handleRecordStart);
+            buttonRecord.addEventListener('touchend', this.handleRecordEnd);
+
+            this.recognition.addEventListener('result', this.handleRecordResult);
+        }
     }
 
     disconnectedCallback() {
         const buttonBack = this.shadow.querySelector('.js-back');
         const buttonDelete = this.shadow.querySelector('.js-delete');
+        const buttonRecord = this.shadow.querySelector('.js-record');
 
         buttonBack.removeEventListener('click', this.handleBack);
         buttonDelete.removeEventListener('click', this.handleDelete);
+
+        if (SpeechRecognition) {
+            // Mouse events
+            buttonRecord.removeEventListener('mousedown', this.handleRecordStart);
+            buttonRecord.removeEventListener('mouseup', this.handleRecordEnd);
+            // Touch events
+            buttonRecord.removeEventListener('touchstart', this.handleRecordStart);
+            buttonRecord.removeEventListener('touchend', this.handleRecordEnd);
+
+            this.recognition.removeEventListener('result', this.handleRecordResult);
+        }
     }
 
     attributeChangedCallback(attributeName, oldValue, newValue, namespace) {
@@ -73,6 +107,7 @@ class ScreenDetail extends HTMLElement {
             await Notes.delete(note.id);
         }
         else {
+            note.updated = new Date().getTime();
             await Notes.put(note);
         }
         notesApp.renderScreenMain();
@@ -85,6 +120,30 @@ class ScreenDetail extends HTMLElement {
 
         await Notes.delete(note.id);
         notesApp.renderScreenMain();
+    }
+
+    handleRecordStart() {
+        const buttonRecord = this.shadow.querySelector('.js-record');
+
+        buttonRecord.dataset.icon = 'record_voice_over';
+        this.recognition.start();
+    }
+
+    handleRecordEnd() {
+        const buttonRecord = this.shadow.querySelector('.js-record');
+
+        buttonRecord.dataset.icon = 'mic';
+        this.recognition.stop();
+    }
+
+    handleRecordResult(event) {
+        const current = event.resultIndex;
+        const { transcript } = event.results[current][0];
+        const notesDetail = this.shadow.querySelector('note-detail');
+        const { note } = notesDetail;
+
+        note.text += transcript;
+        notesDetail.note = note;
     }
 }
 

@@ -50,7 +50,9 @@ class ScreenMain extends HTMLElement {
 
         await Notes.put({
             title: '',
-            text: ''
+            text: '',
+            created: new Date().getTime(),
+            updated: new Date().getTime()
         });
 
         await Notes

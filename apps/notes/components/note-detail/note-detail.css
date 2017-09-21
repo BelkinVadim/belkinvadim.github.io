@@ -49,3 +49,10 @@
 :host .text:empty::before {
 	content: "Текст";
 }
+
+/* Mobile large */
+@media (min-width: 567px) {
+	:host {
+		box-shadow: var(--shadow-elevation-2);
+	}
+}
