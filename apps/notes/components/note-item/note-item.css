@@ -7,6 +7,8 @@
 	box-shadow: var(--shadow-elevation-2);
 	border-radius: 2px;
 	transition: box-shadow .3s var(--transition-standart-easing);
+	user-select: none;
+	cursor: pointer;
 }
 
 :host(:hover) {

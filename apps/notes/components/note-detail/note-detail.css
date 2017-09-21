@@ -1,8 +1,13 @@
 :host {
 	position: relative;
-	display: grid;
-	grid-auto-flow: row;
-	grid-template-rows: min-content;
+	display: flex;
+	flex-direction: column;
+	align-items: stretch;
+	justify-content: flex-start;
+	flex: 1 1 auto;
+	width: 100%;
+	margin-left: auto;
+	margin-right: auto;
 	color: rgba(0, 0, 0, .87);
 	background-color: #fff;
 }
@@ -11,14 +16,12 @@
 :host .text {
 	position: relative;
 	display: block;
-	padding: 16px;
 	outline: none;
 }
 
 :host .title:empty::before,
 :host .text:empty::before {
 	position: absolute;
-	top: 16px;
 	left: 16px;
 	max-width: 100%;
 	text-overflow: ellipsis;
@@ -31,6 +34,7 @@
 :host .title {
 	align-self: start;
 	min-height: 32px;
+	padding: 24px 16px 0;
 	font-size: 24px;
 	font-weight: 500;
 	line-height: 32px;
@@ -38,21 +42,51 @@
 
 :host .title:empty::before {
 	content: "Заголовок";
+	top: 24px;
 }
 
 :host .text {
 	min-height: 20px;
+	padding: 16px;
 	font-size: 14px;
 	line-height: 20px;
 }
 
 :host .text:empty::before {
 	content: "Текст";
+	top: 16px;
+}
+
+:host .date {
+	position: absolute;
+	top: 8px;
+	left: 16px;
+	font-size: 12px;
+	opacity: .54;
+	z-index: 2;
 }
 
 /* Mobile large */
 @media (min-width: 567px) {
 	:host {
+		max-width: 576px;
+		border-radius: 2px;
 		box-shadow: var(--shadow-elevation-2);
+	}
+}
+
+/* Tablet */
+@media (min-width: 768px) {
+	:host {
+		max-width: 720px;
+		margin-top: 16px;
+		margin-bottom: 16px;
+	}
+}
+
+/* Desktop small */
+@media (min-width: 992px) {
+	:host {
+		max-width: 940px;
 	}
 }

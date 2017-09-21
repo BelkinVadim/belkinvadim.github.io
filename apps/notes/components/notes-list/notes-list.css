@@ -1,6 +1,8 @@
 :host {
 	position: relative;
 	display: block;
+	width: calc(100% - 16px);
+	margin: 8px auto;
 	box-sizing: border-box;
 }
 
@@ -9,9 +11,30 @@
 	grid-gap: 8px;
 }
 
+/* Mobile large */
+@media (min-width: 567px) {
+	:host {
+		max-width: 576px;
+	}
+}
+
 /* Tablet */
 @media (min-width: 768px) {
+	:host {
+		width: calc(100% - 32px);
+		max-width: 720px;
+		margin-top: 16px;
+		margin-bottom: 16px;
+	}
+
 	.content {
 		grid-gap: 16px;
+	}
+}
+
+/* Desktop small */
+@media (min-width: 992px) {
+	:host {
+		max-width: 940px;
 	}
 }
