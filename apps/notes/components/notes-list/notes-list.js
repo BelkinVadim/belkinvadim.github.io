@@ -50,6 +50,10 @@ class NotesList extends HTMLElement {
                 });
 
             content.append(fragment);
+            this.hidden = false;
+        }
+        else {
+            this.hidden = true;
         }
     }
 }
