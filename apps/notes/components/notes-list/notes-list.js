@@ -39,12 +39,15 @@ class NotesList extends HTMLElement {
         content.innerHTML = '';
 
         if (this.notes.length) {
-            this.notes.map(note => {
-                const noteItem = document.createElement('note-item');
+            this.notes
+                .sort((a, b) => b.created - a.created)
+                .map(note => {
+                    const noteItem = document.createElement('note-item');
 
-                noteItem.note = note;
-                fragment.append(noteItem);
-            });
+                    noteItem.setAttribute('tabindex', 0);
+                    noteItem.note = note;
+                    fragment.append(noteItem);
+                });
 
             content.append(fragment);
         }

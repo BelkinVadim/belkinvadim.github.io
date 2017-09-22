@@ -1,13 +1,19 @@
 :host {
 	position: relative;
 	display: block;
+	min-height: 42px;
 	padding: 12px 16px;
 	color: var(--primary-text-color);
 	background-color: var(--primary-background-color);
 	border-bottom: 1px solid var(--divider-color);
+	transition: background-color .3s ease;
 	user-select: none;
 	cursor: pointer;
+	box-sizing: border-box;
 }
+
+:host(:hover),
+:host(:focus) {}
 
 .title {
 	display: block;
@@ -35,4 +41,11 @@
 	font-size: 12px;
 	line-height: 16px;
 	color: var(--secondary-text-color);
+}
+
+/* Tablet */
+@media (min-width: 768px) {
+	:host(:last-child) {
+		border-bottom: none;
+	}
 }
