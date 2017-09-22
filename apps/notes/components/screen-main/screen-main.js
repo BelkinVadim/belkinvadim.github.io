@@ -9,11 +9,10 @@ class ScreenMain extends HTMLElement {
         this.shadow = this.attachShadow({mode: 'open'});
         this.shadow.innerHTML = `
             <app-screen>
-                <app-header>
+                <app-header slot="header">
                     <app-toolbar class="primary" role="toolbar">
                         <icon-button data-icon="menu" role="button" tabindex="0"></icon-button>
                         <div class="title">Notes</div>
-                        <icon-button data-icon="search" role="button" tabindex="0"></icon-button>
                     </app-toolbar>
                 </app-header>
                 <notes-list></notes-list>

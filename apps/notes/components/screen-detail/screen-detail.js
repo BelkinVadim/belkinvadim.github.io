@@ -15,7 +15,7 @@ class ScreenDetail extends HTMLElement {
         this.shadow = this.attachShadow({mode: 'open'});
         this.shadow.innerHTML = `
             <app-screen>
-                <app-header>
+                <app-header slot="header">
                     <app-toolbar class="primary" role="toolbar">
                         <icon-button class="js-back" data-icon="arrow_back" role="button" tabindex="0"></icon-button>
                         <div class="title"></div>
@@ -80,7 +80,6 @@ class ScreenDetail extends HTMLElement {
 
     attributeChangedCallback(attributeName, oldValue, newValue, namespace) {
         if (attributeName === 'data-id') {
-            const notesApp = document.querySelector('notes-app');
             const notesDetail = this.shadow.querySelector('note-detail');
 
             Notes

@@ -14,7 +14,14 @@ class AppScreen extends HTMLElement {
         this.shadow = this.attachShadow({mode: 'open'});
         this.shadow.innerHTML = `
             <link rel="stylesheet" href="components/app-screen/app-screen.css">
-	        <slot></slot>
+	        <div class="header">
+	            <slot name="header"></slot>
+            </div>
+	        <div class="body">
+                <div class="content">
+                    <slot></slot>
+                </div>
+            </div>
         `;
     }
 

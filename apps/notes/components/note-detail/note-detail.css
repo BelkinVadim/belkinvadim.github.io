@@ -1,11 +1,8 @@
 :host {
 	position: relative;
-	display: flex;
-	flex-direction: column;
-	align-items: stretch;
-	justify-content: flex-start;
-	flex: 1 1 auto;
+	display: block;
 	width: 100%;
+	min-height: 100%;
 	margin-left: auto;
 	margin-right: auto;
 	color: rgba(0, 0, 0, .87);
@@ -57,15 +54,6 @@
 	top: 16px;
 }
 
-:host .date {
-	position: absolute;
-	top: 8px;
-	left: 16px;
-	font-size: 12px;
-	opacity: .54;
-	z-index: 2;
-}
-
 /* Mobile large */
 @media (min-width: 567px) {
 	:host {
@@ -79,6 +67,7 @@
 @media (min-width: 768px) {
 	:host {
 		max-width: 720px;
+		min-height: calc(100% - 32px);
 		margin-top: 16px;
 		margin-bottom: 16px;
 	}
