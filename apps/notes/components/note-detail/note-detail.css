@@ -29,7 +29,6 @@
 }
 
 :host .title {
-	align-self: start;
 	min-height: 32px;
 	padding: 24px 16px 0;
 	font-size: 24px;
