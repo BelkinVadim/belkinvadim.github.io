@@ -11,6 +11,10 @@
 	box-sizing: border-box;
 }
 
+:host(:empty) {
+	display: none;
+}
+
 /* Tablet */
 @media (min-width: 768px) {
 	:host {
