@@ -24,7 +24,7 @@ class ScreenDetail extends HTMLElement {
                 </app-header>
                 <note-detail></note-detail>
                 ${SpeechRecognition ?
-                    '<floating-button class="accent fixed js-record" data-icon="mic" role="button"></floating-button>'
+                    '<floating-button class="accent fixed js-record" data-icon="mic" role="button" title="Продиктовать"></floating-button>'
                     :
                     ''
                 }
@@ -39,9 +39,16 @@ class ScreenDetail extends HTMLElement {
     }
 
     connectedCallback() {
+        const notesDetail = this.shadow.querySelector('note-detail');
         const buttonBack = this.shadow.querySelector('.js-back');
         const buttonDelete = this.shadow.querySelector('.js-delete');
         const buttonRecord = this.shadow.querySelector('.js-record');
+
+        notesDetail.note = {
+            title: '',
+            text: '',
+            created: new Date().getTime()
+        };
 
         buttonBack.addEventListener('click', this.handleBack);
         buttonDelete.addEventListener('click', this.handleDelete);
@@ -107,12 +114,13 @@ class ScreenDetail extends HTMLElement {
         const note = notesDetail.note;
 
         if (this.isEmpty) {
-            await Notes.delete(note.id);
+            typeof note.id === 'number' && await Notes.delete(note.id);
         }
         else {
             note.updated = new Date().getTime();
             await Notes.put(note);
         }
+
         notesApp.renderScreenMain();
     }
 

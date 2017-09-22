@@ -32,7 +32,7 @@ class NotesApp extends HTMLElement {
     renderScreenDetail(id) {
         const content = this.shadow.querySelector('.content');
 
-        content.innerHTML = `<screen-detail data-id="${id}"></screen-detail>`;
+        content.innerHTML = `<screen-detail ${typeof id === 'number' ? `data-id="${id}"` : ''}></screen-detail>`;
     }
 }
 

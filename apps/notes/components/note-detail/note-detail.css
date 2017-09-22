@@ -1,12 +1,15 @@
 :host {
 	position: relative;
-	display: block;
+	display: flex;
+	flex-direction: column;
+	align-items: stretch;
+	justify-content: flex-start;
 	width: 100%;
 	min-height: 100%;
 	margin-left: auto;
 	margin-right: auto;
-	color: rgba(0, 0, 0, .87);
-	background-color: #fff;
+	color: var(--primary-text-color);
+	background-color: var(--primary-background-color);
 }
 
 :host .title,
@@ -42,6 +45,7 @@
 }
 
 :host .text {
+	flex: 1 1 auto;
 	min-height: 20px;
 	padding: 16px;
 	font-size: 14px;
@@ -53,15 +57,6 @@
 	top: 16px;
 }
 
-/* Mobile large */
-@media (min-width: 567px) {
-	:host {
-		max-width: 576px;
-		border-radius: 2px;
-		box-shadow: var(--shadow-elevation-2);
-	}
-}
-
 /* Tablet */
 @media (min-width: 768px) {
 	:host {
@@ -69,6 +64,8 @@
 		min-height: calc(100% - 32px);
 		margin-top: 16px;
 		margin-bottom: 16px;
+		border-radius: 2px;
+		box-shadow: var(--shadow-elevation-2);
 	}
 }
 

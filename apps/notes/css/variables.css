@@ -43,6 +43,7 @@
 	--disabled-text-color: 		rgba(0, 0, 0, .38);
 	--accent-color: 			var(--color-A700);
 	--accent-color-contrast: 	var(--color-A700-contrast);
+	--divider-color: 			rgba(0, 0, 0, .12);
 
 
 	/* Shadow */

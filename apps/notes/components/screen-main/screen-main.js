@@ -16,7 +16,7 @@ class ScreenMain extends HTMLElement {
                     </app-toolbar>
                 </app-header>
                 <notes-list></notes-list>
-                <floating-button class="accent fixed js-create" data-icon="add" role="button"></floating-button>
+                <floating-button class="accent fixed js-create" data-icon="create" role="button" title="Добавить заметку"></floating-button>
             </app-screen>
         `;
 
@@ -47,15 +47,7 @@ class ScreenMain extends HTMLElement {
     async handleCreateNote() {
         const notesApp = document.querySelector('notes-app');
 
-        await Notes.put({
-            title: '',
-            text: '',
-            created: new Date().getTime()
-        });
-
-        await Notes
-            .getAll()
-            .then(notes => notesApp.renderScreenDetail(notes[notes.length - 1].id));
+        notesApp.renderScreenDetail();
     }
 }
 
