@@ -28,11 +28,21 @@ class ScreenDetail extends HTMLElement {
                     :
                     ''
                 }
+                <app-dialog hidden>
+                    <div class="title">Удалить заметку?</div>
+                    <p>Удаленную заметку невозможно восстановить</p>
+                    <div class="actions">
+                        <custom-button class="primary js-delete-cancel" role="button" tabindex="0">Отменить</custom-button>
+                        <custom-button class="primary js-delete-confirm" role="button" tabindex="0">Да</custom-button>
+                    </div>
+                </app-dialog>
             </app-screen>
         `;
 
         this.handleBack = this.handleBack.bind(this);
         this.handleDelete = this.handleDelete.bind(this);
+        this.handleDeleteCancel = this.handleDeleteCancel.bind(this);
+        this.handleDeleteConfirm = this.handleDeleteConfirm.bind(this);
         this.handleRecordStart = this.handleRecordStart.bind(this);
         this.handleRecordEnd = this.handleRecordEnd.bind(this);
         this.handleRecordResult = this.handleRecordResult.bind(this);
@@ -42,6 +52,8 @@ class ScreenDetail extends HTMLElement {
         const notesDetail = this.shadow.querySelector('note-detail');
         const buttonBack = this.shadow.querySelector('.js-back');
         const buttonDelete = this.shadow.querySelector('.js-delete');
+        const buttonDeleteCancel = this.shadow.querySelector('.js-delete-cancel');
+        const buttonDeleteConfirm = this.shadow.querySelector('.js-delete-confirm');
         const buttonRecord = this.shadow.querySelector('.js-record');
 
         notesDetail.note = {
@@ -52,6 +64,8 @@ class ScreenDetail extends HTMLElement {
 
         buttonBack.addEventListener('click', this.handleBack);
         buttonDelete.addEventListener('click', this.handleDelete);
+        buttonDeleteCancel.addEventListener('click', this.handleDeleteCancel);
+        buttonDeleteConfirm.addEventListener('click', this.handleDeleteConfirm);
 
         if (SpeechRecognition) {
             // Mouse events
@@ -68,10 +82,14 @@ class ScreenDetail extends HTMLElement {
     disconnectedCallback() {
         const buttonBack = this.shadow.querySelector('.js-back');
         const buttonDelete = this.shadow.querySelector('.js-delete');
+        const buttonDeleteCancel = this.shadow.querySelector('.js-delete-cancel');
+        const buttonDeleteConfirm = this.shadow.querySelector('.js-delete-confirm');
         const buttonRecord = this.shadow.querySelector('.js-record');
 
         buttonBack.removeEventListener('click', this.handleBack);
         buttonDelete.removeEventListener('click', this.handleDelete);
+        buttonDeleteCancel.removeEventListener('click', this.handleDeleteCancel);
+        buttonDeleteConfirm.removeEventListener('click', this.handleDeleteConfirm);
 
         if (SpeechRecognition) {
             // Mouse events
@@ -124,12 +142,27 @@ class ScreenDetail extends HTMLElement {
         notesApp.renderScreenMain();
     }
 
-    async handleDelete() {
+    handleDelete() {
+        const dialog = this.shadow.querySelector('app-dialog');
+
+        dialog.hidden = false;
+    }
+
+    handleDeleteCancel() {
+        const dialog = this.shadow.querySelector('app-dialog');
+
+        dialog.hidden = true;
+    }
+
+    async handleDeleteConfirm() {
         const notesApp = document.querySelector('notes-app');
         const notesDetail = this.shadow.querySelector('note-detail');
         const note = notesDetail.note;
+        const dialog = this.shadow.querySelector('app-dialog');
 
-        await Notes.delete(note.id);
+        dialog.hidden = true;
+
+        typeof note.id === 'number' && await Notes.delete(note.id);
         notesApp.renderScreenMain();
     }
 

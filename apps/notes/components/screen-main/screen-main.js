@@ -12,7 +12,7 @@ class ScreenMain extends HTMLElement {
                 <app-header slot="header">
                     <app-toolbar class="primary" role="toolbar">
                         <icon-button data-icon="menu" role="button" tabindex="0"></icon-button>
-                        <div class="title">Notes</div>
+                        <div class="title">Заметки</div>
                     </app-toolbar>
                 </app-header>
                 <notes-list></notes-list>

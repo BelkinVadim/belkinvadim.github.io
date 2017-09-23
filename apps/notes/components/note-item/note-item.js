@@ -11,7 +11,7 @@ class NoteItem extends HTMLElement {
         this.shadow = this.attachShadow({mode: 'open'});
         this.shadow.innerHTML = `
 	        <link rel="stylesheet" href="components/note-item/note-item.css">
-	        <div class="title">${this.note.title || ''}</div>
+	        <div class="title">${this.note.title || 'Без названия'}</div>
 	        <div class="date">${noteDate(this.note.created)}</div>
 	        <div class="text">${this.note.text || ''}</div>
         `;
@@ -45,7 +45,7 @@ class NoteItem extends HTMLElement {
         const date = this.shadow.querySelector('.date');
         const text = this.shadow.querySelector('.text');
 
-        title.innerHTML = this.note.title || '';
+        title.innerHTML = this.note.title || 'Без названия';
         date.innerHTML = noteDate(this.note.created);
         text.innerHTML = this.note.text.length > 150 ? `${this.note.text.substr(0, 120)}&hellip;` : this.note.text || '';
     }
