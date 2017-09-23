@@ -14,7 +14,7 @@
 
         <script>
             if ('serviceWorker' in navigator) {
-                navigator.serviceWorker.register('/apps/notes/js/serviceworker.js', { scope: '/apps/notes/' })
+                navigator.serviceWorker.register('/apps/notes/js/serviceworker.js')
                     .then(function(reg) {
                         // регистрация сработала
                         console.log('Registration succeeded. Scope is ' + reg.scope);
