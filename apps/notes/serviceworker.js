@@ -1,13 +1,13 @@
 const appCache = [
-    '/apps/notes/',
-    '/apps/notes/index.html',
-    '/apps/notes/img/icons.svg',
-    '/apps/notes/css/main.css',
-    '/apps/notes/css/fonts/Roboto/Roboto-Light.woff2',
-    '/apps/notes/css/fonts/Roboto/Roboto-Regular.woff2',
-    '/apps/notes/css/fonts/Roboto/Roboto-Medium.woff2',
-    '/apps/notes/css/fonts/Roboto/Roboto-Bold.woff2',
-    '/apps/notes/js/app.js',
+    './',
+    './index.html',
+    './img/icons.svg',
+    './css/main.css',
+    './css/fonts/Roboto/Roboto-Light.woff2',
+    './css/fonts/Roboto/Roboto-Regular.woff2',
+    './css/fonts/Roboto/Roboto-Medium.woff2',
+    './css/fonts/Roboto/Roboto-Bold.woff2',
+    './js/app.js',
 ];
 
 // период обновления кэша - одни сутки
