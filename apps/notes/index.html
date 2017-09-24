@@ -4,6 +4,10 @@
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
+        <!-- Wep App -->
+        <link rel="manifest" href="manifest.json">
+        <meta name="theme-color" content="#3f51b5">
+
         <!-- iOS Safari -->
         <meta name="apple-mobile-web-app-title" content="Заметки">
         <meta name="apple-mobile-web-app-capable" content="yes">
@@ -15,10 +19,6 @@
         <link rel="icon" type="image/png" href="img/touch/icon-16х16.png" sizes="16x16">
         <link rel="icon" type="image/png" href="img/touch/icon-32х32.png" sizes="32x32">
 
-        <!-- Wep App -->
-        <link rel="manifest" href="manifest.json">
-        <meta name="theme-color" content="#3f51b5">
-
         <title>Заметки</title>
 
         <!-- Base styles -->
@@ -29,7 +29,7 @@
 
         <script>
             if ('serviceWorker' in navigator) {
-                navigator.serviceWorker.register('/apps/notes/js/serviceworker.js')
+                navigator.serviceWorker.register('/apps/notes/serviceworker.js')
                     .then(function(reg) {
                         // регистрация сработала
                         console.log('Registration succeeded. Scope is ' + reg.scope);
