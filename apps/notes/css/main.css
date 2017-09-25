@@ -94,6 +94,11 @@
 	--transition-deceleration-easing: cubic-bezier(0, 0, .2, 1);
 	--transition-acceleration-easing: cubic-bezier(.4, 0, 1, 1);
 	--transition-sharp-easing: 		  cubic-bezier(.4, 0, .6, 1);
+
+
+	/* Container */
+	--container-width-tablet: 		720px;
+	--container-width-desktop-sm: 	940px;
 }
 
 
