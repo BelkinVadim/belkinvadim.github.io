@@ -16,7 +16,7 @@
       "type": "image/png"
     },
     {
-      "src": "img/touch/icon-96х96.png",
+      "src": "img/touch/icon-96x96.png",
       "sizes": "96x96",
       "type": "image/png"
     },
@@ -26,7 +26,7 @@
       "type": "image/png"
     },
     {
-      "src": "img/touch/icon-168х168.png",
+      "src": "img/touch/icon-168x168.png",
       "sizes": "168x168",
       "type": "image/png"
     },
