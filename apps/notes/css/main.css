@@ -13,10 +13,10 @@
 	--color-700:  #1976d2;
 	--color-800:  #1565c0;
 	--color-900:  #0d47a1;
-	--color-A100: #b9f6ca;
-	--color-A200: #69f0ae;
-	--color-A400: #00e676;
-	--color-A700: #00c853;
+	--color-A100: #ff80ab;
+	--color-A200: #ff4081;
+	--color-A400: #f50057;
+	--color-A700: #c51162;
 
 	--color-50-contrast:   rgba(0, 0, 0, .87);
 	--color-100-contrast:  rgba(0, 0, 0, .87);
@@ -29,9 +29,9 @@
 	--color-800-contrast:  rgba(255, 255, 255, .87);
 	--color-900-contrast:  rgba(255, 255, 255, .87);
 	--color-A100-contrast: rgba(0, 0, 0, .87);
-	--color-A200-contrast: rgba(0, 0, 0, .87);
-	--color-A400-contrast: rgba(0, 0, 0, .87);
-	--color-A700-contrast: rgba(0, 0, 0, .87);
+	--color-A200-contrast: rgba(255, 255, 255, .87);
+	--color-A400-contrast: rgba(255, 255, 255, .87);
+	--color-A700-contrast: rgba(255, 255, 255, .87);
 
 
 	/* Color */
