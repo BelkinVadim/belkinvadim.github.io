@@ -1,7 +1,7 @@
 {
-  "name": "Заметки",
-  "short_name": "Заметки",
-  "description": "Приложение для текстовых заметок",
+  "name": "Notes",
+  "short_name": "Notes",
+  "description": "App for notes",
   "lang": "ru",
   "dir": "ltr",
   "icons": [
