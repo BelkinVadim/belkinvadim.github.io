@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="ru">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+        <title>Marvel comics</title>
+    </head>
+    <body>
+        <script>
+            const API_KEY = '13bd1a440b5db101ee55e7907bcb7b2c';
+            const API_PRIVATE_KEY = 'dee2790a7dd7519d42cdbbe0e2bcff97ce1ce7c8';
+            const URL = 'https://gateway.marvel.com:443/v1/public';
+
+            const request = fetch(`${URL}/comics?apikey=${API_KEY}`, {
+                method: 'GET',
+                mode: 'cors',
+                cache: 'default'
+            });
+
+            request
+                .then(playload => {})
+                .catch(error => console.log(error));
+        </script>
+    </body>
+</html>
