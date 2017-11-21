@@ -5,22 +5,15 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
         <title>Marvel comics</title>
+
+        <!-- Base styles -->
+        <link rel="stylesheet" href="css/main.css">
     </head>
     <body>
-        <script>
-            const API_KEY = '13bd1a440b5db101ee55e7907bcb7b2c';
-            const API_PRIVATE_KEY = 'dee2790a7dd7519d42cdbbe0e2bcff97ce1ce7c8';
-            const URL = 'https://gateway.marvel.com:443/v1/public';
+        <div id="app">
+            <router-view></router-view>
+        </div>
 
-            const request = fetch(`${URL}/comics?apikey=${API_KEY}`, {
-                method: 'GET',
-                mode: 'cors',
-                cache: 'default'
-            });
-
-            request
-                .then(playload => {})
-                .catch(error => console.log(error));
-        </script>
+        <script src="js/app.js"></script>
     </body>
 </html>
