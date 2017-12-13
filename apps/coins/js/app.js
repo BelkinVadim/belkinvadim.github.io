@@ -11705,11 +11705,13 @@ __webpack_require__(70);
 
 __webpack_require__(72);
 
+__webpack_require__(91);
+
 __webpack_require__(76);
 
 __webpack_require__(77);
 
-// Libs
+// Components
 class CoinApp extends _polymerElement.Element {
     static get is() {
         return 'coin-app';
@@ -11729,18 +11731,38 @@ class CoinApp extends _polymerElement.Element {
                     color: var(--dark-theme-text-color);
                     background-color: var(--primary-color);
                 }
+
+                app-header paper-input {
+                    flex: 1 1 auto;
+                    --paper-input-container-input-color: #fff;
+                    --paper-input-container-color: #fff;
+                    --paper-input-container-focus-color: transparent;
+                }
+
+                app-toolbar[hidden] {
+                    display: none;
+                }
             </style>
 
             <app-store currencies="{{currencies}}"></app-store>
 
             <app-header-layout>
                 <app-header slot="header" fixed shadow>
-                    <app-toolbar>
+                    <app-toolbar hidden$="[[isOpenSearch]]">
                         <div main-title>Coin</div>
+                        <paper-icon-button icon="search" on-tap="handleToggleSearch"></paper-icon-button>
+                    </app-toolbar>
+                    <app-toolbar hidden$="[[!isOpenSearch]]">
+                        <paper-input
+                            id="search"
+                            placeholder="Search"
+                            value="{{searchValue::input}}"
+                            no-label-float></paper-input>
+                        <paper-icon-button icon="close" on-tap="handleToggleSearch"></paper-icon-button>
                     </app-toolbar>
                 </app-header>
 
-                <currencies-list currencies="[[currencies]]"></currencies-list>
+                <currencies-list currencies="[[filteredCurrencies]]"></currencies-list>
             </app-header-layout>
         `;
     }
@@ -11751,6 +11773,19 @@ class CoinApp extends _polymerElement.Element {
                 type: Array,
                 value: [],
                 notify: true
+            },
+            filteredCurrencies: {
+                type: Array,
+                computed: '_filteredCurrencies(currencies, searchValue)'
+            },
+            searchValue: {
+                type: String,
+                value: '',
+                observer: '_searchValueChanged'
+            },
+            isOpenSearch: {
+                type: Boolean,
+                value: false
             }
         };
     }
@@ -11758,8 +11793,31 @@ class CoinApp extends _polymerElement.Element {
     constructor() {
         super();
     }
-}
-// Components
+
+    _searchValueChanged() {}
+
+    _filteredCurrencies(currencies, searchValue) {
+        if (searchValue) {
+            return currencies.filter(currency => currency.name.toLowerCase().indexOf(searchValue.toLowerCase()) >= 0);
+        } else {
+            return currencies;
+        }
+    }
+
+    handleToggleSearch() {
+        this.isOpenSearch = !this.isOpenSearch;
+
+        if (!this.isOpenSearch) {
+            this.searchValue = '';
+        } else {
+            setTimeout(() => {
+                this.$.search.focus();
+            }, 200);
+        }
+    }
+
+    handleChangeSearch() {}
+} // Libs
 
 
 customElements.define(CoinApp.is, CoinApp);
@@ -19674,6 +19732,31 @@ class CurrencyItem extends _polymerElement.Element {
                 .price[depreciation] {
                     color: var(--paper-red-500);
                 }
+
+                .change {
+                    display: flex;
+                }
+
+                .change__title {
+                    display: block;
+                    flex: 1 1 auto;
+                    white-space: normal;
+                }
+
+                .change__percent {
+                    display: block;
+                    flex: 0 0 auto;
+                    max-width: 50%;
+                    padding-left: 8px;
+                    text-overflow: ellipsis;
+                    white-space: nowrap;
+                    overflow: hidden;
+                    color: var(--paper-green-500);
+                }
+
+                .change__percent[depreciation] {
+                    color: var(--paper-red-500);
+                }
             </style>
 
             <paper-icon-item role="listitem">
@@ -19682,7 +19765,11 @@ class CurrencyItem extends _polymerElement.Element {
                 <paper-item-body two-line>
                     <div class="header">
                         <span class="name">[[currency.name]]</span>
-                        <b class="price" depreciation$="[[isDepreciation]]">[[price]]</b>
+                        <b class="price" depreciation$="[[isDepreciation24H]]">$[[price]]</b>
+                    </div>
+                    <div class="change" secondary>
+                        <span class="change__title">Change (24h)</span>
+                        <b class="change__percent" depreciation$="[[isDepreciation24H]]">[[currency.percent_change_24h]]%</b>
                     </div>
                 </paper-item-body>
             </paper-icon-item>
@@ -19696,9 +19783,17 @@ class CurrencyItem extends _polymerElement.Element {
                 type: String,
                 computed: '_price(currency)'
             },
-            isDepreciation: {
+            isDepreciation1H: {
                 type: Boolean,
-                computed: '_isDepreciation(currency)'
+                computed: '_isDepreciation1H(currency)'
+            },
+            isDepreciation24H: {
+                type: Boolean,
+                computed: '_isDepreciation24H(currency)'
+            },
+            isDepreciation7D: {
+                type: Boolean,
+                computed: '_isDepreciation7D(currency)'
             }
         };
     }
@@ -19713,11 +19808,19 @@ class CurrencyItem extends _polymerElement.Element {
     }
 
     _price(currency) {
-        return (currency.price_usd * 1).toLocaleString('ru-RU', { style: 'currency', currency: 'USD' });
+        return (currency.price_usd * 1).toLocaleString();
     }
 
-    _isDepreciation(currency) {
+    _isDepreciation1H(currency) {
+        return currency.percent_change_1h * 1 < 0;
+    }
+
+    _isDepreciation24H(currency) {
         return currency.percent_change_24h * 1 < 0;
+    }
+
+    _isDepreciation7D(currency) {
+        return currency.percent_change_7d * 1 < 0;
     }
 }
 // Components
@@ -19949,6 +20052,2069 @@ var _polymerFn = __webpack_require__(3);
 `,
 
   is: 'paper-item-body'
+});
+
+/***/ }),
+/* 88 */,
+/* 89 */,
+/* 90 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.PaperInputAddonBehavior = undefined;
+
+__webpack_require__(0);
+
+var _polymerDom = __webpack_require__(2);
+
+const PaperInputAddonBehavior = exports.PaperInputAddonBehavior = {
+  attached: function () {
+    // Workaround for https://github.com/webcomponents/shadydom/issues/96
+    (0, _polymerDom.flush)();
+    this.fire('addon-attached');
+  },
+
+  /**
+   * The function called by `<paper-input-container>` when the input value or validity changes.
+   * @param {{
+   *   inputElement: (Element|undefined),
+   *   value: (string|undefined),
+   *   invalid: boolean
+   * }} state -
+   *     inputElement: The input element.
+   *     value: The input value.
+   *     invalid: True if the input value is invalid.
+   */
+  update: function (state) {}
+
+};
+
+/***/ }),
+/* 91 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+__webpack_require__(0);
+
+var _ironFormElementBehavior = __webpack_require__(92);
+
+__webpack_require__(93);
+
+var _paperInputBehavior = __webpack_require__(96);
+
+__webpack_require__(97);
+
+__webpack_require__(98);
+
+__webpack_require__(99);
+
+var _polymerFn = __webpack_require__(3);
+
+var _domModule = __webpack_require__(29);
+
+var _polymerElement = __webpack_require__(5);
+
+const $_documentContainer = document.createElement('div');
+$_documentContainer.setAttribute('style', 'display: none;');
+
+$_documentContainer.innerHTML = `<dom-module id="paper-input">
+  <template>
+    <style>
+      :host {
+        display: block;
+      }
+
+      :host([focused]) {
+        outline: none;
+      }
+
+      :host([hidden]) {
+        display: none !important;
+      }
+
+      input {
+        position: relative; /* to make a stacking context */
+        outline: none;
+        box-shadow: none;
+        padding: 0;
+        width: 100%;
+        max-width: 100%;
+        background: transparent;
+        border: none;
+        color: var(--paper-input-container-input-color, var(--primary-text-color));
+        -webkit-appearance: none;
+        text-align: inherit;
+        vertical-align: bottom;
+
+        /* Firefox sets a min-width on the input, which can cause layout issues */
+        min-width: 0;
+
+        @apply --paper-font-subhead;
+        @apply --paper-input-container-input;
+      }
+
+      input::-webkit-outer-spin-button,
+      input::-webkit-inner-spin-button {
+        @apply --paper-input-container-input-webkit-spinner;
+      }
+
+      input::-webkit-clear-button {
+        @apply --paper-input-container-input-webkit-clear;
+      }
+
+      input::-webkit-input-placeholder {
+        color: var(--paper-input-container-color, var(--secondary-text-color));
+      }
+
+      input:-moz-placeholder {
+        color: var(--paper-input-container-color, var(--secondary-text-color));
+      }
+
+      input::-moz-placeholder {
+        color: var(--paper-input-container-color, var(--secondary-text-color));
+      }
+
+      input::-ms-clear {
+        @apply --paper-input-container-ms-clear;
+      }
+
+      input:-ms-input-placeholder {
+        color: var(--paper-input-container-color, var(--secondary-text-color));
+      }
+
+      label {
+        pointer-events: none;
+      }
+    </style>
+
+    <paper-input-container id="container" no-label-float="[[noLabelFloat]]" always-float-label="[[_computeAlwaysFloatLabel(alwaysFloatLabel,placeholder)]]" auto-validate\$="[[autoValidate]]" disabled\$="[[disabled]]" invalid="[[invalid]]">
+
+      <slot name="prefix" slot="prefix"></slot>
+
+      <label hidden\$="[[!label]]" aria-hidden="true" for="input" slot="label">[[label]]</label>
+
+      <span id="template-placeholder"></span>
+
+      <slot name="suffix" slot="suffix"></slot>
+
+      <template is="dom-if" if="[[errorMessage]]">
+        <paper-input-error aria-live="assertive" slot="add-on">[[errorMessage]]</paper-input-error>
+      </template>
+
+      <template is="dom-if" if="[[charCounter]]">
+        <paper-input-char-counter slot="add-on"></paper-input-char-counter>
+      </template>
+
+    </paper-input-container>
+  </template>
+
+  <!-- This is a fresh new hell to make this element hybrid. Basically, in 2.0
+    we lost is=, so the example same template can't be used with iron-input 1.0 and 2.0.
+    Expect some conditional code (especially in the tests).
+   -->
+  <template id="v0">
+    <input is="iron-input" id="input" slot="input" aria-labelledby\$="[[_ariaLabelledBy]]" aria-describedby\$="[[_ariaDescribedBy]]" disabled\$="[[disabled]]" title\$="[[title]]" bind-value="{{value}}" invalid="{{invalid}}" prevent-invalid-input="[[preventInvalidInput]]" allowed-pattern="[[allowedPattern]]" validator="[[validator]]" type\$="[[type]]" pattern\$="[[pattern]]" required\$="[[required]]" autocomplete\$="[[autocomplete]]" autofocus\$="[[autofocus]]" inputmode\$="[[inputmode]]" minlength\$="[[minlength]]" maxlength\$="[[maxlength]]" min\$="[[min]]" max\$="[[max]]" step\$="[[step]]" name\$="[[name]]" placeholder\$="[[placeholder]]" readonly\$="[[readonly]]" list\$="[[list]]" size\$="[[size]]" autocapitalize\$="[[autocapitalize]]" autocorrect\$="[[autocorrect]]" on-change="_onChange" tabindex\$="[[tabIndex]]" autosave\$="[[autosave]]" results\$="[[results]]" accept\$="[[accept]]" multiple\$="[[multiple]]">
+  </template>
+
+  <template id="v1">
+    <!-- Need to bind maxlength so that the paper-input-char-counter works correctly -->
+    <iron-input bind-value="{{value}}" id="input" slot="input" maxlength\$="[[maxlength]]" allowed-pattern="[[allowedPattern]]" invalid="{{invalid}}" validator="[[validator]]">
+      <input id="nativeInput" aria-labelledby\$="[[_ariaLabelledBy]]" aria-describedby\$="[[_ariaDescribedBy]]" disabled\$="[[disabled]]" title\$="[[title]]" type\$="[[type]]" pattern\$="[[pattern]]" required\$="[[required]]" autocomplete\$="[[autocomplete]]" autofocus\$="[[autofocus]]" inputmode\$="[[inputmode]]" minlength\$="[[minlength]]" maxlength\$="[[maxlength]]" min\$="[[min]]" max\$="[[max]]" step\$="[[step]]" name\$="[[name]]" placeholder\$="[[placeholder]]" readonly\$="[[readonly]]" list\$="[[list]]" size\$="[[size]]" autocapitalize\$="[[autocapitalize]]" autocorrect\$="[[autocorrect]]" on-change="_onChange" tabindex\$="[[tabIndex]]" autosave\$="[[autosave]]" results\$="[[results]]" accept\$="[[accept]]" multiple\$="[[multiple]]">
+    </iron-input>
+  </template>
+
+</dom-module>`;
+
+document.head.appendChild($_documentContainer);
+(0, _polymerFn.Polymer)({
+  is: 'paper-input',
+
+  behaviors: [_paperInputBehavior.PaperInputBehavior, _ironFormElementBehavior.IronFormElementBehavior],
+
+  beforeRegister: function () {
+    // We need to tell which kind of of template to stamp based on
+    // what kind of `iron-input` we got, but because of polyfills and
+    // custom elements differences between v0 and v1, the safest bet is
+    // to check a particular method we know the iron-input#2.x can have.
+    // If it doesn't have it, then it's an iron-input#1.x.
+    var ironInput = document.createElement('iron-input');
+    var version = typeof ironInput._initSlottedInput == 'function' ? 'v1' : 'v0';
+    var template = _domModule.DomModule.import('paper-input', 'template');
+    var inputTemplate = _domModule.DomModule.import('paper-input', 'template#' + version);
+    var inputPlaceholder = template.content.querySelector('#template-placeholder');
+    if (inputPlaceholder) {
+      inputPlaceholder.parentNode.replaceChild(inputTemplate.content, inputPlaceholder);
+    }
+    // else it's already been processed, probably in superclass
+  },
+
+  /**
+   * Returns a reference to the focusable element. Overridden from PaperInputBehavior
+   * to correctly focus the native input.
+   */
+  get _focusableElement() {
+    return _polymerElement.Element ? this.inputElement._inputElement : this.inputElement;
+  },
+
+  // Note: This event is only available in the 1.0 version of this element.
+  // In 2.0, the functionality of `_onIronInputReady` is done in
+  // PaperInputBehavior::attached.
+  listeners: {
+    'iron-input-ready': '_onIronInputReady'
+  },
+
+  _onIronInputReady: function () {
+    if (this.inputElement && this._typesThatHaveText.indexOf(this.$.nativeInput.type) !== -1) {
+      this.alwaysFloatLabel = true;
+    }
+
+    // Only validate when attached if the input already has a value.
+    if (!!this.inputElement.bindValue) {
+      this.$.container._handleValueAndAutoValidate(this.inputElement);
+    }
+  }
+});
+
+/***/ }),
+/* 92 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.IronFormElementBehavior = undefined;
+
+__webpack_require__(0);
+
+var _polymerElement = __webpack_require__(5);
+
+const IronFormElementBehavior = exports.IronFormElementBehavior = {
+
+  properties: {
+    /**
+     * Fired when the element is added to an `iron-form`.
+     *
+     * @event iron-form-element-register
+     */
+
+    /**
+     * Fired when the element is removed from an `iron-form`.
+     *
+     * @event iron-form-element-unregister
+     */
+
+    /**
+     * The name of this element.
+     */
+    name: {
+      type: String
+    },
+
+    /**
+     * The value for this element.
+     */
+    value: {
+      notify: true,
+      type: String
+    },
+
+    /**
+     * Set to true to mark the input as required. If used in a form, a
+     * custom element that uses this behavior should also use
+     * Polymer.IronValidatableBehavior and define a custom validation method.
+     * Otherwise, a `required` element will always be considered valid.
+     * It's also strongly recommended to provide a visual style for the element
+     * when its value is invalid.
+     */
+    required: {
+      type: Boolean,
+      value: false
+    },
+
+    /**
+     * The form that the element is registered to.
+     */
+    _parentForm: {
+      type: Object
+    }
+  },
+
+  attached: _polymerElement.Element ? null : function () {
+    // Note: the iron-form that this element belongs to will set this
+    // element's _parentForm property when handling this event.
+    this.fire('iron-form-element-register');
+  },
+
+  detached: _polymerElement.Element ? null : function () {
+    if (this._parentForm) {
+      this._parentForm.fire('iron-form-element-unregister', { target: this });
+    }
+  }
+
+};
+
+/***/ }),
+/* 93 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+__webpack_require__(0);
+
+var _ironA11yAnnouncer = __webpack_require__(94);
+
+var _ironValidatableBehavior = __webpack_require__(95);
+
+var _polymerFn = __webpack_require__(3);
+
+var _polymerDom = __webpack_require__(2);
+
+(0, _polymerFn.Polymer)({
+  _template: `
+    <style>
+      :host {
+        display: inline-block;
+      }
+    </style>
+    <slot id="content"></slot>
+`,
+
+  is: 'iron-input',
+
+  behaviors: [_ironValidatableBehavior.IronValidatableBehavior],
+
+  /**
+   * Fired whenever `validate()` is called.
+   *
+   * @event iron-input-validate
+   */
+
+  properties: {
+
+    /**
+     * Use this property instead of `value` for two-way data binding, or to
+     * set a default value for the input. **Do not** use the distributed
+     * input's `value` property to set a default value.
+     */
+    bindValue: {
+      type: String
+    },
+
+    /**
+     * Computed property that echoes `bindValue` (mostly used for Polymer 1.0
+     * backcompatibility, if you were one-way binding to the Polymer 1.0
+     * `input is="iron-input"` value attribute).
+     */
+    value: {
+      computed: '_computeValue(bindValue)'
+    },
+
+    /**
+     * Regex-like list of characters allowed as input; all characters not in the list
+     * will be rejected. The recommended format should be a list of allowed characters,
+     * for example, `[a-zA-Z0-9.+-!;:]`.
+     *
+     * This pattern represents the allowed characters for the field; as the user inputs text,
+     * each individual character will be checked against the pattern (rather than checking
+     * the entire value as a whole). If a character is not a match, it will be rejected.
+     *
+     * Pasted input will have each character checked individually; if any character
+     * doesn't match `allowedPattern`, the entire pasted string will be rejected.
+     *
+     * Note: if you were using `iron-input` in 1.0, you were also required to
+     * set `prevent-invalid-input`. This is no longer needed as of Polymer 2.0,
+     * and will be set automatically for you if an `allowedPattern` is provided.
+     *
+     */
+    allowedPattern: {
+      type: String
+    },
+
+    /**
+     * Set to true to auto-validate the input value as you type.
+     */
+    autoValidate: {
+      type: Boolean,
+      value: false
+    }
+  },
+
+  observers: ['_bindValueChanged(bindValue, _inputElement)'],
+
+  listeners: {
+    'input': '_onInput',
+    'keypress': '_onKeypress'
+  },
+
+  created: function () {
+    _ironA11yAnnouncer.IronA11yAnnouncer.requestAvailability();
+    this._previousValidInput = '';
+    this._patternAlreadyChecked = false;
+  },
+
+  attached: function () {
+    // If the input is added at a later time, update the internal reference.
+    this._observer = (0, _polymerDom.dom)(this).observeNodes(function (info) {
+      this._initSlottedInput();
+    }.bind(this));
+  },
+
+  detached: function () {
+    if (this._observer) {
+      (0, _polymerDom.dom)(this).unobserveNodes(this._observer);
+      this._observer = null;
+    }
+  },
+
+  /**
+   * Returns the distributed <input> element.
+   */
+  get inputElement() {
+    return this._inputElement;
+  },
+
+  _initSlottedInput: function () {
+    this._inputElement = this.getEffectiveChildren()[0];
+
+    if (this.inputElement && this.inputElement.value) {
+      this.bindValue = this.inputElement.value;
+    }
+
+    this.fire('iron-input-ready');
+  },
+
+  get _patternRegExp() {
+    var pattern;
+    if (this.allowedPattern) {
+      pattern = new RegExp(this.allowedPattern);
+    } else {
+      switch (this.type) {
+        case 'number':
+          pattern = /[0-9.,e-]/;
+          break;
+      }
+    }
+    return pattern;
+  },
+
+  /**
+   * @suppress {checkTypes}
+   */
+  _bindValueChanged: function (bindValue, inputElement) {
+    // The observer could have run before attached() when we have actually initialized
+    // this property.
+    if (!inputElement) {
+      return;
+    }
+
+    if (bindValue === undefined) {
+      inputElement.value = null;
+    } else if (bindValue !== inputElement.value) {
+      this.inputElement.value = bindValue;
+    }
+
+    if (this.autoValidate) {
+      this.validate();
+    }
+
+    // manually notify because we don't want to notify until after setting value
+    this.fire('bind-value-changed', { value: bindValue });
+  },
+
+  _onInput: function () {
+    // Need to validate each of the characters pasted if they haven't
+    // been validated inside `_onKeypress` already.
+    if (this.allowedPattern && !this._patternAlreadyChecked) {
+      var valid = this._checkPatternValidity();
+      if (!valid) {
+        this._announceInvalidCharacter('Invalid string of characters not entered.');
+        this.inputElement.value = this._previousValidInput;
+      }
+    }
+    this.bindValue = this._previousValidInput = this.inputElement.value;
+    this._patternAlreadyChecked = false;
+  },
+
+  _isPrintable: function (event) {
+    // What a control/printable character is varies wildly based on the browser.
+    // - most control characters (arrows, backspace) do not send a `keypress` event
+    //   in Chrome, but the *do* on Firefox
+    // - in Firefox, when they do send a `keypress` event, control chars have
+    //   a charCode = 0, keyCode = xx (for ex. 40 for down arrow)
+    // - printable characters always send a keypress event.
+    // - in Firefox, printable chars always have a keyCode = 0. In Chrome, the keyCode
+    //   always matches the charCode.
+    // None of this makes any sense.
+
+    // For these keys, ASCII code == browser keycode.
+    var anyNonPrintable = event.keyCode == 8 || // backspace
+    event.keyCode == 9 || // tab
+    event.keyCode == 13 || // enter
+    event.keyCode == 27; // escape
+
+    // For these keys, make sure it's a browser keycode and not an ASCII code.
+    var mozNonPrintable = event.keyCode == 19 || // pause
+    event.keyCode == 20 || // caps lock
+    event.keyCode == 45 || // insert
+    event.keyCode == 46 || // delete
+    event.keyCode == 144 || // num lock
+    event.keyCode == 145 || // scroll lock
+    event.keyCode > 32 && event.keyCode < 41 || // page up/down, end, home, arrows
+    event.keyCode > 111 && event.keyCode < 124; // fn keys
+
+    return !anyNonPrintable && !(event.charCode == 0 && mozNonPrintable);
+  },
+
+  _onKeypress: function (event) {
+    if (!this.allowedPattern && this.type !== 'number') {
+      return;
+    }
+    var regexp = this._patternRegExp;
+    if (!regexp) {
+      return;
+    }
+
+    // Handle special keys and backspace
+    if (event.metaKey || event.ctrlKey || event.altKey) {
+      return;
+    }
+
+    // Check the pattern either here or in `_onInput`, but not in both.
+    this._patternAlreadyChecked = true;
+
+    var thisChar = String.fromCharCode(event.charCode);
+    if (this._isPrintable(event) && !regexp.test(thisChar)) {
+      event.preventDefault();
+      this._announceInvalidCharacter('Invalid character ' + thisChar + ' not entered.');
+    }
+  },
+
+  _checkPatternValidity: function () {
+    var regexp = this._patternRegExp;
+    if (!regexp) {
+      return true;
+    }
+    for (var i = 0; i < this.inputElement.value.length; i++) {
+      if (!regexp.test(this.inputElement.value[i])) {
+        return false;
+      }
+    }
+    return true;
+  },
+
+  /**
+   * Returns true if `value` is valid. The validator provided in `validator` will be used first,
+   * then any constraints.
+   * @return {boolean} True if the value is valid.
+   */
+  validate: function () {
+    if (!this.inputElement) {
+      this.invalid = false;
+      return true;
+    }
+
+    // Use the nested input's native validity.
+    var valid = this.inputElement.checkValidity();
+
+    // Only do extra checking if the browser thought this was valid.
+    if (valid) {
+      // Empty, required input is invalid
+      if (this.required && this.bindValue === '') {
+        valid = false;
+      } else if (this.hasValidator()) {
+        valid = _ironValidatableBehavior.IronValidatableBehavior.validate.call(this, this.bindValue);
+      }
+    }
+
+    this.invalid = !valid;
+    this.fire('iron-input-validate');
+    return valid;
+  },
+
+  _announceInvalidCharacter: function (message) {
+    this.fire('iron-announce', { text: message });
+  },
+
+  _computeValue: function (bindValue) {
+    return bindValue;
+  }
+});
+
+/***/ }),
+/* 94 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.IronA11yAnnouncer = undefined;
+
+__webpack_require__(0);
+
+var _polymerFn = __webpack_require__(3);
+
+const IronA11yAnnouncer = exports.IronA11yAnnouncer = (0, _polymerFn.Polymer)({
+  _template: `
+    <style>
+      :host {
+        display: inline-block;
+        position: fixed;
+        clip: rect(0px,0px,0px,0px);
+      }
+    </style>
+    <div aria-live\$="[[mode]]">[[_text]]</div>
+`,
+
+  is: 'iron-a11y-announcer',
+
+  properties: {
+
+    /**
+     * The value of mode is used to set the `aria-live` attribute
+     * for the element that will be announced. Valid values are: `off`,
+     * `polite` and `assertive`.
+     */
+    mode: {
+      type: String,
+      value: 'polite'
+    },
+
+    _text: {
+      type: String,
+      value: ''
+    }
+  },
+
+  created: function () {
+    if (!IronA11yAnnouncer.instance) {
+      IronA11yAnnouncer.instance = this;
+    }
+
+    document.body.addEventListener('iron-announce', this._onIronAnnounce.bind(this));
+  },
+
+  /**
+   * Cause a text string to be announced by screen readers.
+   *
+   * @param {string} text The text that should be announced.
+   */
+  announce: function (text) {
+    this._text = '';
+    this.async(function () {
+      this._text = text;
+    }, 100);
+  },
+
+  _onIronAnnounce: function (event) {
+    if (event.detail && event.detail.text) {
+      this.announce(event.detail.text);
+    }
+  }
+});
+
+IronA11yAnnouncer.instance = null;
+
+IronA11yAnnouncer.requestAvailability = function () {
+  if (!IronA11yAnnouncer.instance) {
+    IronA11yAnnouncer.instance = document.createElement('iron-a11y-announcer');
+  }
+
+  document.body.appendChild(IronA11yAnnouncer.instance);
+};
+
+/***/ }),
+/* 95 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.IronValidatableBehavior = exports.IronValidatableBehaviorMeta = undefined;
+
+__webpack_require__(0);
+
+var _ironMeta = __webpack_require__(40);
+
+let IronValidatableBehaviorMeta = exports.IronValidatableBehaviorMeta = null;
+
+const IronValidatableBehavior = exports.IronValidatableBehavior = {
+
+  properties: {
+    /**
+     * Name of the validator to use.
+     */
+    validator: {
+      type: String
+    },
+
+    /**
+     * True if the last call to `validate` is invalid.
+     */
+    invalid: {
+      notify: true,
+      reflectToAttribute: true,
+      type: Boolean,
+      value: false,
+      observer: '_invalidChanged'
+    }
+  },
+
+  registered: function () {
+    exports.IronValidatableBehaviorMeta = IronValidatableBehaviorMeta = new _ironMeta.IronMeta({ type: 'validator' });
+  },
+
+  _invalidChanged: function () {
+    if (this.invalid) {
+      this.setAttribute('aria-invalid', 'true');
+    } else {
+      this.removeAttribute('aria-invalid');
+    }
+  },
+
+  /* Recompute this every time it's needed, because we don't know if the
+   * underlying IronValidatableBehaviorMeta has changed. */
+  get _validator() {
+    return IronValidatableBehaviorMeta && IronValidatableBehaviorMeta.byKey(this.validator);
+  },
+
+  /**
+   * @return {boolean} True if the validator `validator` exists.
+   */
+  hasValidator: function () {
+    return this._validator != null;
+  },
+
+  /**
+   * Returns true if the `value` is valid, and updates `invalid`. If you want
+   * your element to have custom validation logic, do not override this method;
+   * override `_getValidity(value)` instead.
+    * @param {Object} value Deprecated: The value to be validated. By default,
+   * it is passed to the validator's `validate()` function, if a validator is set.
+   * If this argument is not specified, then the element's `value` property
+   * is used, if it exists.
+   * @return {boolean} True if `value` is valid.
+   */
+  validate: function (value) {
+    // If this is an element that also has a value property, and there was
+    // no explicit value argument passed, use the element's property instead.
+    if (value === undefined && this.value !== undefined) this.invalid = !this._getValidity(this.value);else this.invalid = !this._getValidity(value);
+    return !this.invalid;
+  },
+
+  /**
+   * Returns true if `value` is valid.  By default, it is passed
+   * to the validator's `validate()` function, if a validator is set. You
+   * should override this method if you want to implement custom validity
+   * logic for your element.
+   *
+   * @param {Object} value The value to be validated.
+   * @return {boolean} True if `value` is valid.
+   */
+
+  _getValidity: function (value) {
+    if (this.hasValidator()) {
+      return this._validator.validate(value);
+    }
+    return true;
+  }
+};
+
+/***/ }),
+/* 96 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.PaperInputBehavior = exports.PaperInputBehaviorImpl = exports.PaperInputHelper = undefined;
+
+__webpack_require__(0);
+
+var _ironA11yKeysBehavior = __webpack_require__(25);
+
+var _ironControlState = __webpack_require__(26);
+
+var _polymerElement = __webpack_require__(5);
+
+var _polymerDom = __webpack_require__(2);
+
+const PaperInputHelper = exports.PaperInputHelper = {};
+PaperInputHelper.NextLabelID = 1;
+PaperInputHelper.NextAddonID = 1;
+
+const PaperInputBehaviorImpl = exports.PaperInputBehaviorImpl = {
+
+  properties: {
+    /**
+     * Fired when the input changes due to user interaction.
+     *
+     * @event change
+     */
+
+    /**
+     * The label for this input. If you're using PaperInputBehavior to
+     * implement your own paper-input-like element, bind this to
+     * `<label>`'s content and `hidden` property, e.g.
+     * `<label hidden$="[[!label]]">[[label]]</label>` in your `template`
+     */
+    label: {
+      type: String
+    },
+
+    /**
+     * The value for this input. If you're using PaperInputBehavior to
+     * implement your own paper-input-like element, bind this to
+     * the `<iron-input>`'s `bindValue`
+     * property, or the value property of your input that is `notify:true`.
+     */
+    value: {
+      notify: true,
+      type: String
+    },
+
+    /**
+     * Set to true to disable this input. If you're using PaperInputBehavior to
+     * implement your own paper-input-like element, bind this to
+     * both the `<paper-input-container>`'s and the input's `disabled` property.
+     */
+    disabled: {
+      type: Boolean,
+      value: false
+    },
+
+    /**
+     * Returns true if the value is invalid. If you're using PaperInputBehavior to
+     * implement your own paper-input-like element, bind this to both the
+     * `<paper-input-container>`'s and the input's `invalid` property.
+     *
+     * If `autoValidate` is true, the `invalid` attribute is managed automatically,
+     * which can clobber attempts to manage it manually.
+     */
+    invalid: {
+      type: Boolean,
+      value: false,
+      notify: true
+    },
+
+    /**
+     * Set this to specify the pattern allowed by `preventInvalidInput`. If
+     * you're using PaperInputBehavior to implement your own paper-input-like
+     * element, bind this to the `<input is="iron-input">`'s `allowedPattern`
+     * property.
+     */
+    allowedPattern: {
+      type: String
+    },
+
+    /**
+     * The type of the input. The supported types are `text`, `number` and `password`.
+     * If you're using PaperInputBehavior to implement your own paper-input-like element,
+     * bind this to the `<input is="iron-input">`'s `type` property.
+     */
+    type: {
+      type: String
+    },
+
+    /**
+     * The datalist of the input (if any). This should match the id of an existing `<datalist>`.
+     * If you're using PaperInputBehavior to implement your own paper-input-like
+     * element, bind this to the `<input is="iron-input">`'s `list` property.
+     */
+    list: {
+      type: String
+    },
+
+    /**
+     * A pattern to validate the `input` with. If you're using PaperInputBehavior to
+     * implement your own paper-input-like element, bind this to
+     * the `<input is="iron-input">`'s `pattern` property.
+     */
+    pattern: {
+      type: String
+    },
+
+    /**
+     * Set to true to mark the input as required. If you're using PaperInputBehavior to
+     * implement your own paper-input-like element, bind this to
+     * the `<input is="iron-input">`'s `required` property.
+     */
+    required: {
+      type: Boolean,
+      value: false
+    },
+
+    /**
+     * The error message to display when the input is invalid. If you're using
+     * PaperInputBehavior to implement your own paper-input-like element,
+     * bind this to the `<paper-input-error>`'s content, if using.
+     */
+    errorMessage: {
+      type: String
+    },
+
+    /**
+     * Set to true to show a character counter.
+     */
+    charCounter: {
+      type: Boolean,
+      value: false
+    },
+
+    /**
+     * Set to true to disable the floating label. If you're using PaperInputBehavior to
+     * implement your own paper-input-like element, bind this to
+     * the `<paper-input-container>`'s `noLabelFloat` property.
+     */
+    noLabelFloat: {
+      type: Boolean,
+      value: false
+    },
+
+    /**
+     * Set to true to always float the label. If you're using PaperInputBehavior to
+     * implement your own paper-input-like element, bind this to
+     * the `<paper-input-container>`'s `alwaysFloatLabel` property.
+     */
+    alwaysFloatLabel: {
+      type: Boolean,
+      value: false
+    },
+
+    /**
+     * Set to true to auto-validate the input value. If you're using PaperInputBehavior to
+     * implement your own paper-input-like element, bind this to
+     * the `<paper-input-container>`'s `autoValidate` property.
+     */
+    autoValidate: {
+      type: Boolean,
+      value: false
+    },
+
+    /**
+     * Name of the validator to use. If you're using PaperInputBehavior to
+     * implement your own paper-input-like element, bind this to
+     * the `<input is="iron-input">`'s `validator` property.
+     */
+    validator: {
+      type: String
+    },
+
+    // HTMLInputElement attributes for binding if needed
+
+    /**
+     * If you're using PaperInputBehavior to implement your own paper-input-like
+     * element, bind this to the `<input is="iron-input">`'s `autocomplete` property.
+     */
+    autocomplete: {
+      type: String,
+      value: 'off'
+    },
+
+    /**
+     * If you're using PaperInputBehavior to implement your own paper-input-like
+     * element, bind this to the `<input is="iron-input">`'s `autofocus` property.
+     */
+    autofocus: {
+      type: Boolean,
+      observer: '_autofocusChanged'
+    },
+
+    /**
+     * If you're using PaperInputBehavior to implement your own paper-input-like
+     * element, bind this to the `<input is="iron-input">`'s `inputmode` property.
+     */
+    inputmode: {
+      type: String
+    },
+
+    /**
+     * The minimum length of the input value.
+     * If you're using PaperInputBehavior to implement your own paper-input-like
+     * element, bind this to the `<input is="iron-input">`'s `minlength` property.
+     */
+    minlength: {
+      type: Number
+    },
+
+    /**
+     * The maximum length of the input value.
+     * If you're using PaperInputBehavior to implement your own paper-input-like
+     * element, bind this to the `<input is="iron-input">`'s `maxlength` property.
+     */
+    maxlength: {
+      type: Number
+    },
+
+    /**
+     * The minimum (numeric or date-time) input value.
+     * If you're using PaperInputBehavior to implement your own paper-input-like
+     * element, bind this to the `<input is="iron-input">`'s `min` property.
+     */
+    min: {
+      type: String
+    },
+
+    /**
+     * The maximum (numeric or date-time) input value.
+     * Can be a String (e.g. `"2000-01-01"`) or a Number (e.g. `2`).
+     * If you're using PaperInputBehavior to implement your own paper-input-like
+     * element, bind this to the `<input is="iron-input">`'s `max` property.
+     */
+    max: {
+      type: String
+    },
+
+    /**
+     * Limits the numeric or date-time increments.
+     * If you're using PaperInputBehavior to implement your own paper-input-like
+     * element, bind this to the `<input is="iron-input">`'s `step` property.
+     */
+    step: {
+      type: String
+    },
+
+    /**
+     * If you're using PaperInputBehavior to implement your own paper-input-like
+     * element, bind this to the `<input is="iron-input">`'s `name` property.
+     */
+    name: {
+      type: String
+    },
+
+    /**
+     * A placeholder string in addition to the label. If this is set, the label will always float.
+     */
+    placeholder: {
+      type: String,
+      // need to set a default so _computeAlwaysFloatLabel is run
+      value: ''
+    },
+
+    /**
+     * If you're using PaperInputBehavior to implement your own paper-input-like
+     * element, bind this to the `<input is="iron-input">`'s `readonly` property.
+     */
+    readonly: {
+      type: Boolean,
+      value: false
+    },
+
+    /**
+     * If you're using PaperInputBehavior to implement your own paper-input-like
+     * element, bind this to the `<input is="iron-input">`'s `size` property.
+     */
+    size: {
+      type: Number
+    },
+
+    // Nonstandard attributes for binding if needed
+
+    /**
+     * If you're using PaperInputBehavior to implement your own paper-input-like
+     * element, bind this to the `<input is="iron-input">`'s `autocapitalize` property.
+     */
+    autocapitalize: {
+      type: String,
+      value: 'none'
+    },
+
+    /**
+     * If you're using PaperInputBehavior to implement your own paper-input-like
+     * element, bind this to the `<input is="iron-input">`'s `autocorrect` property.
+     */
+    autocorrect: {
+      type: String,
+      value: 'off'
+    },
+
+    /**
+     * If you're using PaperInputBehavior to implement your own paper-input-like
+     * element, bind this to the `<input is="iron-input">`'s `autosave` property,
+     * used with type=search.
+     */
+    autosave: {
+      type: String
+    },
+
+    /**
+     * If you're using PaperInputBehavior to implement your own paper-input-like
+     * element, bind this to the `<input is="iron-input">`'s `results` property,
+     * used with type=search.
+     */
+    results: {
+      type: Number
+    },
+
+    /**
+     * If you're using PaperInputBehavior to implement your own paper-input-like
+     * element, bind this to the `<input is="iron-input">`'s `accept` property,
+     * used with type=file.
+     */
+    accept: {
+      type: String
+    },
+
+    /**
+     * If you're using PaperInputBehavior to implement your own paper-input-like
+     * element, bind this to the`<input is="iron-input">`'s `multiple` property,
+     * used with type=file.
+     */
+    multiple: {
+      type: Boolean
+    },
+
+    _ariaDescribedBy: {
+      type: String,
+      value: ''
+    },
+
+    _ariaLabelledBy: {
+      type: String,
+      value: ''
+    }
+
+  },
+
+  listeners: {
+    'addon-attached': '_onAddonAttached'
+  },
+
+  keyBindings: {
+    'shift+tab:keydown': '_onShiftTabDown'
+  },
+
+  hostAttributes: {
+    tabindex: 0
+  },
+
+  /**
+   * Returns a reference to the input element.
+   */
+  get inputElement() {
+    return this.$.input;
+  },
+
+  /**
+   * Returns a reference to the focusable element.
+   */
+  get _focusableElement() {
+    return this.inputElement;
+  },
+
+  created: function () {
+    // These types have some default placeholder text; overlapping
+    // the label on top of it looks terrible. Auto-float the label in this case.
+    this._typesThatHaveText = ["date", "datetime", "datetime-local", "month", "time", "week", "file"];
+  },
+
+  attached: function () {
+    this._updateAriaLabelledBy();
+
+    // In the 2.0 version of the element, this is handled in `onIronInputReady`,
+    // i.e. after the native input has finished distributing. In the 1.0 version,
+    // the input is in the shadow tree, so it's already available.
+    if (!_polymerElement.Element && this.inputElement && this._typesThatHaveText.indexOf(this.inputElement.type) !== -1) {
+      this.alwaysFloatLabel = true;
+    }
+  },
+
+  _appendStringWithSpace: function (str, more) {
+    if (str) {
+      str = str + ' ' + more;
+    } else {
+      str = more;
+    }
+    return str;
+  },
+
+  _onAddonAttached: function (event) {
+    var target = (0, _polymerDom.dom)(event).rootTarget;
+    if (target.id) {
+      this._ariaDescribedBy = this._appendStringWithSpace(this._ariaDescribedBy, target.id);
+    } else {
+      var id = 'paper-input-add-on-' + PaperInputHelper.NextAddonID++;
+      target.id = id;
+      this._ariaDescribedBy = this._appendStringWithSpace(this._ariaDescribedBy, id);
+    }
+  },
+
+  /**
+   * Validates the input element and sets an error style if needed.
+   *
+   * @return {boolean}
+   */
+  validate: function () {
+    return this.inputElement.validate();
+  },
+
+  /**
+   * Forward focus to inputElement. Overriden from IronControlState.
+   */
+  _focusBlurHandler: function (event) {
+    _ironControlState.IronControlState._focusBlurHandler.call(this, event);
+
+    // Forward the focus to the nested input.
+    if (this.focused && !this._shiftTabPressed && this._focusableElement) {
+      this._focusableElement.focus();
+    }
+  },
+
+  /**
+   * Handler that is called when a shift+tab keypress is detected by the menu.
+   *
+   * @param {CustomEvent} event A key combination event.
+   */
+  _onShiftTabDown: function (event) {
+    var oldTabIndex = this.getAttribute('tabindex');
+    this._shiftTabPressed = true;
+    this.setAttribute('tabindex', '-1');
+    this.async(function () {
+      this.setAttribute('tabindex', oldTabIndex);
+      this._shiftTabPressed = false;
+    }, 1);
+  },
+
+  /**
+   * If `autoValidate` is true, then validates the element.
+   */
+  _handleAutoValidate: function () {
+    if (this.autoValidate) this.validate();
+  },
+
+  /**
+   * Restores the cursor to its original position after updating the value.
+   * @param {string} newValue The value that should be saved.
+   */
+  updateValueAndPreserveCaret: function (newValue) {
+    // Not all elements might have selection, and even if they have the
+    // right properties, accessing them might throw an exception (like for
+    // <input type=number>)
+    try {
+      var start = this.inputElement.selectionStart;
+      this.value = newValue;
+
+      // The cursor automatically jumps to the end after re-setting the value,
+      // so restore it to its original position.
+      this.inputElement.selectionStart = start;
+      this.inputElement.selectionEnd = start;
+    } catch (e) {
+      // Just set the value and give up on the caret.
+      this.value = newValue;
+    }
+  },
+
+  _computeAlwaysFloatLabel: function (alwaysFloatLabel, placeholder) {
+    return placeholder || alwaysFloatLabel;
+  },
+
+  _updateAriaLabelledBy: function () {
+    var label = (0, _polymerDom.dom)(this.root).querySelector('label');
+    if (!label) {
+      this._ariaLabelledBy = '';
+      return;
+    }
+    var labelledBy;
+    if (label.id) {
+      labelledBy = label.id;
+    } else {
+      labelledBy = 'paper-input-label-' + PaperInputHelper.NextLabelID++;
+      label.id = labelledBy;
+    }
+    this._ariaLabelledBy = labelledBy;
+  },
+
+  _onChange: function (event) {
+    // In the Shadow DOM, the `change` event is not leaked into the
+    // ancestor tree, so we must do this manually.
+    // See https://w3c.github.io/webcomponents/spec/shadow/#events-that-are-not-leaked-into-ancestor-trees.
+    if (this.shadowRoot) {
+      this.fire(event.type, { sourceEvent: event }, {
+        node: this,
+        bubbles: event.bubbles,
+        cancelable: event.cancelable
+      });
+    }
+  },
+
+  _autofocusChanged: function () {
+    // Firefox doesn't respect the autofocus attribute if it's applied after
+    // the page is loaded (Chrome/WebKit do respect it), preventing an
+    // autofocus attribute specified in markup from taking effect when the
+    // element is upgraded. As a workaround, if the autofocus property is set,
+    // and the focus hasn't already been moved elsewhere, we take focus.
+    if (this.autofocus && this._focusableElement) {
+
+      // In IE 11, the default document.activeElement can be the page's
+      // outermost html element, but there are also cases (under the
+      // polyfill?) in which the activeElement is not a real HTMLElement, but
+      // just a plain object. We identify the latter case as having no valid
+      // activeElement.
+      var activeElement = document.activeElement;
+      var isActiveElementValid = activeElement instanceof HTMLElement;
+
+      // Has some other element has already taken the focus?
+      var isSomeElementActive = isActiveElementValid && activeElement !== document.body && activeElement !== document.documentElement; /* IE 11 */
+      if (!isSomeElementActive) {
+        // No specific element has taken the focus yet, so we can take it.
+        this._focusableElement.focus();
+      }
+    }
+  }
+};
+
+const PaperInputBehavior = exports.PaperInputBehavior = [_ironControlState.IronControlState, _ironA11yKeysBehavior.IronA11yKeysBehavior, PaperInputBehaviorImpl];
+
+/***/ }),
+/* 97 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+__webpack_require__(0);
+
+__webpack_require__(27);
+
+var _paperInputAddonBehavior = __webpack_require__(90);
+
+var _polymerFn = __webpack_require__(3);
+
+(0, _polymerFn.Polymer)({
+  _template: `
+    <style>
+      :host {
+        display: inline-block;
+        float: right;
+
+        @apply --paper-font-caption;
+        @apply --paper-input-char-counter;
+      }
+
+      :host([hidden]) {
+        display: none !important;
+      }
+
+      :host-context([dir="rtl"]) {
+        float: left;
+      }
+    </style>
+
+    <span>[[_charCounterStr]]</span>
+`,
+
+  is: 'paper-input-char-counter',
+
+  behaviors: [_paperInputAddonBehavior.PaperInputAddonBehavior],
+
+  properties: {
+    _charCounterStr: {
+      type: String,
+      value: '0'
+    }
+  },
+
+  /**
+   * This overrides the update function in PaperInputAddonBehavior.
+   * @param {{
+   *   inputElement: (Element|undefined),
+   *   value: (string|undefined),
+   *   invalid: boolean
+   * }} state -
+   *     inputElement: The input element.
+   *     value: The input value.
+   *     invalid: True if the input value is invalid.
+   */
+  update: function (state) {
+    if (!state.inputElement) {
+      return;
+    }
+
+    state.value = state.value || '';
+
+    var counter = state.value.toString().length.toString();
+
+    if (state.inputElement.hasAttribute('maxlength')) {
+      counter += '/' + state.inputElement.getAttribute('maxlength');
+    }
+
+    this._charCounterStr = counter;
+  }
+});
+
+/***/ }),
+/* 98 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+__webpack_require__(0);
+
+__webpack_require__(7);
+
+__webpack_require__(15);
+
+__webpack_require__(27);
+
+var _polymerFn = __webpack_require__(3);
+
+var _caseMap = __webpack_require__(11);
+
+var _polymerDom = __webpack_require__(2);
+
+(0, _polymerFn.Polymer)({
+  _template: `
+    <style>
+      :host {
+        display: block;
+        padding: 8px 0;
+
+        --paper-input-container-shared-input-style: {
+          position: relative; /* to make a stacking context */
+          outline: none;
+          box-shadow: none;
+          padding: 0;
+          width: 100%;
+          max-width: 100%;
+          background: transparent;
+          border: none;
+          color: var(--paper-input-container-input-color, var(--primary-text-color));
+          -webkit-appearance: none;
+          text-align: inherit;
+          vertical-align: bottom;
+
+          @apply --paper-font-subhead;
+        };
+
+        @apply --paper-input-container;
+      }
+
+      :host([inline]) {
+        display: inline-block;
+      }
+
+      :host([disabled]) {
+        pointer-events: none;
+        opacity: 0.33;
+
+        @apply --paper-input-container-disabled;
+      }
+
+      :host([hidden]) {
+        display: none !important;
+      }
+
+      [hidden] {
+        display: none !important;
+      }
+
+      .floated-label-placeholder {
+        @apply --paper-font-caption;
+      }
+
+      .underline {
+        height: 2px;
+        position: relative;
+      }
+
+      .focused-line {
+        @apply --layout-fit;
+        border-bottom: 2px solid var(--paper-input-container-focus-color, var(--primary-color));
+
+        -webkit-transform-origin: center center;
+        transform-origin: center center;
+        -webkit-transform: scale3d(0,1,1);
+        transform: scale3d(0,1,1);
+
+        @apply --paper-input-container-underline-focus;
+      }
+
+      .underline.is-highlighted .focused-line {
+        -webkit-transform: none;
+        transform: none;
+        -webkit-transition: -webkit-transform 0.25s;
+        transition: transform 0.25s;
+
+        @apply --paper-transition-easing;
+      }
+
+      .underline.is-invalid .focused-line {
+        border-color: var(--paper-input-container-invalid-color, var(--error-color));
+        -webkit-transform: none;
+        transform: none;
+        -webkit-transition: -webkit-transform 0.25s;
+        transition: transform 0.25s;
+
+        @apply --paper-transition-easing;
+      }
+
+      .unfocused-line {
+        @apply --layout-fit;
+        border-bottom: 1px solid var(--paper-input-container-color, var(--secondary-text-color));
+        @apply --paper-input-container-underline;
+      }
+
+      :host([disabled]) .unfocused-line {
+        border-bottom: 1px dashed;
+        border-color: var(--paper-input-container-color, var(--secondary-text-color));
+        @apply --paper-input-container-underline-disabled;
+      }
+
+      .input-wrapper {
+        @apply --layout-horizontal;
+        @apply --layout-center;
+        position: relative;
+      }
+
+      .input-content {
+        @apply --layout-flex-auto;
+        @apply --layout-relative;
+        max-width: 100%;
+      }
+
+      .input-content ::slotted(label),
+      .input-content ::slotted(.paper-input-label) {
+        position: absolute;
+        top: 0;
+        right: 0;
+        left: 0;
+        width: 100%;
+        font: inherit;
+        color: var(--paper-input-container-color, var(--secondary-text-color));
+        -webkit-transition: -webkit-transform 0.25s, width 0.25s;
+        transition: transform 0.25s, width 0.25s;
+        -webkit-transform-origin: left top;
+        transform-origin: left top;
+
+        @apply --paper-font-common-nowrap;
+        @apply --paper-font-subhead;
+        @apply --paper-input-container-label;
+        @apply --paper-transition-easing;
+      }
+
+      .input-content.label-is-floating ::slotted(label),
+      .input-content.label-is-floating ::slotted(.paper-input-label) {
+        -webkit-transform: translateY(-75%) scale(0.75);
+        transform: translateY(-75%) scale(0.75);
+
+        /* Since we scale to 75/100 of the size, we actually have 100/75 of the
+        original space now available */
+        width: 133%;
+
+        @apply --paper-input-container-label-floating;
+      }
+
+      :host-context([dir="rtl"]) .input-content.label-is-floating ::slotted(label),
+      :host-context([dir="rtl"]) .input-content.label-is-floating ::slotted(.paper-input-label) {
+        /* TODO(noms): Figure out why leaving the width at 133% before the animation
+         * actually makes
+         * it wider on the right side, not left side, as you would expect in RTL */
+        width: 100%;
+        -webkit-transform-origin: right top;
+        transform-origin: right top;
+      }
+
+      .input-content.label-is-highlighted ::slotted(label),
+      .input-content.label-is-highlighted ::slotted(.paper-input-label) {
+        color: var(--paper-input-container-focus-color, var(--primary-color));
+
+        @apply --paper-input-container-label-focus;
+      }
+
+      .input-content.is-invalid ::slotted(label),
+      .input-content.is-invalid ::slotted(.paper-input-label) {
+        color: var(--paper-input-container-invalid-color, var(--error-color));
+      }
+
+      .input-content.label-is-hidden ::slotted(label),
+      .input-content.label-is-hidden ::slotted(.paper-input-label) {
+        visibility: hidden;
+      }
+
+      .input-content ::slotted(iron-input) {
+        @apply --paper-input-container-shared-input-style;
+      }
+      
+      .input-content ::slotted(input),
+      .input-content ::slotted(textarea),
+      .input-content ::slotted(iron-autogrow-textarea),
+      .input-content ::slotted(.paper-input-input) {
+        @apply --paper-input-container-shared-input-style;
+        @apply --paper-input-container-input;
+      }
+
+      .input-content ::slotted(input)::-webkit-outer-spin-button,
+      .input-content ::slotted(input)::-webkit-inner-spin-button {
+        @apply --paper-input-container-input-webkit-spinner;
+      }
+      
+      .input-content.focused ::slotted(input),
+      .input-content.focused ::slotted(textarea),
+      .input-content.focused ::slotted(iron-autogrow-textarea),
+      .input-content.focused ::slotted(.paper-input-input) {
+        @apply --paper-input-container-input-focus;
+      }
+
+      .input-content.is-invalid ::slotted(input),
+      .input-content.is-invalid ::slotted(textarea),
+      .input-content.is-invalid ::slotted(iron-autogrow-textarea),
+      .input-content.is-invalid ::slotted(.paper-input-input) {
+        @apply --paper-input-container-input-invalid;
+      }
+      
+      .prefix ::slotted(*) {
+        display: inline-block;
+        @apply --paper-font-subhead;
+        @apply --layout-flex-none;
+        @apply --paper-input-prefix;
+      }
+
+      .suffix ::slotted(*) {
+        display: inline-block;
+        @apply --paper-font-subhead;
+        @apply --layout-flex-none;
+
+        @apply --paper-input-suffix;
+      }
+
+      /* Firefox sets a min-width on the input, which can cause layout issues */
+      .input-content ::slotted(input) {
+        min-width: 0;
+      }
+
+      .input-content ::slotted(textarea) {
+        resize: none;
+      }
+
+      .add-on-content {
+        position: relative;
+      }
+
+      .add-on-content.is-invalid ::slotted(*) {
+        color: var(--paper-input-container-invalid-color, var(--error-color));
+      }
+
+      .add-on-content.is-highlighted ::slotted(*) {
+        color: var(--paper-input-container-focus-color, var(--primary-color));
+      }
+    </style>
+
+    <div class="floated-label-placeholder" aria-hidden="true" hidden="[[noLabelFloat]]">&nbsp;</div>
+
+    <div class="input-wrapper">
+      <span class="prefix"><slot name="prefix"></slot></span>
+
+      <div class\$="[[_computeInputContentClass(noLabelFloat,alwaysFloatLabel,focused,invalid,_inputHasContent)]]" id="labelAndInputContainer">
+        <slot name="label"></slot>
+        <slot name="input"></slot>
+      </div>
+
+      <span class="suffix"><slot name="suffix"></slot></span>
+    </div>
+
+    <div class\$="[[_computeUnderlineClass(focused,invalid)]]">
+      <div class="unfocused-line"></div>
+      <div class="focused-line"></div>
+    </div>
+
+    <div class\$="[[_computeAddOnContentClass(focused,invalid)]]">
+      <slot name="add-on"></slot>
+    </div>
+`,
+
+  is: 'paper-input-container',
+
+  properties: {
+    /**
+     * Set to true to disable the floating label. The label disappears when the input value is
+     * not null.
+     */
+    noLabelFloat: {
+      type: Boolean,
+      value: false
+    },
+
+    /**
+     * Set to true to always float the floating label.
+     */
+    alwaysFloatLabel: {
+      type: Boolean,
+      value: false
+    },
+
+    /**
+     * The attribute to listen for value changes on.
+     */
+    attrForValue: {
+      type: String,
+      value: 'bind-value'
+    },
+
+    /**
+     * Set to true to auto-validate the input value when it changes.
+     */
+    autoValidate: {
+      type: Boolean,
+      value: false
+    },
+
+    /**
+     * True if the input is invalid. This property is set automatically when the input value
+     * changes if auto-validating, or when the `iron-input-validate` event is heard from a child.
+     */
+    invalid: {
+      observer: '_invalidChanged',
+      type: Boolean,
+      value: false
+    },
+
+    /**
+     * True if the input has focus.
+     */
+    focused: {
+      readOnly: true,
+      type: Boolean,
+      value: false,
+      notify: true
+    },
+
+    _addons: {
+      type: Array
+      // do not set a default value here intentionally - it will be initialized lazily when a
+      // distributed child is attached, which may occur before configuration for this element
+      // in polyfill.
+    },
+
+    _inputHasContent: {
+      type: Boolean,
+      value: false
+    },
+
+    _inputSelector: {
+      type: String,
+      value: 'input,iron-input,textarea,.paper-input-input'
+    },
+
+    _boundOnFocus: {
+      type: Function,
+      value: function () {
+        return this._onFocus.bind(this);
+      }
+    },
+
+    _boundOnBlur: {
+      type: Function,
+      value: function () {
+        return this._onBlur.bind(this);
+      }
+    },
+
+    _boundOnInput: {
+      type: Function,
+      value: function () {
+        return this._onInput.bind(this);
+      }
+    },
+
+    _boundValueChanged: {
+      type: Function,
+      value: function () {
+        return this._onValueChanged.bind(this);
+      }
+    }
+  },
+
+  listeners: {
+    'addon-attached': '_onAddonAttached',
+    'iron-input-validate': '_onIronInputValidate'
+  },
+
+  get _valueChangedEvent() {
+    return this.attrForValue + '-changed';
+  },
+
+  get _propertyForValue() {
+    return (0, _caseMap.dashToCamelCase)(this.attrForValue);
+  },
+
+  get _inputElement() {
+    return (0, _polymerDom.dom)(this).querySelector(this._inputSelector);
+  },
+
+  get _inputElementValue() {
+    return this._inputElement[this._propertyForValue] || this._inputElement.value;
+  },
+
+  ready: function () {
+    if (!this._addons) {
+      this._addons = [];
+    }
+    this.addEventListener('focus', this._boundOnFocus, true);
+    this.addEventListener('blur', this._boundOnBlur, true);
+  },
+
+  attached: function () {
+    if (this.attrForValue) {
+      this._inputElement.addEventListener(this._valueChangedEvent, this._boundValueChanged);
+    } else {
+      this.addEventListener('input', this._onInput);
+    }
+
+    // Only validate when attached if the input already has a value.
+    if (this._inputElementValue && this._inputElementValue != '') {
+      this._handleValueAndAutoValidate(this._inputElement);
+    } else {
+      this._handleValue(this._inputElement);
+    }
+  },
+
+  _onAddonAttached: function (event) {
+    if (!this._addons) {
+      this._addons = [];
+    }
+    var target = event.target;
+    if (this._addons.indexOf(target) === -1) {
+      this._addons.push(target);
+      if (this.isAttached) {
+        this._handleValue(this._inputElement);
+      }
+    }
+  },
+
+  _onFocus: function () {
+    this._setFocused(true);
+  },
+
+  _onBlur: function () {
+    this._setFocused(false);
+    this._handleValueAndAutoValidate(this._inputElement);
+  },
+
+  _onInput: function (event) {
+    this._handleValueAndAutoValidate(event.target);
+  },
+
+  _onValueChanged: function (event) {
+    var input = event.target;
+
+    // Problem: if the input is required but has no text entered, we should
+    // only validate it on blur (so that an empty form doesn't come up red
+    // immediately; however, in this handler, we don't know whether this is
+    // the booting up value or a value in the future. I am assuming that the
+    // case  we care about manifests itself when the value is undefined.
+    // If this causes future problems, we need to do something like track whether
+    // the iron-input-ready event has fired, and this handler came before that.
+
+    if (input.value === undefined) {
+      return;
+    }
+
+    this._handleValueAndAutoValidate(event.target);
+  },
+
+  _handleValue: function (inputElement) {
+    var value = this._inputElementValue;
+
+    // type="number" hack needed because this.value is empty until it's valid
+    if (value || value === 0 || inputElement.type === 'number' && !inputElement.checkValidity()) {
+      this._inputHasContent = true;
+    } else {
+      this._inputHasContent = false;
+    }
+
+    this.updateAddons({
+      inputElement: inputElement,
+      value: value,
+      invalid: this.invalid
+    });
+  },
+
+  _handleValueAndAutoValidate: function (inputElement) {
+    if (this.autoValidate && inputElement) {
+      var valid;
+
+      if (inputElement.validate) {
+        valid = inputElement.validate(this._inputElementValue);
+      } else {
+        valid = inputElement.checkValidity();
+      }
+      this.invalid = !valid;
+    }
+
+    // Call this last to notify the add-ons.
+    this._handleValue(inputElement);
+  },
+
+  _onIronInputValidate: function (event) {
+    this.invalid = this._inputElement.invalid;
+  },
+
+  _invalidChanged: function () {
+    if (this._addons) {
+      this.updateAddons({ invalid: this.invalid });
+    }
+  },
+
+  /**
+   * Call this to update the state of add-ons.
+   * @param {Object} state Add-on state.
+   */
+  updateAddons: function (state) {
+    for (var addon, index = 0; addon = this._addons[index]; index++) {
+      addon.update(state);
+    }
+  },
+
+  _computeInputContentClass: function (noLabelFloat, alwaysFloatLabel, focused, invalid, _inputHasContent) {
+    var cls = 'input-content';
+    if (!noLabelFloat) {
+      var label = this.querySelector('label');
+
+      if (alwaysFloatLabel || _inputHasContent) {
+        cls += ' label-is-floating';
+        // If the label is floating, ignore any offsets that may have been
+        // applied from a prefix element.
+        this.$.labelAndInputContainer.style.position = 'static';
+
+        if (invalid) {
+          cls += ' is-invalid';
+        } else if (focused) {
+          cls += " label-is-highlighted";
+        }
+      } else {
+        // When the label is not floating, it should overlap the input element.
+        if (label) {
+          this.$.labelAndInputContainer.style.position = 'relative';
+        }
+        if (invalid) {
+          cls += ' is-invalid';
+        }
+      }
+    } else {
+      if (_inputHasContent) {
+        cls += ' label-is-hidden';
+      }
+      if (invalid) {
+        cls += ' is-invalid';
+      }
+    }
+    if (focused) {
+      cls += ' focused';
+    }
+    return cls;
+  },
+
+  _computeUnderlineClass: function (focused, invalid) {
+    var cls = 'underline';
+    if (invalid) {
+      cls += ' is-invalid';
+    } else if (focused) {
+      cls += ' is-highlighted';
+    }
+    return cls;
+  },
+
+  _computeAddOnContentClass: function (focused, invalid) {
+    var cls = 'add-on-content';
+    if (invalid) {
+      cls += ' is-invalid';
+    } else if (focused) {
+      cls += ' is-highlighted';
+    }
+    return cls;
+  }
+});
+
+/***/ }),
+/* 99 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+__webpack_require__(0);
+
+__webpack_require__(15);
+
+__webpack_require__(27);
+
+var _paperInputAddonBehavior = __webpack_require__(90);
+
+var _polymerFn = __webpack_require__(3);
+
+(0, _polymerFn.Polymer)({
+  _template: `
+    <style>
+      :host {
+        display: inline-block;
+        visibility: hidden;
+
+        color: var(--paper-input-container-invalid-color, var(--error-color));
+
+        @apply --paper-font-caption;
+        @apply --paper-input-error;
+        position: absolute;
+        left:0;
+        right:0;
+      }
+
+      :host([invalid]) {
+        visibility: visible;
+      };
+    </style>
+
+    <slot></slot>
+`,
+
+  is: 'paper-input-error',
+
+  behaviors: [_paperInputAddonBehavior.PaperInputAddonBehavior],
+
+  properties: {
+    /**
+     * True if the error is showing.
+     */
+    invalid: {
+      readOnly: true,
+      reflectToAttribute: true,
+      type: Boolean
+    }
+  },
+
+  /**
+   * This overrides the update function in PaperInputAddonBehavior.
+   * @param {{
+   *   inputElement: (Element|undefined),
+   *   value: (string|undefined),
+   *   invalid: boolean
+   * }} state -
+   *     inputElement: The input element.
+   *     value: The input value.
+   *     invalid: True if the input value is invalid.
+   */
+  update: function (state) {
+    this._setInvalid(state.invalid);
+  }
 });
 
 /***/ })
