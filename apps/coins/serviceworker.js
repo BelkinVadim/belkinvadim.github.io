@@ -1,1 +1,133 @@
-(function(a){function b(d){if(c[d])return c[d].exports;var e=c[d]={i:d,l:!1,exports:{}};return a[d].call(e.exports,e,e.exports,b),e.l=!0,e.exports}var c={};return b.m=a,b.c=c,b.d=function(a,c,d){b.o(a,c)||Object.defineProperty(a,c,{configurable:!1,enumerable:!0,get:d})},b.n=function(a){var c=a&&a.__esModule?function(){return a['default']}:function(){return a};return b.d(c,'a',c),c},b.o=function(a,b){return Object.prototype.hasOwnProperty.call(a,b)},b.p='/',b(b.s=89)})({89:function(){'use strict';const a={version:'0.0.1',lifetime:8.64e7,app_cache:['./','./index.html','./js/webcomponents-sd-ce.js','./js/app.js']};self.addEventListener('install',function(b){b.waitUntil(caches.open('app-cache').then((b)=>b.addAll(a.app_cache)))}),self.addEventListener('fetch',function(b){b.respondWith(caches.match(b.request).then(function(c){let d,e,f;return c?(d=new Date(c.headers.get('last-modified')),f=d&&Date.now()-d.getTime()>a.lifetime,f?(e=b.request.clone(),fetch(e).then(function(a){return a&&200===a.status?(caches.open(CACHE_NAME).then(function(c){c.put(b.request,a.clone())}),a):c}).catch(function(){return c})):c):fetch(b.request)}))})}});
+/******/ (function(modules) { // webpackBootstrap
+/******/ 	// The module cache
+/******/ 	var installedModules = {};
+/******/
+/******/ 	// The require function
+/******/ 	function __webpack_require__(moduleId) {
+/******/
+/******/ 		// Check if module is in cache
+/******/ 		if(installedModules[moduleId]) {
+/******/ 			return installedModules[moduleId].exports;
+/******/ 		}
+/******/ 		// Create a new module (and put it into the cache)
+/******/ 		var module = installedModules[moduleId] = {
+/******/ 			i: moduleId,
+/******/ 			l: false,
+/******/ 			exports: {}
+/******/ 		};
+/******/
+/******/ 		// Execute the module function
+/******/ 		modules[moduleId].call(module.exports, module, module.exports, __webpack_require__);
+/******/
+/******/ 		// Flag the module as loaded
+/******/ 		module.l = true;
+/******/
+/******/ 		// Return the exports of the module
+/******/ 		return module.exports;
+/******/ 	}
+/******/
+/******/
+/******/ 	// expose the modules object (__webpack_modules__)
+/******/ 	__webpack_require__.m = modules;
+/******/
+/******/ 	// expose the module cache
+/******/ 	__webpack_require__.c = installedModules;
+/******/
+/******/ 	// define getter function for harmony exports
+/******/ 	__webpack_require__.d = function(exports, name, getter) {
+/******/ 		if(!__webpack_require__.o(exports, name)) {
+/******/ 			Object.defineProperty(exports, name, {
+/******/ 				configurable: false,
+/******/ 				enumerable: true,
+/******/ 				get: getter
+/******/ 			});
+/******/ 		}
+/******/ 	};
+/******/
+/******/ 	// getDefaultExport function for compatibility with non-harmony modules
+/******/ 	__webpack_require__.n = function(module) {
+/******/ 		var getter = module && module.__esModule ?
+/******/ 			function getDefault() { return module['default']; } :
+/******/ 			function getModuleExports() { return module; };
+/******/ 		__webpack_require__.d(getter, 'a', getter);
+/******/ 		return getter;
+/******/ 	};
+/******/
+/******/ 	// Object.prototype.hasOwnProperty.call
+/******/ 	__webpack_require__.o = function(object, property) { return Object.prototype.hasOwnProperty.call(object, property); };
+/******/
+/******/ 	// __webpack_public_path__
+/******/ 	__webpack_require__.p = "/";
+/******/
+/******/ 	// Load entry module and return exports
+/******/ 	return __webpack_require__(__webpack_require__.s = 89);
+/******/ })
+/************************************************************************/
+/******/ ({
+
+/***/ 89:
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+const PARAMETERS = {
+    version: '0.0.1',
+    lifetime: 86400000, // 7 дней
+    app_cache: ['./', './index.html', './js/webcomponents-sd-ce.js', './js/app.js']
+};
+
+function swInstall(event) {
+    event.waitUntil(caches.open('app-cache').then(cache => {
+        return cache.addAll(PARAMETERS.app_cache);
+    }));
+}
+
+function swFetch(event) {
+    event.respondWith(
+    // ищем запрошенный ресурс среди закэшированных
+    caches.match(event.request).then(function (cachedResponse) {
+        let lastModified, fetchRequest, isEndLifetime;
+
+        // если ресурс есть в кэше
+        if (cachedResponse) {
+            // получаем дату последнего обновления
+            lastModified = new Date(cachedResponse.headers.get('last-modified'));
+            isEndLifetime = lastModified && Date.now() - lastModified.getTime() > PARAMETERS.lifetime;
+
+            // Если ресурс устарел
+            if (isEndLifetime) {
+                fetchRequest = event.request.clone();
+                // создаём новый запрос
+                return fetch(fetchRequest).then(function (response) {
+                    // при неудаче всегда можно выдать ресурс из кэша
+                    if (!response || response.status !== 200) {
+                        return cachedResponse;
+                    }
+
+                    // обновляем кэш
+                    caches.open(CACHE_NAME).then(function (cache) {
+                        cache.put(event.request, response.clone());
+                    });
+
+                    // возвращаем свежий ресурс
+                    return response;
+                }).catch(function () {
+                    return cachedResponse;
+                });
+            }
+            return cachedResponse;
+        }
+
+        // запрашиваем из сети как обычно
+        return fetch(event.request);
+    }));
+}
+
+self.addEventListener('install', swInstall);
+
+self.addEventListener('fetch', swFetch);
+
+/***/ })
+
+/******/ });

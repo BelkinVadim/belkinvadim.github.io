@@ -1,4 +1,683 @@
-(function(e){function t(a){if(n[a])return n[a].exports;var o=n[a]={i:a,l:!1,exports:{}};return e[a].call(o.exports,o,o.exports,t),o.l=!0,o.exports}var n={};return t.m=e,t.c=n,t.d=function(e,n,a){t.o(e,n)||Object.defineProperty(e,n,{configurable:!1,enumerable:!0,get:a})},t.n=function(e){var n=e&&e.__esModule?function(){return e['default']}:function(){return e};return t.d(n,'a',n),n},t.o=function(e,t){return Object.prototype.hasOwnProperty.call(e,t)},t.p='/',t(t.s=43)})([function(e,t,n){'use strict';Object.defineProperty(t,'__esModule',{value:!0}),t.Base=void 0;var a=n(30);n(3),n(57),n(58),n(38),n(59),n(60),n(61),n(63);t.Base=(0,a.LegacyElementMixin)(HTMLElement).prototype},function(){'use strict';window.JSCompiler_renameProperty=function(e){return e}},function(e,t,n){'use strict';Object.defineProperty(t,'__esModule',{value:!0}),t.addDebouncer=t.flush=t.matchesSelector=t.dom=t.DomApi=void 0,n(1),n(9);var a=n(55),o=n(13);const r=Element.prototype,s=r.matches||r.matchesSelector||r.mozMatchesSelector||r.msMatchesSelector||r.oMatchesSelector||r.webkitMatchesSelector,d=function(e,t){return s.call(e,t)};class l{constructor(e){this.node=e}observeNodes(e){return new a.FlattenedNodesObserver(this.node,e)}unobserveNodes(e){e.disconnect()}notifyObserver(){}deepContains(e){if(this.node.contains(e))return!0;let t=e,n=e.ownerDocument;for(;t&&t!==n&&t!==this.node;)t=t.parentNode||t.host;return t===this.node}getOwnerRoot(){return this.node.getRootNode()}getDistributedNodes(){return'slot'===this.node.localName?this.node.assignedNodes({flatten:!0}):[]}getDestinationInsertionPoints(){let e=[],t=this.node.assignedSlot;for(;t;)e.push(t),t=t.assignedSlot;return e}importNode(e,t){let n=this.node instanceof Document?this.node:this.node.ownerDocument;return n.importNode(e,t)}getEffectiveChildNodes(){return a.FlattenedNodesObserver.getFlattenedNodes(this.node)}queryDistributedElements(e){let t=this.getEffectiveChildNodes(),n=[];for(let a=0,o=t.length,r;a<o&&(r=t[a]);a++)r.nodeType===Node.ELEMENT_NODE&&d(r,e)&&n.push(r);return n}get activeElement(){let e=this.node;return e._activeElement===void 0?e.activeElement:e._activeElement}}(function(e,t){for(let n=0,a;n<t.length;n++)a=t[n],e[a]=function(){return this.node[a].apply(this.node,arguments)}})(l.prototype,['cloneNode','appendChild','insertBefore','removeChild','replaceChild','setAttribute','removeAttribute','querySelector','querySelectorAll']),function(e,t){for(let n=0,a;n<t.length;n++)a=t[n],Object.defineProperty(e,a,{get:function(){return this.node[a]},configurable:!0})}(l.prototype,['parentNode','firstChild','lastChild','nextSibling','previousSibling','firstElementChild','lastElementChild','nextElementSibling','previousElementSibling','childNodes','children','classList']),function(e,t){for(let n=0,a;n<t.length;n++)a=t[n],Object.defineProperty(e,a,{get:function(){return this.node[a]},set:function(e){this.node[a]=e},configurable:!0})}(l.prototype,['textContent','innerHTML']);class p{constructor(e){this.event=e}get rootTarget(){return this.event.composedPath()[0]}get localTarget(){return this.event.target}get path(){return this.event.composedPath()}}t.DomApi=l;t.dom=function(e){if(e=e||document,!e.__domApi){let t;t=e instanceof Event?new p(e):new l(e),e.__domApi=t}return e.__domApi};t.matchesSelector=d,t.flush=o.flush,t.addDebouncer=o.enqueueDebouncer},function(e,t,n){'use strict';Object.defineProperty(t,'__esModule',{value:!0}),t.Polymer=void 0;var a=n(56);t.Polymer=function(e){let t;return t='function'==typeof e?e:(0,a.Class)(e),customElements.define(t.is,t),t}},function(e,t,n){'use strict';function a(){}Object.defineProperty(t,'__esModule',{value:!0}),t.dedupingMixin=void 0,n(1);let o=0;a.prototype.__mixinApplications,a.prototype.__mixinSet;t.dedupingMixin=function(e){let t=e.__mixinApplications;t||(t=new WeakMap,e.__mixinApplications=t);let n=o++;return function(a){let o=a.__mixinSet;if(o&&o[n])return a;let r=t,s=r.get(a);s||(s=e(a),r.set(a,s));let d=Object.create(s.__mixinSet||o||null);return d[n]=!0,s.__mixinSet=d,s}}},function(e,t,n){'use strict';Object.defineProperty(t,'__esModule',{value:!0}),t.Element=void 0;var a=n(16);const o=(0,a.ElementMixin)(HTMLElement);t.Element=o},function(e,t,n){'use strict';Object.defineProperty(t,'__esModule',{value:!0}),t.microTask=t.idlePeriod=t.animationFrame=t.timeOut=void 0,n(1);let a=0,o=0,r=[],s=0,d=document.createTextNode('');new window.MutationObserver(function(){const e=r.length;for(let t=0,n;t<e;t++)if(n=r[t],n)try{n()}catch(t){setTimeout(()=>{throw t})}r.splice(0,e),o+=e}).observe(d,{characterData:!0});const l=t.timeOut={after(e){return{run(t){return setTimeout(t,e)},cancel:window.clearTimeout.bind(window)}},run:window.setTimeout.bind(window),cancel:window.clearTimeout.bind(window)},p=t.animationFrame={run:window.requestAnimationFrame.bind(window),cancel:window.cancelAnimationFrame.bind(window)},_=t.idlePeriod={run(e){return window.requestIdleCallback?window.requestIdleCallback(e):window.setTimeout(e,16)},cancel(e){window.cancelIdleCallback?window.cancelIdleCallback(e):window.clearTimeout(e)}},c=t.microTask={run(e){return d.textContent=s++,r.push(e),a++},cancel(e){const t=e-o;if(0<=t){if(!r[t])throw new Error('invalid async handle: '+e);r[t]=null}}}},function(e,t,n){'use strict';n(0);const a=document.createElement('div');a.setAttribute('style','display: none;'),a.innerHTML=`<custom-style>
+/******/ (function(modules) { // webpackBootstrap
+/******/ 	// The module cache
+/******/ 	var installedModules = {};
+/******/
+/******/ 	// The require function
+/******/ 	function __webpack_require__(moduleId) {
+/******/
+/******/ 		// Check if module is in cache
+/******/ 		if(installedModules[moduleId]) {
+/******/ 			return installedModules[moduleId].exports;
+/******/ 		}
+/******/ 		// Create a new module (and put it into the cache)
+/******/ 		var module = installedModules[moduleId] = {
+/******/ 			i: moduleId,
+/******/ 			l: false,
+/******/ 			exports: {}
+/******/ 		};
+/******/
+/******/ 		// Execute the module function
+/******/ 		modules[moduleId].call(module.exports, module, module.exports, __webpack_require__);
+/******/
+/******/ 		// Flag the module as loaded
+/******/ 		module.l = true;
+/******/
+/******/ 		// Return the exports of the module
+/******/ 		return module.exports;
+/******/ 	}
+/******/
+/******/
+/******/ 	// expose the modules object (__webpack_modules__)
+/******/ 	__webpack_require__.m = modules;
+/******/
+/******/ 	// expose the module cache
+/******/ 	__webpack_require__.c = installedModules;
+/******/
+/******/ 	// define getter function for harmony exports
+/******/ 	__webpack_require__.d = function(exports, name, getter) {
+/******/ 		if(!__webpack_require__.o(exports, name)) {
+/******/ 			Object.defineProperty(exports, name, {
+/******/ 				configurable: false,
+/******/ 				enumerable: true,
+/******/ 				get: getter
+/******/ 			});
+/******/ 		}
+/******/ 	};
+/******/
+/******/ 	// getDefaultExport function for compatibility with non-harmony modules
+/******/ 	__webpack_require__.n = function(module) {
+/******/ 		var getter = module && module.__esModule ?
+/******/ 			function getDefault() { return module['default']; } :
+/******/ 			function getModuleExports() { return module; };
+/******/ 		__webpack_require__.d(getter, 'a', getter);
+/******/ 		return getter;
+/******/ 	};
+/******/
+/******/ 	// Object.prototype.hasOwnProperty.call
+/******/ 	__webpack_require__.o = function(object, property) { return Object.prototype.hasOwnProperty.call(object, property); };
+/******/
+/******/ 	// __webpack_public_path__
+/******/ 	__webpack_require__.p = "/";
+/******/
+/******/ 	// Load entry module and return exports
+/******/ 	return __webpack_require__(__webpack_require__.s = 43);
+/******/ })
+/************************************************************************/
+/******/ ([
+/* 0 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.Base = undefined;
+
+var _legacyElementMixin = __webpack_require__(30);
+
+__webpack_require__(3);
+
+__webpack_require__(57);
+
+__webpack_require__(58);
+
+__webpack_require__(38);
+
+__webpack_require__(59);
+
+__webpack_require__(60);
+
+__webpack_require__(61);
+
+__webpack_require__(63);
+
+const Base = exports.Base = (0, _legacyElementMixin.LegacyElementMixin)(HTMLElement).prototype;
+
+/***/ }),
+/* 1 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+window.JSCompiler_renameProperty = function (prop, obj) {
+  return prop;
+};
+
+/** @namespace */
+let Polymer;
+
+/***/ }),
+/* 2 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.addDebouncer = exports.flush = exports.matchesSelector = exports.dom = exports.DomApi = undefined;
+
+__webpack_require__(1);
+
+__webpack_require__(9);
+
+var _flattenedNodesObserver = __webpack_require__(55);
+
+var _flush = __webpack_require__(13);
+
+const p = Element.prototype;
+/**
+ * @const {function(this:Element, string): boolean}
+ */
+const normalizedMatchesSelector = p.matches || p.matchesSelector || p.mozMatchesSelector || p.msMatchesSelector || p.oMatchesSelector || p.webkitMatchesSelector;
+
+/**
+ * Cross-platform `element.matches` shim.
+ *
+ * @function matchesSelector
+ * @memberof Polymer.dom
+ * @param {!Element} node Node to check selector against
+ * @param {string} selector Selector to match
+ * @return {boolean} True if node matched selector
+ */
+const matchesSelector = function (node, selector) {
+  return normalizedMatchesSelector.call(node, selector);
+};
+
+/**
+ * Node API wrapper class returned from `Polymer.dom.(target)` when
+ * `target` is a `Node`.
+ */
+class DomApi {
+
+  /**
+   * @param {Node} node Node for which to create a Polymer.dom helper object.
+   */
+  constructor(node) {
+    this.node = node;
+  }
+
+  /**
+   * Returns an instance of `Polymer.FlattenedNodesObserver` that
+   * listens for node changes on this element.
+   *
+   * @param {Function} callback Called when direct or distributed children
+   *   of this element changes
+   * @return {Polymer.FlattenedNodesObserver} Observer instance
+   */
+  observeNodes(callback) {
+    return new _flattenedNodesObserver.FlattenedNodesObserver(this.node, callback);
+  }
+
+  /**
+   * Disconnects an observer previously created via `observeNodes`
+   *
+   * @param {Polymer.FlattenedNodesObserver} observerHandle Observer instance
+   *   to disconnect.
+   */
+  unobserveNodes(observerHandle) {
+    observerHandle.disconnect();
+  }
+
+  /**
+   * Provided as a backwards-compatible API only.  This method does nothing.
+   */
+  notifyObserver() {}
+
+  /**
+   * Returns true if the provided node is contained with this element's
+   * light-DOM children or shadow root, including any nested shadow roots
+   * of children therein.
+   *
+   * @param {Node} node Node to test
+   * @return {boolean} Returns true if the given `node` is contained within
+   *   this element's light or shadow DOM.
+   */
+  deepContains(node) {
+    if (this.node.contains(node)) {
+      return true;
+    }
+    let n = node;
+    let doc = node.ownerDocument;
+    // walk from node to `this` or `document`
+    while (n && n !== doc && n !== this.node) {
+      // use logical parentnode, or native ShadowRoot host
+      n = n.parentNode || n.host;
+    }
+    return n === this.node;
+  }
+
+  /**
+   * Returns the root node of this node.  Equivalent to `getRoodNode()`.
+   *
+   * @return {Node} Top most element in the dom tree in which the node
+   * exists. If the node is connected to a document this is either a
+   * shadowRoot or the document; otherwise, it may be the node
+   * itself or a node or document fragment containing it.
+   */
+  getOwnerRoot() {
+    return this.node.getRootNode();
+  }
+
+  /**
+   * For slot elements, returns the nodes assigned to the slot; otherwise
+   * an empty array. It is equivalent to `<slot>.addignedNodes({flatten:true})`.
+   *
+   * @return {Array<Node>} Array of assigned nodes
+   */
+  getDistributedNodes() {
+    return this.node.localName === 'slot' ? this.node.assignedNodes({ flatten: true }) : [];
+  }
+
+  /**
+   * Returns an array of all slots this element was distributed to.
+   *
+   * @return {Array<HTMLSlotElement>} Description
+   */
+  getDestinationInsertionPoints() {
+    let ip$ = [];
+    let n = this.node.assignedSlot;
+    while (n) {
+      ip$.push(n);
+      n = n.assignedSlot;
+    }
+    return ip$;
+  }
+
+  /**
+   * Calls `importNode` on the `ownerDocument` for this node.
+   *
+   * @param {Node} node Node to import
+   * @param {boolean} deep True if the node should be cloned deeply during
+   *   import
+   * @return {Node} Clone of given node imported to this owner document
+   */
+  importNode(node, deep) {
+    let doc = this.node instanceof Document ? this.node : this.node.ownerDocument;
+    return doc.importNode(node, deep);
+  }
+
+  /**
+   * @return {Array} Returns a flattened list of all child nodes and nodes assigned
+   * to child slots.
+   */
+  getEffectiveChildNodes() {
+    return _flattenedNodesObserver.FlattenedNodesObserver.getFlattenedNodes(this.node);
+  }
+
+  /**
+   * Returns a filtered list of flattened child elements for this element based
+   * on the given selector.
+   *
+   * @param {string} selector Selector to filter nodes against
+   * @return {Array<HTMLElement>} List of flattened child elements
+   */
+  queryDistributedElements(selector) {
+    let c$ = this.getEffectiveChildNodes();
+    let list = [];
+    for (let i = 0, l = c$.length, c; i < l && (c = c$[i]); i++) {
+      if (c.nodeType === Node.ELEMENT_NODE && matchesSelector(c, selector)) {
+        list.push(c);
+      }
+    }
+    return list;
+  }
+
+  /**
+   * For shadow roots, returns the currently focused element within this
+   * shadow root.
+   *
+   * @return {Node|undefined} Currently focused element
+   */
+  get activeElement() {
+    let node = this.node;
+    return node._activeElement !== undefined ? node._activeElement : node.activeElement;
+  }
+}
+
+function forwardMethods(proto, methods) {
+  for (let i = 0; i < methods.length; i++) {
+    let method = methods[i];
+    proto[method] = /** @this {DomApi} */function () {
+      return this.node[method].apply(this.node, arguments);
+    };
+  }
+}
+
+function forwardReadOnlyProperties(proto, properties) {
+  for (let i = 0; i < properties.length; i++) {
+    let name = properties[i];
+    Object.defineProperty(proto, name, {
+      get: function () {
+        return (/** @type {DomApi} */this.node[name]
+        );
+      },
+      configurable: true
+    });
+  }
+}
+
+function forwardProperties(proto, properties) {
+  for (let i = 0; i < properties.length; i++) {
+    let name = properties[i];
+    Object.defineProperty(proto, name, {
+      get: function () {
+        return (/** @type {DomApi} */this.node[name]
+        );
+      },
+      set: function (value) {
+        /** @type {DomApi} */this.node[name] = value;
+      },
+      configurable: true
+    });
+  }
+}
+
+forwardMethods(DomApi.prototype, ['cloneNode', 'appendChild', 'insertBefore', 'removeChild', 'replaceChild', 'setAttribute', 'removeAttribute', 'querySelector', 'querySelectorAll']);
+
+forwardReadOnlyProperties(DomApi.prototype, ['parentNode', 'firstChild', 'lastChild', 'nextSibling', 'previousSibling', 'firstElementChild', 'lastElementChild', 'nextElementSibling', 'previousElementSibling', 'childNodes', 'children', 'classList']);
+
+forwardProperties(DomApi.prototype, ['textContent', 'innerHTML']);
+
+/**
+ * Event API wrapper class returned from `Polymer.dom.(target)` when
+ * `target` is an `Event`.
+ */
+class EventApi {
+  constructor(event) {
+    this.event = event;
+  }
+
+  /**
+   * Returns the first node on the `composedPath` of this event.
+   *
+   * @return {Node} The node this event was dispatched to
+   */
+  get rootTarget() {
+    return this.event.composedPath()[0];
+  }
+
+  /**
+   * Returns the local (re-targeted) target for this event.
+   *
+   * @return {Node} The local (re-targeted) target for this event.
+   */
+  get localTarget() {
+    return this.event.target;
+  }
+
+  /**
+   * Returns the `composedPath` for this event.
+   */
+  get path() {
+    return this.event.composedPath();
+  }
+}
+
+exports.DomApi = DomApi;
+const dom = exports.dom = function (obj) {
+  obj = obj || document;
+  if (!obj.__domApi) {
+    let helper;
+    if (obj instanceof Event) {
+      helper = new EventApi(obj);
+    } else {
+      helper = new DomApi(obj);
+    }
+    obj.__domApi = helper;
+  }
+  return obj.__domApi;
+};
+
+exports.matchesSelector = matchesSelector;
+exports.flush = _flush.flush;
+exports.addDebouncer = _flush.enqueueDebouncer;
+
+/***/ }),
+/* 3 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.Polymer = undefined;
+
+var _class = __webpack_require__(56);
+
+const Polymer = exports.Polymer = function (info) {
+  // if input is a `class` (aka a function with a prototype), use the prototype
+  // remember that the `constructor` will never be called
+  let klass;
+  if (typeof info === 'function') {
+    klass = info;
+  } else {
+    klass = (0, _class.Class)(info);
+  }
+  customElements.define(klass.is, /** @type {!HTMLElement} */klass);
+  return klass;
+};
+
+/***/ }),
+/* 4 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.dedupingMixin = undefined;
+
+__webpack_require__(1);
+
+// unique global id for deduping mixins.
+let dedupeId = 0;
+
+/**
+ * @constructor
+ * @extends {Function}
+ */
+function MixinFunction() {}
+/** @type {(WeakMap | undefined)} */
+MixinFunction.prototype.__mixinApplications;
+/** @type {(Object | undefined)} */
+MixinFunction.prototype.__mixinSet;
+
+const dedupingMixin = exports.dedupingMixin = function (mixin) {
+  let mixinApplications = /** @type {!MixinFunction} */mixin.__mixinApplications;
+  if (!mixinApplications) {
+    mixinApplications = new WeakMap();
+    /** @type {!MixinFunction} */mixin.__mixinApplications = mixinApplications;
+  }
+  // maintain a unique id for each mixin
+  let mixinDedupeId = dedupeId++;
+  function dedupingMixin(base) {
+    let baseSet = /** @type {!MixinFunction} */base.__mixinSet;
+    if (baseSet && baseSet[mixinDedupeId]) {
+      return base;
+    }
+    let map = mixinApplications;
+    let extended = map.get(base);
+    if (!extended) {
+      extended = /** @type {!Function} */mixin(base);
+      map.set(base, extended);
+    }
+    // copy inherited mixin set from the extended class, or the base class
+    // NOTE: we avoid use of Set here because some browser (IE11)
+    // cannot extend a base Set via the constructor.
+    let mixinSet = Object.create( /** @type {!MixinFunction} */extended.__mixinSet || baseSet || null);
+    mixinSet[mixinDedupeId] = true;
+    /** @type {!MixinFunction} */extended.__mixinSet = mixinSet;
+    return extended;
+  }
+
+  return dedupingMixin;
+};
+
+/***/ }),
+/* 5 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.Element = undefined;
+
+var _elementMixin = __webpack_require__(16);
+
+/**
+ * Base class that provides the core API for Polymer's meta-programming
+ * features including template stamping, data-binding, attribute deserialization,
+ * and property change observation.
+ *
+ * @customElement
+ * @polymer
+ * @memberof Polymer
+ * @constructor
+ * @implements {Polymer_ElementMixin}
+ * @extends HTMLElement
+ * @appliesMixin Polymer.ElementMixin
+ * @summary Custom element base class that provides the core API for Polymer's
+ *   key meta-programming features including template stamping, data-binding,
+ *   attribute deserialization, and property change observation
+ */
+const Element = (0, _elementMixin.ElementMixin)(HTMLElement);
+exports.Element = Element;
+
+/***/ }),
+/* 6 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.microTask = exports.idlePeriod = exports.animationFrame = exports.timeOut = undefined;
+
+__webpack_require__(1);
+
+/** @typedef {{run: function(function(), number=):number, cancel: function(number)}} */
+let AsyncInterface; // eslint-disable-line no-unused-vars
+
+// Microtask implemented using Mutation Observer
+let microtaskCurrHandle = 0;
+let microtaskLastHandle = 0;
+let microtaskCallbacks = [];
+let microtaskNodeContent = 0;
+let microtaskNode = document.createTextNode('');
+new window.MutationObserver(microtaskFlush).observe(microtaskNode, { characterData: true });
+
+function microtaskFlush() {
+  const len = microtaskCallbacks.length;
+  for (let i = 0; i < len; i++) {
+    let cb = microtaskCallbacks[i];
+    if (cb) {
+      try {
+        cb();
+      } catch (e) {
+        setTimeout(() => {
+          throw e;
+        });
+      }
+    }
+  }
+  microtaskCallbacks.splice(0, len);
+  microtaskLastHandle += len;
+}
+
+const timeOut = exports.timeOut = {
+  /**
+   * Returns a sub-module with the async interface providing the provided
+   * delay.
+   *
+   * @memberof Polymer.Async.timeOut
+   * @param {number} delay Time to wait before calling callbacks in ms
+   * @return {AsyncInterface} An async timeout interface
+   */
+  after(delay) {
+    return {
+      run(fn) {
+        return setTimeout(fn, delay);
+      },
+      cancel: window.clearTimeout.bind(window)
+    };
+  },
+  /**
+   * Enqueues a function called in the next task.
+   *
+   * @memberof Polymer.Async.timeOut
+   * @param {Function} fn Callback to run
+   * @return {number} Handle used for canceling task
+   */
+  run: window.setTimeout.bind(window),
+  /**
+   * Cancels a previously enqueued `timeOut` callback.
+   *
+   * @memberof Polymer.Async.timeOut
+   * @param {number} handle Handle returned from `run` of callback to cancel
+   */
+  cancel: window.clearTimeout.bind(window)
+};
+
+const animationFrame = exports.animationFrame = {
+  /**
+   * Enqueues a function called at `requestAnimationFrame` timing.
+   *
+   * @memberof Polymer.Async.animationFrame
+   * @param {Function} fn Callback to run
+   * @return {number} Handle used for canceling task
+   */
+  run: window.requestAnimationFrame.bind(window),
+  /**
+   * Cancels a previously enqueued `animationFrame` callback.
+   *
+   * @memberof Polymer.Async.timeOut
+   * @param {number} handle Handle returned from `run` of callback to cancel
+   */
+  cancel: window.cancelAnimationFrame.bind(window)
+};
+
+const idlePeriod = exports.idlePeriod = {
+  /**
+   * Enqueues a function called at `requestIdleCallback` timing.
+   *
+   * @memberof Polymer.Async.idlePeriod
+   * @param {function(IdleDeadline)} fn Callback to run
+   * @return {number} Handle used for canceling task
+   */
+  run(fn) {
+    return window.requestIdleCallback ? window.requestIdleCallback(fn) : window.setTimeout(fn, 16);
+  },
+  /**
+   * Cancels a previously enqueued `idlePeriod` callback.
+   *
+   * @memberof Polymer.Async.idlePeriod
+   * @param {number} handle Handle returned from `run` of callback to cancel
+   */
+  cancel(handle) {
+    window.cancelIdleCallback ? window.cancelIdleCallback(handle) : window.clearTimeout(handle);
+  }
+};
+
+const microTask = exports.microTask = {
+
+  /**
+   * Enqueues a function called at microtask timing.
+   *
+   * @memberof Polymer.Async.microTask
+   * @param {Function} callback Callback to run
+   * @return {number} Handle used for canceling task
+   */
+  run(callback) {
+    microtaskNode.textContent = microtaskNodeContent++;
+    microtaskCallbacks.push(callback);
+    return microtaskCurrHandle++;
+  },
+
+  /**
+   * Cancels a previously enqueued `microTask` callback.
+   *
+   * @memberof Polymer.Async.microTask
+   * @param {number} handle Handle returned from `run` of callback to cancel
+   */
+  cancel(handle) {
+    const idx = handle - microtaskLastHandle;
+    if (idx >= 0) {
+      if (!microtaskCallbacks[idx]) {
+        throw new Error('invalid async handle: ' + handle);
+      }
+      microtaskCallbacks[idx] = null;
+    }
+  }
+
+};
+
+/***/ }),
+/* 7 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+__webpack_require__(0);
+
+const $_documentContainer = document.createElement('div');
+$_documentContainer.setAttribute('style', 'display: none;');
+
+$_documentContainer.innerHTML = `<custom-style>
   <style is="custom-style">
     html {
 
@@ -342,7 +1021,609 @@
 
     }
   </style>
-</custom-style>`,document.head.appendChild(a)},function(e,t,n){'use strict';Object.defineProperty(t,'__esModule',{value:!0}),t.Debouncer=void 0,n(1),n(4),n(6);class a{constructor(){this._asyncModule=null,this._callback=null,this._timer=null}setConfig(e,t){this._asyncModule=e,this._callback=t,this._timer=this._asyncModule.run(()=>{this._timer=null,this._callback()})}cancel(){this.isActive()&&(this._asyncModule.cancel(this._timer),this._timer=null)}flush(){this.isActive()&&(this.cancel(),this._callback())}isActive(){return null!=this._timer}static debounce(e,t,n){return e instanceof a?e.cancel():e=new a,e.setConfig(t,n),e}}t.Debouncer=a},function(e,t,n){'use strict';Object.defineProperty(t,'__esModule',{value:!0}),t.setSanitizeDOMValue=t.sanitizeDOMValue=t.setRootPath=t.rootPath=t.Settings=t.useNativeCustomElements=t.useNativeCSSProperties=t.useShadow=void 0,n(1);var a=n(10);const o=t.useShadow=!window.ShadyDOM,r=t.useNativeCSSProperties=!(window.ShadyCSS&&!window.ShadyCSS.nativeCss),s=t.useNativeCustomElements=!window.customElements.polyfillWrapFlushCallback;t.Settings={};let d=(0,a.pathFromUrl)(document.baseURI||window.location.href);t.rootPath=d;t.setRootPath=function(e){t.rootPath=d=e};let l;t.sanitizeDOMValue=l;t.setSanitizeDOMValue=function(e){t.sanitizeDOMValue=l=e}},function(e,t,n){'use strict';function a(e,t){if(e&&r.test(e))return e;if(void 0==s){s=!1;try{const e=new URL('b','http://a');e.pathname='c%20d',s='http://a/c%20d'===e.href}catch(t){}}return(t||(t=document.baseURI||window.location.href),s)?new URL(e,t).href:(d||(d=document.implementation.createHTMLDocument('temp'),d.base=d.createElement('base'),d.head.appendChild(d.base),d.anchor=d.createElement('a'),d.body.appendChild(d.anchor)),d.base.href=t,d.anchor.href=e,d.anchor.href||e)}Object.defineProperty(t,'__esModule',{value:!0}),t.pathFromUrl=t.resolveUrl=t.resolveCss=void 0,n(1);let o=/(url\()([^)]*)(\))/g,r=/(^\/)|(^#)|(^[\w-\d]*:)/,s,d;t.resolveCss=function(e,t){return e.replace(o,function(e,n,o,r){return n+'\''+a(o.replace(/["']/g,''),t)+'\''+r})},t.resolveUrl=a,t.pathFromUrl=function(e){return e.substring(0,e.lastIndexOf('/')+1)}},function(e,t,n){'use strict';Object.defineProperty(t,'__esModule',{value:!0}),t.dashToCamelCase=function(e){return a[e]||(a[e]=0>e.indexOf('-')?e:e.replace(o,(e)=>e[1].toUpperCase()))},t.camelToDashCase=function(e){return a[e]||(a[e]=e.replace(r,'-$1').toLowerCase())},n(1);const a={},o=/-[a-z]/g,r=/([A-Z])/g},function(e,t,n){'use strict';function a(e){return 0<=e.indexOf('.')}function o(e,t){return 0===e.indexOf(t+'.')}function r(e,t){return 0===t.indexOf(e+'.')}function s(e){if(Array.isArray(e)){let t=[];for(let n=0,a;n<e.length;n++){a=e[n].toString().split('.');for(let e=0;e<a.length;e++)t.push(a[e])}return t.join('.')}return e}function d(e){return Array.isArray(e)?s(e).split('.'):e.toString().split('.')}Object.defineProperty(t,'__esModule',{value:!0}),t.isDeep=void 0,t.isPath=a,t.root=function(e){let t=e.indexOf('.');return-1===t?e:e.slice(0,t)},t.isAncestor=o,t.isDescendant=r,t.translate=function(e,t,n){return t+n.slice(e.length)},t.matches=function(e,t){return e===t||o(e,t)||r(e,t)},t.normalize=s,t.split=d,t.get=function(e,t,n){let a=e,o=d(t);for(let r=0;r<o.length;r++){if(!a)return;let e=o[r];a=a[e]}return n&&(n.path=o.join('.')),a},t.set=function(e,t,n){let a=e,o=d(t),r=o[o.length-1];if(1<o.length){for(let e=0,t;e<o.length-1;e++)if(t=o[e],a=a[t],!a)return;a[r]=n}else a[t]=n;return o.join('.')},n(1);t.isDeep=a},function(e,t,n){'use strict';function a(){const e=!!o.length;for(;o.length;)try{o.shift().flush()}catch(t){setTimeout(()=>{throw t})}return e}Object.defineProperty(t,'__esModule',{value:!0}),t.flush=t.enqueueDebouncer=void 0,n(1);let o=[];const r=t.enqueueDebouncer=function(e){o.push(e)},s=t.flush=function(){let e,t;do e=window.ShadyDOM&&ShadyDOM.flush(),window.ShadyCSS&&window.ShadyCSS.ScopingShim&&window.ShadyCSS.ScopingShim.flush(),t=a();while(e||t)}},function(e,t,n){'use strict';function a(e,t,n,a,o){let r;o&&(r='object'==typeof n&&null!==n,r&&(a=e.__dataTemp[t]));let s=a!==n&&(a===a||n===n);return r&&s&&(e.__dataTemp[t]=n),s}Object.defineProperty(t,'__esModule',{value:!0}),t.OptionalMutableData=t.MutableData=void 0;var o=n(4);const r=t.MutableData=(0,o.dedupingMixin)((e)=>{class t extends e{_shouldPropertyChange(e,t,n){return a(this,e,t,n,!0)}}return t.prototype.mutableData=!1,t}),s=t.OptionalMutableData=(0,o.dedupingMixin)((e)=>{class t extends e{static get properties(){return{mutableData:Boolean}}_shouldPropertyChange(e,t,n){return a(this,e,t,n,this.mutableData)}}return t});r._mutablePropertyChange=a},function(e,t,n){'use strict';n(0),n(41);const a=document.createElement('div');a.setAttribute('style','display: none;'),a.innerHTML=`<custom-style>
+</custom-style>`;
+
+document.head.appendChild($_documentContainer);
+
+/***/ }),
+/* 8 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.Debouncer = undefined;
+
+__webpack_require__(1);
+
+__webpack_require__(4);
+
+__webpack_require__(6);
+
+/** @typedef {{run: function(function(), number=):number, cancel: function(number)}} */
+let AsyncModule; // eslint-disable-line no-unused-vars
+
+/**
+ * @summary Collapse multiple callbacks into one invocation after a timer.
+ * @memberof Polymer
+ */
+class Debouncer {
+  constructor() {
+    this._asyncModule = null;
+    this._callback = null;
+    this._timer = null;
+  }
+  /**
+   * Sets the scheduler; that is, a module with the Async interface,
+   * a callback and optional arguments to be passed to the run function
+   * from the async module.
+   *
+   * @param {!AsyncModule} asyncModule Object with Async interface.
+   * @param {function()} callback Callback to run.
+   */
+  setConfig(asyncModule, callback) {
+    this._asyncModule = asyncModule;
+    this._callback = callback;
+    this._timer = this._asyncModule.run(() => {
+      this._timer = null;
+      this._callback();
+    });
+  }
+  /**
+   * Cancels an active debouncer and returns a reference to itself.
+   */
+  cancel() {
+    if (this.isActive()) {
+      this._asyncModule.cancel(this._timer);
+      this._timer = null;
+    }
+  }
+  /**
+   * Flushes an active debouncer and returns a reference to itself.
+   */
+  flush() {
+    if (this.isActive()) {
+      this.cancel();
+      this._callback();
+    }
+  }
+  /**
+   * Returns true if the debouncer is active.
+   *
+   * @return {boolean} True if active.
+   */
+  isActive() {
+    return this._timer != null;
+  }
+  /**
+   * Creates a debouncer if no debouncer is passed as a parameter
+   * or it cancels an active debouncer otherwise. The following
+   * example shows how a debouncer can be called multiple times within a
+   * microtask and "debounced" such that the provided callback function is
+   * called once. Add this method to a custom element:
+   *
+   * _debounceWork() {
+   *   this._debounceJob = Polymer.Debouncer.debounce(this._debounceJob,
+   *       Polymer.Async.microTask, () => {
+   *     this._doWork();
+   *   });
+   * }
+   *
+   * If the `_debounceWork` method is called multiple times within the same
+   * microtask, the `_doWork` function will be called only once at the next
+   * microtask checkpoint.
+   *
+   * Note: In testing it is often convenient to avoid asynchrony. To accomplish
+   * this with a debouncer, you can use `Polymer.enqueueDebouncer` and
+   * `Polymer.flush`. For example, extend the above example by adding
+   * `Polymer.enqueueDebouncer(this._debounceJob)` at the end of the
+   * `_debounceWork` method. Then in a test, call `Polymer.flush` to ensure
+   * the debouncer has completed.
+   *
+   * @param {Debouncer?} debouncer Debouncer object.
+   * @param {!AsyncModule} asyncModule Object with Async interface
+   * @param {function()} callback Callback to run.
+   * @return {!Debouncer} Returns a debouncer object.
+   */
+  static debounce(debouncer, asyncModule, callback) {
+    if (debouncer instanceof Debouncer) {
+      debouncer.cancel();
+    } else {
+      debouncer = new Debouncer();
+    }
+    debouncer.setConfig(asyncModule, callback);
+    return debouncer;
+  }
+}
+
+exports.Debouncer = Debouncer;
+
+/***/ }),
+/* 9 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.setSanitizeDOMValue = exports.sanitizeDOMValue = exports.setRootPath = exports.rootPath = exports.Settings = exports.useNativeCustomElements = exports.useNativeCSSProperties = exports.useShadow = undefined;
+
+__webpack_require__(1);
+
+var _resolveUrl = __webpack_require__(10);
+
+/**
+ * Legacy settings.
+ * @namespace
+ * @memberof Polymer
+ */
+const settings = undefined || {};
+const useShadow = exports.useShadow = !window.ShadyDOM;
+const useNativeCSSProperties = exports.useNativeCSSProperties = Boolean(!window.ShadyCSS || window.ShadyCSS.nativeCss);
+const useNativeCustomElements = exports.useNativeCustomElements = !window.customElements.polyfillWrapFlushCallback;
+exports.Settings = settings;
+
+/**
+ * Globally settable property that is automatically assigned to
+ * `Polymer.ElementMixin` instances, useful for binding in templates to
+ * make URL's relative to an application's root.  Defaults to the main
+ * document URL, but can be overridden by users.  It may be useful to set
+ * `Polymer.rootPath` to provide a stable application mount path when
+ * using client side routing.
+ *
+ * @memberof Polymer
+ */
+
+let rootPath = undefined || (0, _resolveUrl.pathFromUrl)(document.baseURI || window.location.href);
+
+exports.rootPath = rootPath;
+const setRootPath = exports.setRootPath = function (path) {
+  exports.rootPath = rootPath = path;
+};
+
+/**
+ * A global callback used to sanitize any value before inserting it into the DOM. The callback signature is:
+ *
+ *     Polymer = {
+ *       sanitizeDOMValue: function(value, name, type, node) { ... }
+ *     }
+ *
+ * Where:
+ *
+ * `value` is the value to sanitize.
+ * `name` is the name of an attribute or property (for example, href).
+ * `type` indicates where the value is being inserted: one of property, attribute, or text.
+ * `node` is the node where the value is being inserted.
+ *
+ * @type {(function(*,string,string,Node):*)|undefined}
+ * @memberof Polymer
+ */
+let sanitizeDOMValue = undefined;
+
+exports.sanitizeDOMValue = sanitizeDOMValue;
+const setSanitizeDOMValue = exports.setSanitizeDOMValue = function (newSanitizeDOMValue) {
+  exports.sanitizeDOMValue = sanitizeDOMValue = newSanitizeDOMValue;
+};
+
+/***/ }),
+/* 10 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.pathFromUrl = exports.resolveUrl = exports.resolveCss = undefined;
+
+__webpack_require__(1);
+
+let CSS_URL_RX = /(url\()([^)]*)(\))/g;
+let ABS_URL = /(^\/)|(^#)|(^[\w-\d]*:)/;
+let workingURL;
+let resolveDoc;
+/**
+ * Resolves the given URL against the provided `baseUri'.
+ *
+ * @memberof Polymer.ResolveUrl
+ * @param {string} url Input URL to resolve
+ * @param {?string=} baseURI Base URI to resolve the URL against
+ * @return {string} resolved URL
+ */
+function resolveUrl(url, baseURI) {
+  if (url && ABS_URL.test(url)) {
+    return url;
+  }
+  // Lazy feature detection.
+  if (workingURL === undefined) {
+    workingURL = false;
+    try {
+      const u = new URL('b', 'http://a');
+      u.pathname = 'c%20d';
+      workingURL = u.href === 'http://a/c%20d';
+    } catch (e) {
+      // silently fail
+    }
+  }
+  if (!baseURI) {
+    baseURI = document.baseURI || window.location.href;
+  }
+  if (workingURL) {
+    return new URL(url, baseURI).href;
+  }
+  // Fallback to creating an anchor into a disconnected document.
+  if (!resolveDoc) {
+    resolveDoc = document.implementation.createHTMLDocument('temp');
+    resolveDoc.base = resolveDoc.createElement('base');
+    resolveDoc.head.appendChild(resolveDoc.base);
+    resolveDoc.anchor = resolveDoc.createElement('a');
+    resolveDoc.body.appendChild(resolveDoc.anchor);
+  }
+  resolveDoc.base.href = baseURI;
+  resolveDoc.anchor.href = url;
+  return resolveDoc.anchor.href || url;
+}
+
+/**
+ * Resolves any relative URL's in the given CSS text against the provided
+ * `ownerDocument`'s `baseURI`.
+ *
+ * @memberof Polymer.ResolveUrl
+ * @param {string} cssText CSS text to process
+ * @param {string} baseURI Base URI to resolve the URL against
+ * @return {string} Processed CSS text with resolved URL's
+ */
+function resolveCss(cssText, baseURI) {
+  return cssText.replace(CSS_URL_RX, function (m, pre, url, post) {
+    return pre + '\'' + resolveUrl(url.replace(/["']/g, ''), baseURI) + '\'' + post;
+  });
+}
+
+/**
+ * Returns a path from a given `url`. The path includes the trailing
+ * `/` from the url.
+ *
+ * @memberof Polymer.ResolveUrl
+ * @param {string} url Input URL to transform
+ * @return {string} resolved path
+ */
+function pathFromUrl(url) {
+  return url.substring(0, url.lastIndexOf('/') + 1);
+}
+
+exports.resolveCss = resolveCss;
+exports.resolveUrl = resolveUrl;
+exports.pathFromUrl = pathFromUrl;
+
+/***/ }),
+/* 11 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.dashToCamelCase = dashToCamelCase;
+exports.camelToDashCase = camelToDashCase;
+
+__webpack_require__(1);
+
+const caseMap = {};
+const DASH_TO_CAMEL = /-[a-z]/g;
+const CAMEL_TO_DASH = /([A-Z])/g;
+
+function dashToCamelCase(dash) {
+  return caseMap[dash] || (caseMap[dash] = dash.indexOf('-') < 0 ? dash : dash.replace(DASH_TO_CAMEL, m => m[1].toUpperCase()));
+}
+
+function camelToDashCase(camel) {
+  return caseMap[camel] || (caseMap[camel] = camel.replace(CAMEL_TO_DASH, '-$1').toLowerCase());
+}
+
+/***/ }),
+/* 12 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.isDeep = undefined;
+exports.isPath = isPath;
+exports.root = root;
+exports.isAncestor = isAncestor;
+exports.isDescendant = isDescendant;
+exports.translate = translate;
+exports.matches = matches;
+exports.normalize = normalize;
+exports.split = split;
+exports.get = get;
+exports.set = set;
+
+__webpack_require__(1);
+
+function isPath(path) {
+  return path.indexOf('.') >= 0;
+}
+
+function root(path) {
+  let dotIndex = path.indexOf('.');
+  if (dotIndex === -1) {
+    return path;
+  }
+  return path.slice(0, dotIndex);
+}
+
+function isAncestor(base, path) {
+  //     base.startsWith(path + '.');
+  return base.indexOf(path + '.') === 0;
+}
+
+function isDescendant(base, path) {
+  //     path.startsWith(base + '.');
+  return path.indexOf(base + '.') === 0;
+}
+
+function translate(base, newBase, path) {
+  return newBase + path.slice(base.length);
+}
+
+function matches(base, path) {
+  return base === path || isAncestor(base, path) || isDescendant(base, path);
+}
+
+function normalize(path) {
+  if (Array.isArray(path)) {
+    let parts = [];
+    for (let i = 0; i < path.length; i++) {
+      let args = path[i].toString().split('.');
+      for (let j = 0; j < args.length; j++) {
+        parts.push(args[j]);
+      }
+    }
+    return parts.join('.');
+  } else {
+    return path;
+  }
+}
+
+function split(path) {
+  if (Array.isArray(path)) {
+    return normalize(path).split('.');
+  }
+  return path.toString().split('.');
+}
+
+function get(root, path, info) {
+  let prop = root;
+  let parts = split(path);
+  // Loop over path parts[0..n-1] and dereference
+  for (let i = 0; i < parts.length; i++) {
+    if (!prop) {
+      return;
+    }
+    let part = parts[i];
+    prop = prop[part];
+  }
+  if (info) {
+    info.path = parts.join('.');
+  }
+  return prop;
+}
+
+function set(root, path, value) {
+  let prop = root;
+  let parts = split(path);
+  let last = parts[parts.length - 1];
+  if (parts.length > 1) {
+    // Loop over path parts[0..n-2] and dereference
+    for (let i = 0; i < parts.length - 1; i++) {
+      let part = parts[i];
+      prop = prop[part];
+      if (!prop) {
+        return;
+      }
+    }
+    // Set value to object at end of path
+    prop[last] = value;
+  } else {
+    // Simple property set
+    prop[path] = value;
+  }
+  return parts.join('.');
+}
+
+const isDeep = exports.isDeep = isPath;
+
+/***/ }),
+/* 13 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.flush = exports.enqueueDebouncer = undefined;
+
+__webpack_require__(1);
+
+let debouncerQueue = [];
+
+const enqueueDebouncer = exports.enqueueDebouncer = function (debouncer) {
+  debouncerQueue.push(debouncer);
+};
+
+function flushDebouncers() {
+  const didFlush = Boolean(debouncerQueue.length);
+  while (debouncerQueue.length) {
+    try {
+      debouncerQueue.shift().flush();
+    } catch (e) {
+      setTimeout(() => {
+        throw e;
+      });
+    }
+  }
+  return didFlush;
+}
+
+const flush = exports.flush = function () {
+  let shadyDOM, debouncers;
+  do {
+    shadyDOM = window.ShadyDOM && ShadyDOM.flush();
+    if (window.ShadyCSS && window.ShadyCSS.ScopingShim) {
+      window.ShadyCSS.ScopingShim.flush();
+    }
+    debouncers = flushDebouncers();
+  } while (shadyDOM || debouncers);
+};
+
+/***/ }),
+/* 14 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.OptionalMutableData = exports.MutableData = undefined;
+
+var _mixin = __webpack_require__(4);
+
+// Common implementation for mixin & behavior
+function mutablePropertyChange(inst, property, value, old, mutableData) {
+  let isObject;
+  if (mutableData) {
+    isObject = typeof value === 'object' && value !== null;
+    // Pull `old` for Objects from temp cache, but treat `null` as a primitive
+    if (isObject) {
+      old = inst.__dataTemp[property];
+    }
+  }
+  // Strict equality check, but return false for NaN===NaN
+  let shouldChange = old !== value && (old === old || value === value);
+  // Objects are stored in temporary cache (cleared at end of
+  // turn), which is used for dirty-checking
+  if (isObject && shouldChange) {
+    inst.__dataTemp[property] = value;
+  }
+  return shouldChange;
+}
+
+const MutableData = exports.MutableData = (0, _mixin.dedupingMixin)(superClass => {
+
+  /**
+   * @polymer
+   * @mixinClass
+   * @implements {Polymer_MutableData}
+   */
+  class MutableData extends superClass {
+    /**
+     * Overrides `Polymer.PropertyEffects` to provide option for skipping
+     * strict equality checking for Objects and Arrays.
+     *
+     * This method pulls the value to dirty check against from the `__dataTemp`
+     * cache (rather than the normal `__data` cache) for Objects.  Since the temp
+     * cache is cleared at the end of a turn, this implementation allows
+     * side-effects of deep object changes to be processed by re-setting the
+     * same object (using the temp cache as an in-turn backstop to prevent
+     * cycles due to 2-way notification).
+     *
+     * @param {string} property Property name
+     * @param {*} value New property value
+     * @param {*} old Previous property value
+     * @return {boolean} Whether the property should be considered a change
+     * @protected
+     */
+    _shouldPropertyChange(property, value, old) {
+      return mutablePropertyChange(this, property, value, old, true);
+    }
+
+  }
+  /** @type {boolean} */
+  MutableData.prototype.mutableData = false;
+
+  return MutableData;
+});
+
+const OptionalMutableData = exports.OptionalMutableData = (0, _mixin.dedupingMixin)(superClass => {
+
+  /**
+   * @mixinClass
+   * @polymer
+   * @implements {Polymer_OptionalMutableData}
+   */
+  class OptionalMutableData extends superClass {
+
+    static get properties() {
+      return {
+        /**
+         * Instance-level flag for configuring the dirty-checking strategy
+         * for this element.  When true, Objects and Arrays will skip dirty
+         * checking, otherwise strict equality checking will be used.
+         */
+        mutableData: Boolean
+      };
+    }
+
+    /**
+     * Overrides `Polymer.PropertyEffects` to provide option for skipping
+     * strict equality checking for Objects and Arrays.
+     *
+     * When `this.mutableData` is true on this instance, this method
+     * pulls the value to dirty check against from the `__dataTemp` cache
+     * (rather than the normal `__data` cache) for Objects.  Since the temp
+     * cache is cleared at the end of a turn, this implementation allows
+     * side-effects of deep object changes to be processed by re-setting the
+     * same object (using the temp cache as an in-turn backstop to prevent
+     * cycles due to 2-way notification).
+     *
+     * @param {string} property Property name
+     * @param {*} value New property value
+     * @param {*} old Previous property value
+     * @return {boolean} Whether the property should be considered a change
+     * @protected
+     */
+    _shouldPropertyChange(property, value, old) {
+      return mutablePropertyChange(this, property, value, old, this.mutableData);
+    }
+  }
+
+  return OptionalMutableData;
+});
+
+// Export for use by legacy behavior
+MutableData._mutablePropertyChange = mutablePropertyChange;
+
+/***/ }),
+/* 15 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+__webpack_require__(0);
+
+__webpack_require__(41);
+
+const $_documentContainer = document.createElement('div');
+$_documentContainer.setAttribute('style', 'display: none;');
+
+$_documentContainer.innerHTML = `<custom-style>
   <style is="custom-style">
     html {
       /*
@@ -397,7 +1678,3386 @@
       --default-primary-color: var(--primary-color);
     }
   </style>
-</custom-style>`,document.head.appendChild(a)},function(e,t,n){'use strict';function a(e){console.log('['+e.is+']: registered')}function o(e){h.push(e),void 0}Object.defineProperty(t,'__esModule',{value:!0}),t.updateStyles=t.registrations=t.instanceCount=t.ElementMixin=void 0,t._regLog=a,t.register=o,t.dumpRegistrations=function(){h.forEach(a)},n(1);var r=n(9),s=n(4),d=n(11),l=function(e){if(e&&e.__esModule)return e;var t={};if(null!=e)for(var n in e)Object.prototype.hasOwnProperty.call(e,n)&&(t[n]=e[n]);return t.default=e,t}(d),p=n(28),_=n(10),c=n(29),u=n(17);t.ElementMixin=(0,s.dedupingMixin)((e)=>{function n(e){return e.hasOwnProperty(JSCompiler_renameProperty('__ownProperties',e))||(e.__ownProperties=e.hasOwnProperty(JSCompiler_renameProperty('properties',e))?e.properties:{}),e.__ownProperties}function a(e){return e.hasOwnProperty(JSCompiler_renameProperty('__ownObservers',e))||(e.__ownObservers=e.hasOwnProperty(JSCompiler_renameProperty('observers',e))?e.observers:[]),e.__ownObservers}function s(e,t){for(let n in t){let a=t[n];'function'==typeof a&&(a={type:a}),e[n]=a}return e}function h(e){if(!e.hasOwnProperty(JSCompiler_renameProperty('__classProperties',e))){e.__classProperties=s({},n(e));let t=Object.getPrototypeOf(e.prototype).constructor;t.prototype instanceof T&&(e.__classProperties=Object.assign(Object.create(h(t)),e.__classProperties))}return e.__classProperties}function y(e){if(!e.hasOwnProperty(JSCompiler_renameProperty('__classPropertyDefaults',e))){e.__classPropertyDefaults=null;let t=h(e);for(let n in t){let a=t[n];'value'in a&&(e.__classPropertyDefaults=e.__classPropertyDefaults||{},e.__classPropertyDefaults[n]=a)}}return e.__classPropertyDefaults}function f(e){return e.hasOwnProperty(JSCompiler_renameProperty('__finalized',e))}function g(e){let t=e.prototype,n=Object.getPrototypeOf(t).constructor;n.prototype instanceof T&&n.finalize(),v(e)}function v(e){e.__finalized=!0;let t=e.prototype;e.hasOwnProperty(JSCompiler_renameProperty('is',e))&&e.is&&o(t);let r=n(e);r&&b(t,r);let s=a(e);s&&S(t,s,r);let d=e.template;if(d){if('string'==typeof d){let e=document.createElement('template');e.innerHTML=d,d=e}else d=d.cloneNode(!0);t._template=d}}function b(e,t){for(let n in t)C(e,n,t[n],t)}function S(e,t,n){for(let a=0;a<t.length;a++)e._createMethodObserver(t[a],n)}function C(e,t,n,a){n.computed&&(n.readOnly=!0),n.computed&&!e._hasReadOnlyEffect(t)&&e._createComputedProperty(t,n.computed,a),n.readOnly&&!e._hasReadOnlyEffect(t)&&e._createReadOnlyProperty(t,!n.computed),n.reflectToAttribute&&!e._hasReflectEffect(t)&&e._createReflectedProperty(t),n.notify&&!e._hasNotifyEffect(t)&&e._createNotifyingProperty(t),n.observer&&e._createPropertyObserver(t,n.observer,a[n.observer])}function P(e,t,n,a,o){let r=(0,p.cssFromModuleImports)(a)+(0,p.cssFromTemplate)(t,n);if(r){let e=document.createElement('style');e.textContent=r,t.content.insertBefore(e,t.content.firstChild)}window.ShadyCSS&&window.ShadyCSS.prepareTemplate(t,a,o),e._bindTemplate(t)}const E=(0,u.PropertyEffects)(e);class T extends E{static get observedAttributes(){if(!this.hasOwnProperty(JSCompiler_renameProperty('__observedAttributes',this))){let e=[],t=h(this);for(let n in t)e.push((0,d.camelToDashCase)(n));this.__observedAttributes=e}return this.__observedAttributes}static finalize(){f(this)||g(this)}static get template(){return this.hasOwnProperty(JSCompiler_renameProperty('_template',this))||(this._template=c.DomModule&&c.DomModule.import(this.is,'template')||Object.getPrototypeOf(this.prototype).constructor.template),this._template}static get importPath(){if(!this.hasOwnProperty(JSCompiler_renameProperty('_importPath',this))){const e=c.DomModule&&c.DomModule.import(this.is);this._importPath=e?e.assetpath:Object.getPrototypeOf(this.prototype).constructor.importPath}return this._importPath}constructor(){super(),this._template,this._importPath,this.rootPath,this.importPath,this.root,this.$}_initializeProperties(){t.instanceCount=m+=1,this.constructor.finalize();const e=this.constructor.importPath;if(this._template&&!this._template.__polymerFinalized){this._template.__polymerFinalized=!0;const t=e?(0,_.resolveUrl)(e):'';P(this.__proto__,this._template,t,this.localName)}super._initializeProperties(),this.rootPath=r.rootPath,this.importPath=e;let n=y(this.constructor);if(n)for(let e in n){let t=n[e];if(!this.hasOwnProperty(e)){let n='function'==typeof t.value?t.value.call(this):t.value;this._hasAccessor(e)?this._setPendingProperty(e,n,!0):this[e]=n}}}connectedCallback(){window.ShadyCSS&&this._template&&window.ShadyCSS.styleElement(this),this._enableProperties()}disconnectedCallback(){}ready(){this._template&&(this.root=this._stampTemplate(this._template),this.$=this.root.$),super.ready()}_readyClients(){this._template&&(this.root=this._attachDom(this.root)),super._readyClients()}_attachDom(e){if(this.attachShadow)return e?(this.shadowRoot||this.attachShadow({mode:'open'}),this.shadowRoot.appendChild(e),this.shadowRoot):null;throw new Error('ShadowDOM not available. Polymer.Element can create dom as children instead of in ShadowDOM by setting `this.root = this;` before `ready`.')}attributeChangedCallback(e,t,n){if(t!==n){let t=l.dashToCamelCase(e),a=h(this.constructor)[t].type;this._hasReadOnlyEffect(t)||this._attributeToProperty(e,n,a)}}updateStyles(e){window.ShadyCSS&&window.ShadyCSS.styleSubtree(this,e)}resolveUrl(e,t){return!t&&this.importPath&&(t=(0,_.resolveUrl)(this.importPath)),(0,_.resolveUrl)(e,t)}static _parseTemplateContent(e,t,n){return t.dynamicFns=t.dynamicFns||h(this),super._parseTemplateContent(e,t,n)}}return T});let m=t.instanceCount=0;const h=t.registrations=[],y=t.updateStyles=function(e){window.ShadyCSS&&window.ShadyCSS.styleDocument(e)}},function(e,t,n){'use strict';function a(e,t){let n=e[t];if(!n)n=e[t]={};else if(!e.hasOwnProperty(t))for(let a in n=e[t]=Object.create(e[t]),n){let e=n[a],t=n[a]=Array(e.length);for(let n=0;n<e.length;n++)t[n]=e[n]}return n}function o(e,t,n,a,o,s){if(t){let d=!1,l=Y++;for(let p in n)r(e,t,l,p,n,a,o,s)&&(d=!0);return d}return!1}function r(e,t,n,a,o,r,d,p){let _=!1,l=d?(0,H.root)(a):a,c=t[l];if(c)for(let t=0,u=c.length,l;t<u&&(l=c[t]);t++)l.info&&l.info.lastRun===n||d&&!s(a,l.trigger)||(l.info&&(l.info.lastRun=n),l.fn(e,a,o,r,l.info,d,p),_=!0);return _}function s(e,t){if(t){let n=t.name;return n==e||t.structured&&(0,H.isAncestor)(n,e)||t.wildcard&&(0,H.isDescendant)(n,e)}return!0}function d(e,t,n,a,o){let r=e[o.methodName],s=o.property;r?r.call(e,e.__data[s],a[s]):!o.dynamicFn&&console.warn('observer method `'+o.methodName+'` not defined')}function l(e,t,n,a,o){let s=e[X.NOTIFY],d=Y++,l;for(let _ in t)t[_]&&(s&&r(e,s,d,_,n,a,o)?l=!0:o&&p(e,_,n)&&(l=!0));let _;l&&(_=e.__dataHost)&&_._invalidateProperties&&_._invalidateProperties()}function p(e,t,n){let a=(0,H.root)(t);if(a!==t){let o=(0,B.camelToDashCase)(a)+'-changed';return _(e,o,n[t],t),!0}return!1}function _(e,t,n,a){let o={value:n,queueProperty:!0};a&&(o.path=a),e.dispatchEvent(new CustomEvent(t,{detail:o}))}function c(e,t,n,a,o,r){let s=r?(0,H.root)(t):t,d=s==t?null:t,l=d?(0,H.get)(e,d):e.__data[t];d&&l===void 0&&(l=n[t]),_(e,o.eventName,l,d)}function u(e,t,n,a,o){let r=e.detail,s=r&&r.path,d;s?(a=(0,H.translate)(n,a,s),d=r&&r.value):d=e.target[n],d=o?!d:d,t[X.READ_ONLY]&&t[X.READ_ONLY][a]||!t._setPendingPropertyOrPath(a,d,!0,!!s)||r&&r.queueProperty||t._invalidateProperties()}function m(e,t,n,a,o){let r=e.__data[t];K.sanitizeDOMValue&&(r=(0,K.sanitizeDOMValue)(r,o.attrName,'attribute',e)),e._propertyToAttribute(t,o.attrName,r)}function h(e,t,n,a){let r=e[X.COMPUTE];if(r)for(let s=t;o(e,r,s,n,a);)Object.assign(n,e.__dataOld),Object.assign(t,e.__dataPending),s=e.__dataPending,e.__dataPending=null}function y(e,t,n,a,o){let r=x(e,t,n,a,o),s=o.methodInfo;e.__dataHasAccessor&&e.__dataHasAccessor[s]?e._setPendingProperty(s,r,!0):e[s]=r}function f(e,t,n){let o=e.__dataLinkedPaths;if(o){let r;for(let s in o){let a=o[s];(0,H.isDescendant)(s,t)?(r=(0,H.translate)(s,a,t),e._setPendingPropertyOrPath(r,n,!0,!0)):(0,H.isDescendant)(a,t)&&(r=(0,H.translate)(a,s,t),e._setPendingPropertyOrPath(r,n,!0,!0))}}}function g(e,t,n,a,o,r,s){n.bindings=n.bindings||[];let d={kind:a,target:o,parts:r,literal:s,isCompound:1!==r.length};if(n.bindings.push(d),P(d)){let{event:e,negate:t}=d.parts[0];d.listenerEvent=e||q.camelToDashCase(o)+'-changed',d.listenerNegate=t}let l=t.nodeInfoList.length;for(let p=0,_;p<d.parts.length;p++)_=d.parts[p],_.compoundIndex=p,v(e,t,d,_,l)}function v(e,t,n,a,o){if(!a.literal)if('attribute'===n.kind&&'-'===n.target[0])console.warn('Cannot set attribute '+n.target+' because "-" is not a valid attribute starting character');else{let r=a.dependencies,s={index:o,binding:n,part:a,evaluator:e};for(let n=0,a;n<r.length;n++)a=r[n],'string'==typeof a&&(a=N(a),a.wildcard=!0),e._addTemplatePropertyEffect(t,a.rootProperty,{fn:b,info:s,trigger:a})}}function b(e,t,n,a,o,r,s){let d=s[o.index],l=o.binding,p=o.part;if(r&&p.source&&t.length>p.source.length&&'property'==l.kind&&!l.isCompound&&d.__dataHasAccessor&&d.__dataHasAccessor[l.target]){let a=n[t];t=(0,H.translate)(p.source,l.target,t),d._setPendingPropertyOrPath(t,a,!1,!0)&&e._enqueueClient(d)}else{let s=o.evaluator._evaluateBinding(e,p,t,n,a,r);S(e,d,l,p,s)}}function S(e,t,n,a,o){if(o=C(t,o,n,a),K.sanitizeDOMValue&&(o=(0,K.sanitizeDOMValue)(o,n.target,n.kind,t)),'attribute'==n.kind)e._valueToNodeAttribute(t,o,n.target);else{let a=n.target;t.__dataHasAccessor&&t.__dataHasAccessor[a]?(!t[X.READ_ONLY]||!t[X.READ_ONLY][a])&&t._setPendingProperty(a,o)&&e._enqueueClient(t):e._setUnmanagedPropertyToNode(t,a,o)}}function C(e,t,n,a){if(n.isCompound){let o=e.__dataCompoundStorage[n.target];o[a.compoundIndex]=t,t=o.join('')}return'attribute'!==n.kind&&('textContent'===n.target||'input'==e.localName&&'value'==n.target)&&(t=void 0==t?'':t),t}function P(e){return!!e.target&&'attribute'!=e.kind&&'text'!=e.kind&&!e.isCompound&&'{'===e.parts[0].mode}function E(e,t){let{nodeList:n,nodeInfoList:a}=t;if(a.length)for(let t=0;t<a.length;t++){let o=a[t],r=n[t],s=o.bindings;if(s)for(let t=0,n;t<s.length;t++)n=s[t],T(r,n),I(r,e,n);r.__dataHost=e}}function T(e,t){if(t.isCompound){let n=e.__dataCompoundStorage||(e.__dataCompoundStorage={}),a=t.parts,o=Array(a.length);for(let e=0;e<a.length;e++)o[e]=a[e].literal;let r=t.target;n[r]=o,t.literal&&'property'==t.kind&&(e[r]=t.literal)}}function I(e,t,n){if(n.listenerEvent){let a=n.parts[0];e.addEventListener(n.listenerEvent,function(o){u(o,t,n.target,a.source,a.negate)})}}function A(e,t,n,a,o,r){r=t.static||r&&('object'!=typeof r||r[t.methodName]);let s={methodName:t.methodName,args:t.args,methodInfo:o,dynamicFn:r};for(let d=0,l;d<t.args.length&&(l=t.args[d]);d++)l.literal||e._addPropertyEffect(l.rootProperty,n,{fn:a,info:s,trigger:l});r&&e._addPropertyEffect(t.methodName,n,{fn:a,info:s})}function x(e,t,n,a,o){let r=e._methodHost||e,s=r[o.methodName];if(s){let a=w(e.__data,o.args,t,n);return s.apply(r,a)}o.dynamicFn||console.warn('method `'+o.methodName+'` not defined')}function M(e){let t='';for(let n=0,a;n<e.length;n++)a=e[n].literal,t+=a||'';return t}function O(e){let t=e.match(/([^\s]+?)\(([\s\S]*)\)/);if(t){let e=t[1],n={methodName:e,static:!0,args:$};if(t[2].trim()){let e=t[2].replace(/\\,/g,'&comma;').split(',');return R(e,n)}return n}return null}function R(e,t){return t.args=e.map(function(e){let n=N(e);return n.literal||(t.static=!1),n},this),t}function N(e){let t=e.trim().replace(/&comma;/g,',').replace(/\\(.)/g,'$1'),n={name:t,value:'',literal:!1},a=t[0];return'-'===a&&(a=t[1]),'0'<=a&&'9'>=a&&(a='#'),'\''===a||'"'===a?(n.value=t.slice(1,-1),n.literal=!0):'#'===a?(n.value=+t,n.literal=!0):void 0,(n.literal||(n.rootProperty=(0,H.root)(t),n.structured=(0,H.isPath)(t),n.structured&&(n.wildcard='.*'==t.slice(-2),n.wildcard&&(n.name=t.slice(0,-2)))),n)}function w(e,t,n,a){let o=[];for(let r=0,s=t.length;r<s;r++){let s=t[r],d=s.name,l;if(s.literal?l=s.value:s.structured?(l=(0,H.get)(e,d),void 0===l&&(l=a[d])):l=e[d],s.wildcard){let e=0===d.indexOf(n+'.'),t=0===n.indexOf(d)&&!e;o[r]={path:t?n:d,value:t?a[n]:l,base:l}}else o[r]=l}return o}function D(e,t,n,a){let o=n+'.splices';e.notifyPath(o,{indexSplices:a}),e.notifyPath(n+'.length',t.length),e.__data[o]={indexSplices:null}}function k(e,t,n,a,o,r){D(e,t,n,[{index:a,addedCount:o,removed:r,object:t,type:'splice'}])}function L(e){return e[0].toUpperCase()+e.substring(1)}Object.defineProperty(t,'__esModule',{value:!0}),t.PropertyEffects=void 0,n(1);var F=n(4),H=n(12),B=n(11),z=function(e){if(e&&e.__esModule)return e;var t={};if(null!=e)for(var n in e)Object.prototype.hasOwnProperty.call(e,n)&&(t[n]=e[n]);return t.default=e,t}(B),U=n(45),V=n(46),K=n(9);const q=z;let Y=0;const X={COMPUTE:'__computeEffects',REFLECT:'__reflectEffects',NOTIFY:'__notifyEffects',PROPAGATE:'__propagateEffects',OBSERVE:'__observeEffects',READ_ONLY:'__readOnly'};let j;const $=[],G='(?:[a-zA-Z_$][\\w.:$\\-*]*)',W='(?:('+G+'|'+'(?:[-+]?[0-9]*\\.?[0-9]+(?:[eE][-+]?[0-9]+)?)'+'|'+('(?:'+'(?:\'(?:[^\'\\\\]|\\\\.)*\')'+'|'+'(?:"(?:[^"\\\\]|\\\\.)*")'+')')+')\\s*)',J=/(\[\[|{{)\s*(?:(!)\s*)?((?:[a-zA-Z_$][\w.:$\-*]*)\s*(?:\(\s*(?:(?:(?:((?:[a-zA-Z_$][\w.:$\-*]*)|(?:[-+]?[0-9]*\.?[0-9]+(?:[eE][-+]?[0-9]+)?)|(?:(?:'(?:[^'\\]|\\.)*')|(?:"(?:[^"\\]|\\.)*")))\s*)(?:,\s*(?:((?:[a-zA-Z_$][\w.:$\-*]*)|(?:[-+]?[0-9]*\.?[0-9]+(?:[eE][-+]?[0-9]+)?)|(?:(?:'(?:[^'\\]|\\.)*')|(?:"(?:[^"\\]|\\.)*")))\s*))*)?)\)\s*)?)(?:]]|}})/g,Z=t.PropertyEffects=(0,F.dedupingMixin)((e)=>{const t=(0,V.TemplateStamp)((0,U.PropertyAccessors)(e));class n extends t{constructor(){super(),this.__dataClientsReady,this.__dataPendingClients,this.__dataToNotify,this.__dataLinkedPaths,this.__dataHasPaths,this.__dataCompoundStorage,this.__dataHost,this.__dataTemp,this.__dataClientsInitialized,this.__data,this.__dataPending,this.__dataOld,this.__computeEffects,this.__reflectEffects,this.__notifyEffects,this.__propagateEffects,this.__observeEffects,this.__readOnly,this.__dataCounter,this.__templateInfo}get PROPERTY_EFFECT_TYPES(){return X}_initializeProperties(){super._initializeProperties(),Q.registerHost(this),this.__dataClientsReady=!1,this.__dataPendingClients=null,this.__dataToNotify=null,this.__dataLinkedPaths=null,this.__dataHasPaths=!1,this.__dataCompoundStorage=this.__dataCompoundStorage||null,this.__dataHost=this.__dataHost||null,this.__dataTemp={},this.__dataClientsInitialized=!1}_initializeProtoProperties(e){this.__data=Object.create(e),this.__dataPending=Object.create(e),this.__dataOld={}}_initializeInstanceProperties(e){let t=this[X.READ_ONLY];for(let n in e)t&&t[n]||(this.__dataPending=this.__dataPending||{},this.__dataOld=this.__dataOld||{},this.__data[n]=this.__dataPending[n]=e[n])}_addPropertyEffect(e,t,n){this._createPropertyAccessor(e,t==X.READ_ONLY);let o=a(this,t)[e];o||(o=this[t][e]=[]),o.push(n)}_removePropertyEffect(e,t,n){let o=a(this,t)[e],r=o.indexOf(n);0<=r&&o.splice(r,1)}_hasPropertyEffect(e,t){let n=this[t];return!!(n&&n[e])}_hasReadOnlyEffect(e){return this._hasPropertyEffect(e,X.READ_ONLY)}_hasNotifyEffect(e){return this._hasPropertyEffect(e,X.NOTIFY)}_hasReflectEffect(e){return this._hasPropertyEffect(e,X.REFLECT)}_hasComputedEffect(e){return this._hasPropertyEffect(e,X.COMPUTE)}_setPendingPropertyOrPath(e,t,n,a){if(a||(0,H.root)(Array.isArray(e)?e[0]:e)!==e){if(!a){let n=(0,H.get)(this,e);if(e=(0,H.set)(this,e,t),!e||!super._shouldPropertyChange(e,t,n))return!1}if(this.__dataHasPaths=!0,this._setPendingProperty(e,t,n))return f(this,e,t),!0}else{if(this.__dataHasAccessor&&this.__dataHasAccessor[e])return this._setPendingProperty(e,t,n);this[e]=t}return!1}_setUnmanagedPropertyToNode(e,t,n){(n!==e[t]||'object'==typeof n)&&(e[t]=n)}_setPendingProperty(e,t,n){let a=this.__dataHasPaths&&(0,H.isPath)(e),o=a?this.__dataTemp:this.__data;return!!this._shouldPropertyChange(e,t,o[e])&&(this.__dataPending||(this.__dataPending={},this.__dataOld={}),e in this.__dataOld||(this.__dataOld[e]=this.__data[e]),a?this.__dataTemp[e]=t:this.__data[e]=t,this.__dataPending[e]=t,(a||this[X.NOTIFY]&&this[X.NOTIFY][e])&&(this.__dataToNotify=this.__dataToNotify||{},this.__dataToNotify[e]=n),!0)}_setProperty(e,t){this._setPendingProperty(e,t,!0)&&this._invalidateProperties()}_invalidateProperties(){this.__dataReady&&this._flushProperties()}_enqueueClient(e){this.__dataPendingClients=this.__dataPendingClients||[],e!==this&&this.__dataPendingClients.push(e)}_flushClients(){this.__dataClientsReady?this.__enableOrFlushClients():(this.__dataClientsReady=!0,this._readyClients(),this.__dataReady=!0)}__enableOrFlushClients(){let e=this.__dataPendingClients;if(e){this.__dataPendingClients=null;for(let t=0,n;t<e.length;t++)n=e[t],n.__dataEnabled?n.__dataPending&&n._flushProperties():n._enableProperties()}}_readyClients(){this.__enableOrFlushClients()}setProperties(e,t){for(let n in e)!t&&this[X.READ_ONLY]&&this[X.READ_ONLY][n]||this._setPendingPropertyOrPath(n,e[n],!0);this._invalidateProperties()}ready(){this._flushProperties(),this.__dataClientsReady||this._flushClients(),this.__dataPending&&this._flushProperties()}_propertiesChanged(e,t,n){let a=this.__dataHasPaths;this.__dataHasPaths=!1,h(this,t,n,a);let r=this.__dataToNotify;this.__dataToNotify=null,this._propagatePropertyChanges(t,n,a),this._flushClients(),o(this,this[X.REFLECT],t,n,a),o(this,this[X.OBSERVE],t,n,a),r&&l(this,r,t,n,a),1==this.__dataCounter&&(this.__dataTemp={})}_propagatePropertyChanges(e,t,n){this[X.PROPAGATE]&&o(this,this[X.PROPAGATE],e,t,n);for(let a=this.__templateInfo;a;)o(this,a.propertyEffects,e,t,n,a.nodeList),a=a.nextTemplateInfo}linkPaths(e,t){e=(0,H.normalize)(e),t=(0,H.normalize)(t),this.__dataLinkedPaths=this.__dataLinkedPaths||{},this.__dataLinkedPaths[e]=t}unlinkPaths(e){e=(0,H.normalize)(e),this.__dataLinkedPaths&&delete this.__dataLinkedPaths[e]}notifySplices(e,t){let n={path:''},a=(0,H.get)(this,e,n);D(this,a,n.path,t)}get(e,t){return(0,H.get)(t||this,e)}set(e,t,n){n?(0,H.set)(n,e,t):(!this[X.READ_ONLY]||!this[X.READ_ONLY][e])&&this._setPendingPropertyOrPath(e,t,!0)&&this._invalidateProperties()}push(e,...t){let n={path:''},a=(0,H.get)(this,e,n),o=a.length,r=a.push(...t);return t.length&&k(this,a,n.path,o,t.length,[]),r}pop(e){let t={path:''},n=(0,H.get)(this,e,t),a=!!n.length,o=n.pop();return a&&k(this,n,t.path,n.length,0,[o]),o}splice(e,t,n,...a){var o=Math.floor;let r={path:''},s=(0,H.get)(this,e,r);t=0>t?s.length-o(-t):o(t),t||(t=0);let d=s.splice(t,n,...a);return(a.length||d.length)&&k(this,s,r.path,t,a.length,d),d}shift(e){let t={path:''},n=(0,H.get)(this,e,t),a=!!n.length,o=n.shift();return a&&k(this,n,t.path,0,0,[o]),o}unshift(e,...t){let n={path:''},a=(0,H.get)(this,e,n),o=a.unshift(...t);return t.length&&k(this,a,n.path,0,t.length,[]),o}notifyPath(e,t){let n;if(1==arguments.length){let a={path:''};t=(0,H.get)(this,e,a),n=a.path}else n=Array.isArray(e)?(0,H.normalize)(e):e;this._setPendingPropertyOrPath(n,t,!0,!0)&&this._invalidateProperties()}_createReadOnlyProperty(e,t){this._addPropertyEffect(e,X.READ_ONLY),t&&(this['_set'+L(e)]=function(t){this._setProperty(e,t)})}_createPropertyObserver(e,t,n){let a={property:e,methodName:t,dynamicFn:!!n};this._addPropertyEffect(e,X.OBSERVE,{fn:d,info:a,trigger:{name:e}}),n&&this._addPropertyEffect(t,X.OBSERVE,{fn:d,info:a,trigger:{name:t}})}_createMethodObserver(e,t){let n=O(e);if(!n)throw new Error('Malformed observer expression \''+e+'\'');A(this,n,X.OBSERVE,x,null,t)}_createNotifyingProperty(e){this._addPropertyEffect(e,X.NOTIFY,{fn:c,info:{eventName:q.camelToDashCase(e)+'-changed',property:e}})}_createReflectedProperty(e){let t=q.camelToDashCase(e);'-'===t[0]?console.warn('Property '+e+' cannot be reflected to attribute '+t+' because "-" is not a valid starting attribute name. Use a lowercase first letter for the property thisead.'):this._addPropertyEffect(e,X.REFLECT,{fn:m,info:{attrName:t}})}_createComputedProperty(e,t,n){let a=O(t);if(!a)throw new Error('Malformed computed expression \''+t+'\'');A(this,a,X.COMPUTE,y,e,n)}static addPropertyEffect(e,t,n){this.prototype._addPropertyEffect(e,t,n)}static createPropertyObserver(e,t,n){this.prototype._createPropertyObserver(e,t,n)}static createMethodObserver(e,t){this.prototype._createMethodObserver(e,t)}static createNotifyingProperty(e){this.prototype._createNotifyingProperty(e)}static createReadOnlyProperty(e,t){this.prototype._createReadOnlyProperty(e,t)}static createReflectedProperty(e){this.prototype._createReflectedProperty(e)}static createComputedProperty(e,t,n){this.prototype._createComputedProperty(e,t,n)}static bindTemplate(e){return this.prototype._bindTemplate(e)}_bindTemplate(e,t){let n=this.constructor._parseTemplate(e),a=this.__templateInfo==n;if(!a)for(let e in n.propertyEffects)this._createPropertyAccessor(e);if(t&&(n=Object.create(n),n.wasPreBound=a,!a&&this.__templateInfo)){let e=this.__templateInfoLast||this.__templateInfo;return this.__templateInfoLast=e.nextTemplateInfo=n,n.previousTemplateInfo=e,n}return this.__templateInfo=n}static _addTemplatePropertyEffect(e,t,n){let a=e.hostProps=e.hostProps||{};a[t]=!0;let o=e.propertyEffects=e.propertyEffects||{},r=o[t]=o[t]||[];r.push(n)}_stampTemplate(e){Q.beginHosting(this);let t=super._stampTemplate(e);Q.endHosting(this);let n=this._bindTemplate(e,!0);if(n.nodeList=t.nodeList,!n.wasPreBound){let e=n.childNodes=[];for(let a=t.firstChild;a;a=a.nextSibling)e.push(a)}return t.templateInfo=n,E(this,n),this.__dataReady&&o(this,n.propertyEffects,this.__data,null,!1,n.nodeList),t}_removeBoundDom(e){let t=e.templateInfo;t.previousTemplateInfo&&(t.previousTemplateInfo.nextTemplateInfo=t.nextTemplateInfo),t.nextTemplateInfo&&(t.nextTemplateInfo.previousTemplateInfo=t.previousTemplateInfo),this.__templateInfoLast==t&&(this.__templateInfoLast=t.previousTemplateInfo),t.previousTemplateInfo=t.nextTemplateInfo=null;let n=t.childNodes;for(let t=0,a;t<n.length;t++)a=n[t],a.parentNode.removeChild(a)}static _parseTemplateNode(e,t,n){let a=super._parseTemplateNode(e,t,n);if(e.nodeType===Node.TEXT_NODE){let o=this._parseBindings(e.textContent,t);o&&(e.textContent=M(o)||' ',g(this,t,n,'text','textContent',o),a=!0)}return a}static _parseTemplateNodeAttribute(e,t,n,a,o){let r=this._parseBindings(o,t);if(r){let o=a,s='property';'$'==a[a.length-1]&&(a=a.slice(0,-1),s='attribute');let d=M(r);return d&&'attribute'==s&&e.setAttribute(a,d),'input'===e.localName&&'value'===o&&e.setAttribute(o,''),e.removeAttribute(o),'property'==s&&(a=(0,B.dashToCamelCase)(a)),g(this,t,n,s,a,r,d),!0}return super._parseTemplateNodeAttribute(e,t,n,a,o)}static _parseTemplateNestedTemplate(e,t,n){let a=super._parseTemplateNestedTemplate(e,t,n),o=n.templateInfo.hostProps;for(let a in o){g(this,t,n,'property','_host_'+a,[{mode:'{',source:a,dependencies:[a]}])}return a}static _parseBindings(e,t){let n=[],a=0,o;for(;null!==(o=J.exec(e));){o.index>a&&n.push({literal:e.slice(a,o.index)});let r=o[1][0],s=!!o[2],d=o[3].trim(),l=!1,p='',_=-1;'{'==r&&0<(_=d.indexOf('::'))&&(p=d.substring(_+2),d=d.substring(0,_),l=!0);let c=O(d),u=[];if(c){let{args:e,methodName:n}=c;for(let t=0,n;t<e.length;t++)n=e[t],n.literal||u.push(n);let a=t.dynamicFns;(a&&a[n]||c.static)&&(u.push(n),c.dynamicFn=!0)}else u.push(d);n.push({source:d,mode:r,negate:s,customEvent:l,signature:c,dependencies:u,event:p}),a=J.lastIndex}if(a&&a<e.length){let t=e.substring(a);t&&n.push({literal:t})}return n.length?n:null}static _evaluateBinding(e,t,n,a,o,r){let s;return s=t.signature?x(e,n,a,o,t.signature):n==t.source?r&&(0,H.isPath)(n)?(0,H.get)(e,n):e.__data[n]:(0,H.get)(e,t.source),t.negate&&(s=!s),s}}return j=n,n});let Q={stack:[],registerHost(e){if(this.stack.length){let t=this.stack[this.stack.length-1];t._enqueueClient(e)}},beginHosting(e){this.stack.push(e)},endHosting(e){let t=this.stack.length;t&&this.stack[t-1]==e&&this.stack.pop()}}},function(e,t){'use strict';/**
+</custom-style>`;
+
+document.head.appendChild($_documentContainer);
+
+/***/ }),
+/* 16 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.updateStyles = exports.registrations = exports.instanceCount = exports.ElementMixin = undefined;
+exports._regLog = _regLog;
+exports.register = register;
+exports.dumpRegistrations = dumpRegistrations;
+
+__webpack_require__(1);
+
+var _settings = __webpack_require__(9);
+
+var _mixin = __webpack_require__(4);
+
+var _caseMap = __webpack_require__(11);
+
+var caseMap$0 = _interopRequireWildcard(_caseMap);
+
+var _styleGather = __webpack_require__(28);
+
+var _resolveUrl = __webpack_require__(10);
+
+var _domModule = __webpack_require__(29);
+
+var _propertyEffects = __webpack_require__(17);
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+const ElementMixin = exports.ElementMixin = (0, _mixin.dedupingMixin)(base => {
+
+  /**
+   * @constructor
+   * @extends {base}
+   * @implements {Polymer_PropertyEffects}
+   */
+  const polymerElementBase = (0, _propertyEffects.PropertyEffects)(base);
+
+  let caseMap = caseMap$0;
+
+  /**
+   * Returns the `properties` object specifically on `klass`. Use for:
+   * (1) super chain mixes togther to make `propertiesForClass` which is
+   * then used to make `observedAttributes`.
+   * (2) properties effects and observers are created from it at `finalize` time.
+   *
+   * @param {HTMLElement} klass Element class
+   * @return {Object} Object containing own properties for this class
+   * @private
+   */
+  function ownPropertiesForClass(klass) {
+    if (!klass.hasOwnProperty(JSCompiler_renameProperty('__ownProperties', klass))) {
+      klass.__ownProperties = klass.hasOwnProperty(JSCompiler_renameProperty('properties', klass)) ?
+      /** @type PolymerElementConstructor */klass.properties : {};
+    }
+    return klass.__ownProperties;
+  }
+
+  /**
+   * Returns the `observers` array specifically on `klass`. Use for
+   * setting up observers.
+   *
+   * @param {HTMLElement} klass Element class
+   * @return {Array} Array containing own observers for this class
+   * @private
+   */
+  function ownObserversForClass(klass) {
+    if (!klass.hasOwnProperty(JSCompiler_renameProperty('__ownObservers', klass))) {
+      klass.__ownObservers = klass.hasOwnProperty(JSCompiler_renameProperty('observers', klass)) ?
+      /** @type PolymerElementConstructor */klass.observers : [];
+    }
+    return klass.__ownObservers;
+  }
+
+  /**
+   * Mixes `props` into `flattenedProps` but upgrades shorthand type
+   * syntax to { type: Type}.
+   *
+   * @param {Object} flattenedProps Bag to collect flattened properties into
+   * @param {Object} props Bag of properties to add to `flattenedProps`
+   * @return {Object} The input `flattenedProps` bag
+   * @private
+   */
+  function flattenProperties(flattenedProps, props) {
+    for (let p in props) {
+      let o = props[p];
+      if (typeof o == 'function') {
+        o = { type: o };
+      }
+      flattenedProps[p] = o;
+    }
+    return flattenedProps;
+  }
+
+  /**
+   * Returns a flattened list of properties mixed together from the chain of all
+   * constructor's `config.properties`. This list is used to create
+   * (1) observedAttributes,
+   * (2) class property default values
+   *
+   * @param {PolymerElementConstructor} klass Element class
+   * @return {PolymerElementProperties} Flattened properties for this class
+   * @suppress {missingProperties} class.prototype is not a property for some reason?
+   * @private
+   */
+  function propertiesForClass(klass) {
+    if (!klass.hasOwnProperty(JSCompiler_renameProperty('__classProperties', klass))) {
+      klass.__classProperties = flattenProperties({}, ownPropertiesForClass(klass));
+      let superCtor = Object.getPrototypeOf(klass.prototype).constructor;
+      if (superCtor.prototype instanceof PolymerElement) {
+        klass.__classProperties = Object.assign(Object.create(propertiesForClass( /** @type PolymerElementConstructor */superCtor)), klass.__classProperties);
+      }
+    }
+    return klass.__classProperties;
+  }
+
+  /**
+   * Returns a list of properties with default values.
+   * This list is created as an optimization since it is a subset of
+   * the list returned from `propertiesForClass`.
+   * This list is used in `_initializeProperties` to set property defaults.
+   *
+   * @param {PolymerElementConstructor} klass Element class
+   * @return {PolymerElementProperties} Flattened properties for this class
+   *   that have default values
+   * @private
+   */
+  function propertyDefaultsForClass(klass) {
+    if (!klass.hasOwnProperty(JSCompiler_renameProperty('__classPropertyDefaults', klass))) {
+      klass.__classPropertyDefaults = null;
+      let props = propertiesForClass(klass);
+      for (let p in props) {
+        let info = props[p];
+        if ('value' in info) {
+          klass.__classPropertyDefaults = klass.__classPropertyDefaults || {};
+          klass.__classPropertyDefaults[p] = info;
+        }
+      }
+    }
+    return klass.__classPropertyDefaults;
+  }
+
+  /**
+   * Returns true if a `klass` has finalized. Called in `ElementClass.finalize()`
+   * @param {PolymerElementConstructor} klass Element class
+   * @return {boolean} True if all metaprogramming for this class has been
+   *   completed
+   * @private
+   */
+  function hasClassFinalized(klass) {
+    return klass.hasOwnProperty(JSCompiler_renameProperty('__finalized', klass));
+  }
+
+  /**
+   * Called by `ElementClass.finalize()`. Ensures this `klass` and
+   * *all superclasses* are finalized by traversing the prototype chain
+   * and calling `klass.finalize()`.
+   *
+   * @param {PolymerElementConstructor} klass Element class
+   * @private
+   */
+  function finalizeClassAndSuper(klass) {
+    let proto = /** @type PolymerElementConstructor */klass.prototype;
+    let superCtor = Object.getPrototypeOf(proto).constructor;
+    if (superCtor.prototype instanceof PolymerElement) {
+      superCtor.finalize();
+    }
+    finalizeClass(klass);
+  }
+
+  /**
+   * Configures a `klass` based on a staic `klass.config` object and
+   * a `template`. This includes creating accessors and effects
+   * for properties in `config` and the `template` as well as preparing the
+   * `template` for stamping.
+   *
+   * @param {PolymerElementConstructor} klass Element class
+   * @private
+   */
+  function finalizeClass(klass) {
+    klass.__finalized = true;
+    let proto = /** @type PolymerElementConstructor */klass.prototype;
+    if (klass.hasOwnProperty(JSCompiler_renameProperty('is', klass)) && klass.is) {
+      register(proto);
+    }
+    let props = ownPropertiesForClass(klass);
+    if (props) {
+      finalizeProperties(proto, props);
+    }
+    let observers = ownObserversForClass(klass);
+    if (observers) {
+      finalizeObservers(proto, observers, props);
+    }
+    // note: create "working" template that is finalized at instance time
+    let template = /** @type PolymerElementConstructor */klass.template;
+    if (template) {
+      if (typeof template === 'string') {
+        let t = document.createElement('template');
+        t.innerHTML = template;
+        template = t;
+      } else {
+        template = template.cloneNode(true);
+      }
+      proto._template = template;
+    }
+  }
+
+  /**
+   * Configures a `proto` based on a `properties` object.
+   * Leverages `PropertyEffects` to create property accessors and effects
+   * supporting, observers, reflecting to attributes, change notification,
+   * computed properties, and read only properties.
+   * @param {PolymerElement} proto Element class prototype to add accessors
+   *    and effects to
+   * @param {Object} properties Flattened bag of property descriptors for
+   *    this class
+   * @private
+   */
+  function finalizeProperties(proto, properties) {
+    for (let p in properties) {
+      createPropertyFromConfig(proto, p, properties[p], properties);
+    }
+  }
+
+  /**
+   * Configures a `proto` based on a `observers` array.
+   * Leverages `PropertyEffects` to create observers.
+   * @param {PolymerElement} proto Element class prototype to add accessors
+   *   and effects to
+   * @param {Object} observers Flattened array of observer descriptors for
+   *   this class
+   * @param {Object} dynamicFns Object containing keys for any properties
+   *   that are functions and should trigger the effect when the function
+   *   reference is changed
+   * @private
+   */
+  function finalizeObservers(proto, observers, dynamicFns) {
+    for (let i = 0; i < observers.length; i++) {
+      proto._createMethodObserver(observers[i], dynamicFns);
+    }
+  }
+
+  /**
+   * Creates effects for a property.
+   *
+   * Note, once a property has been set to
+   * `readOnly`, `computed`, `reflectToAttribute`, or `notify`
+   * these values may not be changed. For example, a subclass cannot
+   * alter these settings. However, additional `observers` may be added
+   * by subclasses.
+   *
+   * The info object should may contain property metadata as follows:
+   *
+   * * `type`: {function} type to which an attribute matching the property
+   * is deserialized. Note the property is camel-cased from a dash-cased
+   * attribute. For example, 'foo-bar' attribute is dersialized to a
+   * property named 'fooBar'.
+   *
+   * * `readOnly`: {boolean} creates a readOnly property and
+   * makes a private setter for the private of the form '_setFoo' for a
+   * property 'foo',
+   *
+   * * `computed`: {string} creates a computed property. A computed property
+   * also automatically is set to `readOnly: true`. The value is calculated
+   * by running a method and arguments parsed from the given string. For
+   * example 'compute(foo)' will compute a given property when the
+   * 'foo' property changes by executing the 'compute' method. This method
+   * must return the computed value.
+   *
+   * * `reflectToAttriute`: {boolean} If true, the property value is reflected
+   * to an attribute of the same name. Note, the attribute is dash-cased
+   * so a property named 'fooBar' is reflected as 'foo-bar'.
+   *
+   * * `notify`: {boolean} sends a non-bubbling notification event when
+   * the property changes. For example, a property named 'foo' sends an
+   * event named 'foo-changed' with `event.detail` set to the value of
+   * the property.
+   *
+   * * observer: {string} name of a method that runs when the property
+   * changes. The arguments of the method are (value, previousValue).
+   *
+   * Note: Users may want control over modifying property
+   * effects via subclassing. For example, a user might want to make a
+   * reflectToAttribute property not do so in a subclass. We've chosen to
+   * disable this because it leads to additional complication.
+   * For example, a readOnly effect generates a special setter. If a subclass
+   * disables the effect, the setter would fail unexpectedly.
+   * Based on feedback, we may want to try to make effects more malleable
+   * and/or provide an advanced api for manipulating them.
+   * Also consider adding warnings when an effect cannot be changed.
+   *
+   * @param {PolymerElement} proto Element class prototype to add accessors
+   *   and effects to
+   * @param {string} name Name of the property.
+   * @param {Object} info Info object from which to create property effects.
+   * Supported keys:
+   * @param {Object} allProps Flattened map of all properties defined in this
+   *   element (including inherited properties)
+   * @private
+   */
+  function createPropertyFromConfig(proto, name, info, allProps) {
+    // computed forces readOnly...
+    if (info.computed) {
+      info.readOnly = true;
+    }
+    // Note, since all computed properties are readOnly, this prevents
+    // adding additional computed property effects (which leads to a confusing
+    // setup where multiple triggers for setting a property)
+    // While we do have `hasComputedEffect` this is set on the property's
+    // dependencies rather than itself.
+    if (info.computed && !proto._hasReadOnlyEffect(name)) {
+      proto._createComputedProperty(name, info.computed, allProps);
+    }
+    if (info.readOnly && !proto._hasReadOnlyEffect(name)) {
+      proto._createReadOnlyProperty(name, !info.computed);
+    }
+    if (info.reflectToAttribute && !proto._hasReflectEffect(name)) {
+      proto._createReflectedProperty(name);
+    }
+    if (info.notify && !proto._hasNotifyEffect(name)) {
+      proto._createNotifyingProperty(name);
+    }
+    // always add observer
+    if (info.observer) {
+      proto._createPropertyObserver(name, info.observer, allProps[info.observer]);
+    }
+  }
+
+  /**
+   * Configures an element `proto` to function with a given `template`.
+   * The element name `is` and extends `ext` must be specified for ShadyCSS
+   * style scoping.
+   *
+   * @param {PolymerElement} proto Element class prototype to add accessors
+   *   and effects to
+   * @param {!HTMLTemplateElement} template Template to process and bind
+   * @param {string} baseURI URL against which to resolve urls in
+   *   style element cssText
+   * @param {string} is Tag name (or type extension name) for this element
+   * @param {string=} ext For type extensions, the tag name that was extended
+   * @private
+   */
+  function finalizeTemplate(proto, template, baseURI, is, ext) {
+    // support `include="module-name"`
+    let cssText = (0, _styleGather.cssFromModuleImports)(is) + (0, _styleGather.cssFromTemplate)(template, baseURI);
+    if (cssText) {
+      let style = document.createElement('style');
+      style.textContent = cssText;
+      template.content.insertBefore(style, template.content.firstChild);
+    }
+    if (window.ShadyCSS) {
+      window.ShadyCSS.prepareTemplate(template, is, ext);
+    }
+    proto._bindTemplate(template);
+  }
+
+  /**
+   * @polymer
+   * @mixinClass
+   * @unrestricted
+   * @implements {Polymer_ElementMixin}
+   */
+  class PolymerElement extends polymerElementBase {
+
+    /**
+     * Standard Custom Elements V1 API.  The default implementation returns
+     * a list of dash-cased attributes based on a flattening of all properties
+     * declared in `static get properties()` for this element and any
+     * superclasses.
+     *
+     * @return {Array} Observed attribute list
+     */
+    static get observedAttributes() {
+      if (!this.hasOwnProperty(JSCompiler_renameProperty('__observedAttributes', this))) {
+        let list = [];
+        let properties = propertiesForClass(this);
+        for (let prop in properties) {
+          list.push((0, _caseMap.camelToDashCase)(prop));
+        }
+        this.__observedAttributes = list;
+      }
+      return this.__observedAttributes;
+    }
+
+    /**
+     * Called automatically when the first element instance is created to
+     * ensure that class finalization work has been completed.
+     * May be called by users to eagerly perform class finalization work
+     * prior to the creation of the first element instance.
+     *
+     * Class finalization work generally includes meta-programming such as
+     * creating property accessors and any property effect metadata needed for
+     * the features used.
+     *
+     * @public
+     */
+    static finalize() {
+      if (!hasClassFinalized(this)) {
+        finalizeClassAndSuper(this);
+      }
+    }
+
+    /**
+     * Returns the template that will be stamped into this element's shadow root.
+     *
+     * If a `static get is()` getter is defined, the default implementation
+     * will return the first `<template>` in a `dom-module` whose `id`
+     * matches this element's `is`.
+     *
+     * Users may override this getter to return an arbitrary template
+     * (in which case the `is` getter is unnecessary). The template returned
+     * may be either an `HTMLTemplateElement` or a string that will be
+     * automatically parsed into a template.
+     *
+     * Note that when subclassing, if the super class overrode the default
+     * implementation and the subclass would like to provide an alternate
+     * template via a `dom-module`, it should override this getter and
+     * return `Polymer.DomModule.import(this.is, 'template')`.
+     *
+     * If a subclass would like to modify the super class template, it should
+     * clone it rather than modify it in place.  If the getter does expensive
+     * work such as cloning/modifying a template, it should memoize the
+     * template for maximum performance:
+     *
+     *   let memoizedTemplate;
+     *   class MySubClass extends MySuperClass {
+     *     static get template() {
+     *       if (!memoizedTemplate) {
+     *         memoizedTemplate = super.template.cloneNode(true);
+     *         let subContent = document.createElement('div');
+     *         subContent.textContent = 'This came from MySubClass';
+     *         memoizedTemplate.content.appendChild(subContent);
+     *       }
+     *       return memoizedTemplate;
+     *     }
+     *   }
+     *
+     * @return {HTMLTemplateElement|string} Template to be stamped
+     */
+    static get template() {
+      if (!this.hasOwnProperty(JSCompiler_renameProperty('_template', this))) {
+        this._template = _domModule.DomModule && _domModule.DomModule.import(
+        /** @type PolymerElementConstructor*/this.is, 'template') ||
+        // note: implemented so a subclass can retrieve the super
+        // template; call the super impl this way so that `this` points
+        // to the superclass.
+        Object.getPrototypeOf( /** @type PolymerElementConstructor*/this.prototype).constructor.template;
+      }
+      return this._template;
+    }
+
+    /**
+     * Path matching the url from which the element was imported.
+     * This path is used to resolve url's in template style cssText.
+     * The `importPath` property is also set on element instances and can be
+     * used to create bindings relative to the import path.
+     * Defaults to the path matching the url containing a `dom-module` element
+     * matching this element's static `is` property.
+     * Note, this path should contain a trailing `/`.
+     *
+     * @return {string} The import path for this element class
+     */
+    static get importPath() {
+      if (!this.hasOwnProperty(JSCompiler_renameProperty('_importPath', this))) {
+        const module = _domModule.DomModule && _domModule.DomModule.import( /** @type PolymerElementConstructor */this.is);
+        this._importPath = module ? module.assetpath : '' || Object.getPrototypeOf( /** @type PolymerElementConstructor*/this.prototype).constructor.importPath;
+      }
+      return this._importPath;
+    }
+
+    constructor() {
+      super();
+      /** @type {HTMLTemplateElement} */
+      this._template;
+      /** @type {string} */
+      this._importPath;
+      /** @type {string} */
+      this.rootPath;
+      /** @type {string} */
+      this.importPath;
+      /** @type {StampedTemplate | HTMLElement | ShadowRoot} */
+      this.root;
+      /** @type {!Object<string, !Node>} */
+      this.$;
+    }
+
+    /**
+     * Overrides the default `Polymer.PropertyAccessors` to ensure class
+     * metaprogramming related to property accessors and effects has
+     * completed (calls `finalize`).
+     *
+     * It also initializes any property defaults provided via `value` in
+     * `properties` metadata.
+     *
+     * @override
+     * @suppress {invalidCasts}
+     */
+    _initializeProperties() {
+      exports.instanceCount = instanceCount += 1;
+      this.constructor.finalize();
+      const importPath = this.constructor.importPath;
+      // note: finalize template when we have access to `localName` to
+      // avoid dependence on `is` for polyfilling styling.
+      if (this._template && !this._template.__polymerFinalized) {
+        this._template.__polymerFinalized = true;
+        const baseURI = importPath ? (0, _resolveUrl.resolveUrl)(importPath) : '';
+        finalizeTemplate( /** @type {!PolymerElement} */this.__proto__, this._template, baseURI,
+        /**@type {!HTMLElement}*/this.localName);
+      }
+      super._initializeProperties();
+      // set path defaults
+      this.rootPath = _settings.rootPath;
+      this.importPath = importPath;
+      // apply property defaults...
+      let p$ = propertyDefaultsForClass(this.constructor);
+      if (!p$) {
+        return;
+      }
+      for (let p in p$) {
+        let info = p$[p];
+        // Don't set default value if there is already an own property, which
+        // happens when a `properties` property with default but no effects had
+        // a property set (e.g. bound) by its host before upgrade
+        if (!this.hasOwnProperty(p)) {
+          let value = typeof info.value == 'function' ? info.value.call(this) : info.value;
+          // Set via `_setProperty` if there is an accessor, to enable
+          // initializing readOnly property defaults
+          if (this._hasAccessor(p)) {
+            this._setPendingProperty(p, value, true);
+          } else {
+            this[p] = value;
+          }
+        }
+      }
+    }
+
+    /**
+     * Provides a default implementation of the standard Custom Elements
+     * `connectedCallback`.
+     *
+     * The default implementation enables the property effects system and
+     * flushes any pending properties, and updates shimmed CSS properties
+     * when using the ShadyCSS scoping/custom properties polyfill.
+     *
+     * @suppress {invalidCasts}
+     */
+    connectedCallback() {
+      if (window.ShadyCSS && this._template) {
+        window.ShadyCSS.styleElement( /** @type {!HTMLElement} */this);
+      }
+      this._enableProperties();
+    }
+
+    /**
+     * Provides a default implementation of the standard Custom Elements
+     * `disconnectedCallback`.
+     */
+    disconnectedCallback() {}
+
+    /**
+     * Stamps the element template.
+     *
+     * @override
+     */
+    ready() {
+      if (this._template) {
+        this.root = this._stampTemplate(this._template);
+        this.$ = this.root.$;
+      }
+      super.ready();
+    }
+
+    /**
+     * Implements `PropertyEffects`'s `_readyClients` call. Attaches
+     * element dom by calling `_attachDom` with the dom stamped from the
+     * element's template via `_stampTemplate`. Note that this allows
+     * client dom to be attached to the element prior to any observers
+     * running.
+     *
+     * @override
+     */
+    _readyClients() {
+      if (this._template) {
+        this.root = this._attachDom( /** @type {StampedTemplate} */this.root);
+      }
+      // The super._readyClients here sets the clients initialized flag.
+      // We must wait to do this until after client dom is created/attached
+      // so that this flag can be checked to prevent notifications fired
+      // during this process from being handled before clients are ready.
+      super._readyClients();
+    }
+
+    /**
+     * Attaches an element's stamped dom to itself. By default,
+     * this method creates a `shadowRoot` and adds the dom to it.
+     * However, this method may be overridden to allow an element
+     * to put its dom in another location.
+     *
+     * @throws {Error}
+     * @suppress {missingReturn}
+     * @param {StampedTemplate} dom to attach to the element.
+     * @return {ShadowRoot} node to which the dom has been attached.
+     */
+    _attachDom(dom) {
+      if (this.attachShadow) {
+        if (dom) {
+          if (!this.shadowRoot) {
+            this.attachShadow({ mode: 'open' });
+          }
+          this.shadowRoot.appendChild(dom);
+          return this.shadowRoot;
+        }
+        return null;
+      } else {
+        throw new Error('ShadowDOM not available. ' +
+        // TODO(sorvell): move to compile-time conditional when supported
+        'Polymer.Element can create dom as children instead of in ' + 'ShadowDOM by setting `this.root = this;\` before \`ready\`.');
+      }
+    }
+
+    /**
+     * Provides a default implementation of the standard Custom Elements
+     * `attributeChangedCallback`.
+     *
+     * By default, attributes declared in `properties` metadata are
+     * deserialized using their `type` information to properties of the
+     * same name.  "Dash-cased" attributes are deserialzed to "camelCase"
+     * properties.
+     *
+     * @param {string} name Name of attribute.
+     * @param {?string} old Old value of attribute.
+     * @param {?string} value Current value of attribute.
+     * @override
+     */
+    attributeChangedCallback(name, old, value) {
+      if (old !== value) {
+        let property = caseMap.dashToCamelCase(name);
+        let type = propertiesForClass(this.constructor)[property].type;
+        if (!this._hasReadOnlyEffect(property)) {
+          this._attributeToProperty(name, value, type);
+        }
+      }
+    }
+
+    /**
+     * When using the ShadyCSS scoping and custom property shim, causes all
+     * shimmed styles in this element (and its subtree) to be updated
+     * based on current custom property values.
+     *
+     * The optional parameter overrides inline custom property styles with an
+     * object of properties where the keys are CSS properties, and the values
+     * are strings.
+     *
+     * Example: `this.updateStyles({'--color': 'blue'})`
+     *
+     * These properties are retained unless a value of `null` is set.
+     *
+     * @param {Object=} properties Bag of custom property key/values to
+     *   apply to this element.
+     * @suppress {invalidCasts}
+     */
+    updateStyles(properties) {
+      if (window.ShadyCSS) {
+        window.ShadyCSS.styleSubtree( /** @type {!HTMLElement} */this, properties);
+      }
+    }
+
+    /**
+     * Rewrites a given URL relative to a base URL. The base URL defaults to
+     * the original location of the document containing the `dom-module` for
+     * this element. This method will return the same URL before and after
+     * bundling.
+     *
+     * @param {string} url URL to resolve.
+     * @param {string=} base Optional base URL to resolve against, defaults
+     * to the element's `importPath`
+     * @return {string} Rewritten URL relative to base
+     */
+    resolveUrl(url, base) {
+      if (!base && this.importPath) {
+        base = (0, _resolveUrl.resolveUrl)(this.importPath);
+      }
+      return (0, _resolveUrl.resolveUrl)(url, base);
+    }
+
+    /**
+     * Overrides `PropertyAccessors` to add map of dynamic functions on
+     * template info, for consumption by `PropertyEffects` template binding
+     * code. This map determines which method templates should have accessors
+     * created for them.
+     *
+     * @override
+     * @suppress {missingProperties} Interfaces in closure do not inherit statics, but classes do
+     */
+    static _parseTemplateContent(template, templateInfo, nodeInfo) {
+      templateInfo.dynamicFns = templateInfo.dynamicFns || propertiesForClass(this);
+      return super._parseTemplateContent(template, templateInfo, nodeInfo);
+    }
+
+  }
+
+  return PolymerElement;
+});
+
+let instanceCount = exports.instanceCount = 0;
+const registrations = exports.registrations = [];
+
+function _regLog(prototype) {
+  console.log('[' + prototype.is + ']: registered');
+}
+
+function register(prototype) {
+  registrations.push(prototype);
+  undefined && _regLog(prototype);
+}
+
+function dumpRegistrations() {
+  registrations.forEach(_regLog);
+}
+
+const updateStyles = exports.updateStyles = function (props) {
+  if (window.ShadyCSS) {
+    window.ShadyCSS.styleDocument(props);
+  }
+};
+
+/***/ }),
+/* 17 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.PropertyEffects = undefined;
+
+__webpack_require__(1);
+
+var _mixin = __webpack_require__(4);
+
+var _path = __webpack_require__(12);
+
+var _caseMap = __webpack_require__(11);
+
+var caseMap = _interopRequireWildcard(_caseMap);
+
+var _propertyAccessors = __webpack_require__(45);
+
+var _templateStamp = __webpack_require__(46);
+
+var _settings = __webpack_require__(9);
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+/** @const {Object} */
+const CaseMap = caseMap;
+
+// Monotonically increasing unique ID used for de-duping effects triggered
+// from multiple properties in the same turn
+let dedupeId = 0;
+
+/**
+ * Property effect types; effects are stored on the prototype using these keys
+ * @enum {string}
+ */
+const TYPES = {
+  COMPUTE: '__computeEffects',
+  REFLECT: '__reflectEffects',
+  NOTIFY: '__notifyEffects',
+  PROPAGATE: '__propagateEffects',
+  OBSERVE: '__observeEffects',
+  READ_ONLY: '__readOnly'
+};
+
+/**
+ * @typedef {{
+ * name: (string | undefined),
+ * structured: (boolean | undefined),
+ * wildcard: (boolean | undefined)
+ * }}
+ */
+let DataTrigger; //eslint-disable-line no-unused-vars
+
+/**
+ * @typedef {{
+ * info: ?,
+ * trigger: (!DataTrigger | undefined),
+ * fn: (!Function | undefined)
+ * }}
+ */
+let DataEffect; //eslint-disable-line no-unused-vars
+
+let PropertyEffectsType; //eslint-disable-line no-unused-vars
+
+/**
+ * Ensures that the model has an own-property map of effects for the given type.
+ * The model may be a prototype or an instance.
+ *
+ * Property effects are stored as arrays of effects by property in a map,
+ * by named type on the model. e.g.
+ *
+ *   __computeEffects: {
+ *     foo: [ ... ],
+ *     bar: [ ... ]
+ *   }
+ *
+ * If the model does not yet have an effect map for the type, one is created
+ * and returned.  If it does, but it is not an own property (i.e. the
+ * prototype had effects), the the map is deeply cloned and the copy is
+ * set on the model and returned, ready for new effects to be added.
+ *
+ * @param {Object} model Prototype or instance
+ * @param {string} type Property effect type
+ * @return {Object} The own-property map of effects for the given type
+ * @private
+ */
+function ensureOwnEffectMap(model, type) {
+  let effects = model[type];
+  if (!effects) {
+    effects = model[type] = {};
+  } else if (!model.hasOwnProperty(type)) {
+    effects = model[type] = Object.create(model[type]);
+    for (let p in effects) {
+      let protoFx = effects[p];
+      let instFx = effects[p] = Array(protoFx.length);
+      for (let i = 0; i < protoFx.length; i++) {
+        instFx[i] = protoFx[i];
+      }
+    }
+  }
+  return effects;
+}
+
+// -- effects ----------------------------------------------
+
+/**
+ * Runs all effects of a given type for the given set of property changes
+ * on an instance.
+ *
+ * @param {!PropertyEffectsType} inst The instance with effects to run
+ * @param {Object} effects Object map of property-to-Array of effects
+ * @param {Object} props Bag of current property changes
+ * @param {Object=} oldProps Bag of previous values for changed properties
+ * @param {boolean=} hasPaths True with `props` contains one or more paths
+ * @param {*=} extraArgs Additional metadata to pass to effect function
+ * @return {boolean} True if an effect ran for this property
+ * @private
+ */
+function runEffects(inst, effects, props, oldProps, hasPaths, extraArgs) {
+  if (effects) {
+    let ran = false;
+    let id = dedupeId++;
+    for (let prop in props) {
+      if (runEffectsForProperty(inst, effects, id, prop, props, oldProps, hasPaths, extraArgs)) {
+        ran = true;
+      }
+    }
+    return ran;
+  }
+  return false;
+}
+
+/**
+ * Runs a list of effects for a given property.
+ *
+ * @param {!PropertyEffectsType} inst The instance with effects to run
+ * @param {Object} effects Object map of property-to-Array of effects
+ * @param {number} dedupeId Counter used for de-duping effects
+ * @param {string} prop Name of changed property
+ * @param {*} props Changed properties
+ * @param {*} oldProps Old properties
+ * @param {boolean=} hasPaths True with `props` contains one or more paths
+ * @param {*=} extraArgs Additional metadata to pass to effect function
+ * @return {boolean} True if an effect ran for this property
+ * @private
+ */
+function runEffectsForProperty(inst, effects, dedupeId, prop, props, oldProps, hasPaths, extraArgs) {
+  let ran = false;
+  let rootProperty = hasPaths ? (0, _path.root)(prop) : prop;
+  let fxs = effects[rootProperty];
+  if (fxs) {
+    for (let i = 0, l = fxs.length, fx; i < l && (fx = fxs[i]); i++) {
+      if ((!fx.info || fx.info.lastRun !== dedupeId) && (!hasPaths || pathMatchesTrigger(prop, fx.trigger))) {
+        if (fx.info) {
+          fx.info.lastRun = dedupeId;
+        }
+        fx.fn(inst, prop, props, oldProps, fx.info, hasPaths, extraArgs);
+        ran = true;
+      }
+    }
+  }
+  return ran;
+}
+
+/**
+ * Determines whether a property/path that has changed matches the trigger
+ * criteria for an effect.  A trigger is a descriptor with the following
+ * structure, which matches the descriptors returned from `parseArg`.
+ * e.g. for `foo.bar.*`:
+ * ```
+ * trigger: {
+ *   name: 'a.b',
+ *   structured: true,
+ *   wildcard: true
+ * }
+ * ```
+ * If no trigger is given, the path is deemed to match.
+ *
+ * @param {string} path Path or property that changed
+ * @param {DataTrigger} trigger Descriptor
+ * @return {boolean} Whether the path matched the trigger
+ */
+function pathMatchesTrigger(path, trigger) {
+  if (trigger) {
+    let triggerPath = trigger.name;
+    return triggerPath == path || trigger.structured && (0, _path.isAncestor)(triggerPath, path) || trigger.wildcard && (0, _path.isDescendant)(triggerPath, path);
+  } else {
+    return true;
+  }
+}
+
+/**
+ * Implements the "observer" effect.
+ *
+ * Calls the method with `info.methodName` on the instance, passing the
+ * new and old values.
+ *
+ * @param {!PropertyEffectsType} inst The instance the effect will be run on
+ * @param {string} property Name of property
+ * @param {Object} props Bag of current property changes
+ * @param {Object} oldProps Bag of previous values for changed properties
+ * @param {?} info Effect metadata
+ * @private
+ */
+function runObserverEffect(inst, property, props, oldProps, info) {
+  let fn = inst[info.methodName];
+  let changedProp = info.property;
+  if (fn) {
+    fn.call(inst, inst.__data[changedProp], oldProps[changedProp]);
+  } else if (!info.dynamicFn) {
+    console.warn('observer method `' + info.methodName + '` not defined');
+  }
+}
+
+/**
+ * Runs "notify" effects for a set of changed properties.
+ *
+ * This method differs from the generic `runEffects` method in that it
+ * will dispatch path notification events in the case that the property
+ * changed was a path and the root property for that path didn't have a
+ * "notify" effect.  This is to maintain 1.0 behavior that did not require
+ * `notify: true` to ensure object sub-property notifications were
+ * sent.
+ *
+ * @param {!PropertyEffectsType} inst The instance with effects to run
+ * @param {Object} notifyProps Bag of properties to notify
+ * @param {Object} props Bag of current property changes
+ * @param {Object} oldProps Bag of previous values for changed properties
+ * @param {boolean} hasPaths True with `props` contains one or more paths
+ * @private
+ */
+function runNotifyEffects(inst, notifyProps, props, oldProps, hasPaths) {
+  // Notify
+  let fxs = inst[TYPES.NOTIFY];
+  let notified;
+  let id = dedupeId++;
+  // Try normal notify effects; if none, fall back to try path notification
+  for (let prop in notifyProps) {
+    if (notifyProps[prop]) {
+      if (fxs && runEffectsForProperty(inst, fxs, id, prop, props, oldProps, hasPaths)) {
+        notified = true;
+      } else if (hasPaths && notifyPath(inst, prop, props)) {
+        notified = true;
+      }
+    }
+  }
+  // Flush host if we actually notified and host was batching
+  // And the host has already initialized clients; this prevents
+  // an issue with a host observing data changes before clients are ready.
+  let host;
+  if (notified && (host = inst.__dataHost) && host._invalidateProperties) {
+    host._invalidateProperties();
+  }
+}
+
+/**
+ * Dispatches {property}-changed events with path information in the detail
+ * object to indicate a sub-path of the property was changed.
+ *
+ * @param {!PropertyEffectsType} inst The element from which to fire the event
+ * @param {string} path The path that was changed
+ * @param {Object} props Bag of current property changes
+ * @return {boolean} Returns true if the path was notified
+ * @private
+ */
+function notifyPath(inst, path, props) {
+  let rootProperty = (0, _path.root)(path);
+  if (rootProperty !== path) {
+    let eventName = (0, _caseMap.camelToDashCase)(rootProperty) + '-changed';
+    dispatchNotifyEvent(inst, eventName, props[path], path);
+    return true;
+  }
+  return false;
+}
+
+/**
+ * Dispatches {property}-changed events to indicate a property (or path)
+ * changed.
+ *
+ * @param {!PropertyEffectsType} inst The element from which to fire the event
+ * @param {string} eventName The name of the event to send ('{property}-changed')
+ * @param {*} value The value of the changed property
+ * @param {string | null | undefined} path If a sub-path of this property changed, the path
+ *   that changed (optional).
+ * @private
+ * @suppress {invalidCasts}
+ */
+function dispatchNotifyEvent(inst, eventName, value, path) {
+  let detail = {
+    value: value,
+    queueProperty: true
+  };
+  if (path) {
+    detail.path = path;
+  }
+  /** @type {!HTMLElement} */inst.dispatchEvent(new CustomEvent(eventName, { detail }));
+}
+
+/**
+ * Implements the "notify" effect.
+ *
+ * Dispatches a non-bubbling event named `info.eventName` on the instance
+ * with a detail object containing the new `value`.
+ *
+ * @param {!PropertyEffectsType} inst The instance the effect will be run on
+ * @param {string} property Name of property
+ * @param {Object} props Bag of current property changes
+ * @param {Object} oldProps Bag of previous values for changed properties
+ * @param {?} info Effect metadata
+ * @param {boolean} hasPaths True with `props` contains one or more paths
+ * @private
+ */
+function runNotifyEffect(inst, property, props, oldProps, info, hasPaths) {
+  let rootProperty = hasPaths ? (0, _path.root)(property) : property;
+  let path = rootProperty != property ? property : null;
+  let value = path ? (0, _path.get)(inst, path) : inst.__data[property];
+  if (path && value === undefined) {
+    value = props[property]; // specifically for .splices
+  }
+  dispatchNotifyEvent(inst, info.eventName, value, path);
+}
+
+/**
+ * Handler function for 2-way notification events. Receives context
+ * information captured in the `addNotifyListener` closure from the
+ * `__notifyListeners` metadata.
+ *
+ * Sets the value of the notified property to the host property or path.  If
+ * the event contained path information, translate that path to the host
+ * scope's name for that path first.
+ *
+ * @param {CustomEvent} event Notification event (e.g. '<property>-changed')
+ * @param {!PropertyEffectsType} inst Host element instance handling the notification event
+ * @param {string} fromProp Child element property that was bound
+ * @param {string} toPath Host property/path that was bound
+ * @param {boolean} negate Whether the binding was negated
+ * @private
+ */
+function handleNotification(event, inst, fromProp, toPath, negate) {
+  let value;
+  let detail = /** @type {Object} */event.detail;
+  let fromPath = detail && detail.path;
+  if (fromPath) {
+    toPath = (0, _path.translate)(fromProp, toPath, fromPath);
+    value = detail && detail.value;
+  } else {
+    value = event.target[fromProp];
+  }
+  value = negate ? !value : value;
+  if (!inst[TYPES.READ_ONLY] || !inst[TYPES.READ_ONLY][toPath]) {
+    if (inst._setPendingPropertyOrPath(toPath, value, true, Boolean(fromPath)) && (!detail || !detail.queueProperty)) {
+      inst._invalidateProperties();
+    }
+  }
+}
+
+/**
+ * Implements the "reflect" effect.
+ *
+ * Sets the attribute named `info.attrName` to the given property value.
+ *
+ * @param {!PropertyEffectsType} inst The instance the effect will be run on
+ * @param {string} property Name of property
+ * @param {Object} props Bag of current property changes
+ * @param {Object} oldProps Bag of previous values for changed properties
+ * @param {?} info Effect metadata
+ * @private
+ */
+function runReflectEffect(inst, property, props, oldProps, info) {
+  let value = inst.__data[property];
+  if (_settings.sanitizeDOMValue) {
+    value = (0, _settings.sanitizeDOMValue)(value, info.attrName, 'attribute', /** @type {Node} */inst);
+  }
+  inst._propertyToAttribute(property, info.attrName, value);
+}
+
+/**
+ * Runs "computed" effects for a set of changed properties.
+ *
+ * This method differs from the generic `runEffects` method in that it
+ * continues to run computed effects based on the output of each pass until
+ * there are no more newly computed properties.  This ensures that all
+ * properties that will be computed by the initial set of changes are
+ * computed before other effects (binding propagation, observers, and notify)
+ * run.
+ *
+ * @param {!PropertyEffectsType} inst The instance the effect will be run on
+ * @param {!Object} changedProps Bag of changed properties
+ * @param {!Object} oldProps Bag of previous values for changed properties
+ * @param {boolean} hasPaths True with `props` contains one or more paths
+ * @private
+ */
+function runComputedEffects(inst, changedProps, oldProps, hasPaths) {
+  let computeEffects = inst[TYPES.COMPUTE];
+  if (computeEffects) {
+    let inputProps = changedProps;
+    while (runEffects(inst, computeEffects, inputProps, oldProps, hasPaths)) {
+      Object.assign(oldProps, inst.__dataOld);
+      Object.assign(changedProps, inst.__dataPending);
+      inputProps = inst.__dataPending;
+      inst.__dataPending = null;
+    }
+  }
+}
+
+/**
+ * Implements the "computed property" effect by running the method with the
+ * values of the arguments specified in the `info` object and setting the
+ * return value to the computed property specified.
+ *
+ * @param {!PropertyEffectsType} inst The instance the effect will be run on
+ * @param {string} property Name of property
+ * @param {Object} props Bag of current property changes
+ * @param {Object} oldProps Bag of previous values for changed properties
+ * @param {?} info Effect metadata
+ * @private
+ */
+function runComputedEffect(inst, property, props, oldProps, info) {
+  let result = runMethodEffect(inst, property, props, oldProps, info);
+  let computedProp = info.methodInfo;
+  if (inst.__dataHasAccessor && inst.__dataHasAccessor[computedProp]) {
+    inst._setPendingProperty(computedProp, result, true);
+  } else {
+    inst[computedProp] = result;
+  }
+}
+
+/**
+ * Computes path changes based on path links set up using the `linkPaths`
+ * API.
+ *
+ * @param {!PropertyEffectsType} inst The instance whose props are changing
+ * @param {string | !Array<(string|number)>} path Path that has changed
+ * @param {*} value Value of changed path
+ * @private
+ */
+function computeLinkedPaths(inst, path, value) {
+  let links = inst.__dataLinkedPaths;
+  if (links) {
+    let link;
+    for (let a in links) {
+      let b = links[a];
+      if ((0, _path.isDescendant)(a, path)) {
+        link = (0, _path.translate)(a, b, path);
+        inst._setPendingPropertyOrPath(link, value, true, true);
+      } else if ((0, _path.isDescendant)(b, path)) {
+        link = (0, _path.translate)(b, a, path);
+        inst._setPendingPropertyOrPath(link, value, true, true);
+      }
+    }
+  }
+}
+
+// -- bindings ----------------------------------------------
+
+/**
+ * Adds binding metadata to the current `nodeInfo`, and binding effects
+ * for all part dependencies to `templateInfo`.
+ *
+ * @param {Function} constructor Class that `_parseTemplate` is currently
+ *   running on
+ * @param {TemplateInfo} templateInfo Template metadata for current template
+ * @param {NodeInfo} nodeInfo Node metadata for current template node
+ * @param {string} kind Binding kind, either 'property', 'attribute', or 'text'
+ * @param {string} target Target property name
+ * @param {!Array<!BindingPart>} parts Array of binding part metadata
+ * @param {string=} literal Literal text surrounding binding parts (specified
+ *   only for 'property' bindings, since these must be initialized as part
+ *   of boot-up)
+ * @private
+ */
+function addBinding(constructor, templateInfo, nodeInfo, kind, target, parts, literal) {
+  // Create binding metadata and add to nodeInfo
+  nodeInfo.bindings = nodeInfo.bindings || [];
+  let /** Binding */binding = { kind, target, parts, literal, isCompound: parts.length !== 1 };
+  nodeInfo.bindings.push(binding);
+  // Add listener info to binding metadata
+  if (shouldAddListener(binding)) {
+    let { event, negate } = binding.parts[0];
+    binding.listenerEvent = event || CaseMap.camelToDashCase(target) + '-changed';
+    binding.listenerNegate = negate;
+  }
+  // Add "propagate" property effects to templateInfo
+  let index = templateInfo.nodeInfoList.length;
+  for (let i = 0; i < binding.parts.length; i++) {
+    let part = binding.parts[i];
+    part.compoundIndex = i;
+    addEffectForBindingPart(constructor, templateInfo, binding, part, index);
+  }
+}
+
+/**
+ * Adds property effects to the given `templateInfo` for the given binding
+ * part.
+ *
+ * @param {Function} constructor Class that `_parseTemplate` is currently
+ *   running on
+ * @param {TemplateInfo} templateInfo Template metadata for current template
+ * @param {!Binding} binding Binding metadata
+ * @param {!BindingPart} part Binding part metadata
+ * @param {number} index Index into `nodeInfoList` for this node
+ */
+function addEffectForBindingPart(constructor, templateInfo, binding, part, index) {
+  if (!part.literal) {
+    if (binding.kind === 'attribute' && binding.target[0] === '-') {
+      console.warn('Cannot set attribute ' + binding.target + ' because "-" is not a valid attribute starting character');
+    } else {
+      let dependencies = part.dependencies;
+      let info = { index, binding, part, evaluator: constructor };
+      for (let j = 0; j < dependencies.length; j++) {
+        let trigger = dependencies[j];
+        if (typeof trigger == 'string') {
+          trigger = parseArg(trigger);
+          trigger.wildcard = true;
+        }
+        constructor._addTemplatePropertyEffect(templateInfo, trigger.rootProperty, {
+          fn: runBindingEffect,
+          info, trigger
+        });
+      }
+    }
+  }
+}
+
+/**
+ * Implements the "binding" (property/path binding) effect.
+ *
+ * Note that binding syntax is overridable via `_parseBindings` and
+ * `_evaluateBinding`.  This method will call `_evaluateBinding` for any
+ * non-literal parts returned from `_parseBindings`.  However,
+ * there is no support for _path_ bindings via custom binding parts,
+ * as this is specific to Polymer's path binding syntax.
+ *
+ * @param {!PropertyEffectsType} inst The instance the effect will be run on
+ * @param {string} path Name of property
+ * @param {Object} props Bag of current property changes
+ * @param {Object} oldProps Bag of previous values for changed properties
+ * @param {?} info Effect metadata
+ * @param {boolean} hasPaths True with `props` contains one or more paths
+ * @param {Array} nodeList List of nodes associated with `nodeInfoList` template
+ *   metadata
+ * @private
+ */
+function runBindingEffect(inst, path, props, oldProps, info, hasPaths, nodeList) {
+  let node = nodeList[info.index];
+  let binding = info.binding;
+  let part = info.part;
+  // Subpath notification: transform path and set to client
+  // e.g.: foo="{{obj.sub}}", path: 'obj.sub.prop', set 'foo.prop'=obj.sub.prop
+  if (hasPaths && part.source && path.length > part.source.length && binding.kind == 'property' && !binding.isCompound && node.__dataHasAccessor && node.__dataHasAccessor[binding.target]) {
+    let value = props[path];
+    path = (0, _path.translate)(part.source, binding.target, path);
+    if (node._setPendingPropertyOrPath(path, value, false, true)) {
+      inst._enqueueClient(node);
+    }
+  } else {
+    let value = info.evaluator._evaluateBinding(inst, part, path, props, oldProps, hasPaths);
+    // Propagate value to child
+    applyBindingValue(inst, node, binding, part, value);
+  }
+}
+
+/**
+ * Sets the value for an "binding" (binding) effect to a node,
+ * either as a property or attribute.
+ *
+ * @param {!PropertyEffectsType} inst The instance owning the binding effect
+ * @param {Node} node Target node for binding
+ * @param {!Binding} binding Binding metadata
+ * @param {!BindingPart} part Binding part metadata
+ * @param {*} value Value to set
+ * @private
+ */
+function applyBindingValue(inst, node, binding, part, value) {
+  value = computeBindingValue(node, value, binding, part);
+  if (_settings.sanitizeDOMValue) {
+    value = (0, _settings.sanitizeDOMValue)(value, binding.target, binding.kind, node);
+  }
+  if (binding.kind == 'attribute') {
+    // Attribute binding
+    inst._valueToNodeAttribute( /** @type {Element} */node, value, binding.target);
+  } else {
+    // Property binding
+    let prop = binding.target;
+    if (node.__dataHasAccessor && node.__dataHasAccessor[prop]) {
+      if (!node[TYPES.READ_ONLY] || !node[TYPES.READ_ONLY][prop]) {
+        if (node._setPendingProperty(prop, value)) {
+          inst._enqueueClient(node);
+        }
+      }
+    } else {
+      inst._setUnmanagedPropertyToNode(node, prop, value);
+    }
+  }
+}
+
+/**
+ * Transforms an "binding" effect value based on compound & negation
+ * effect metadata, as well as handling for special-case properties
+ *
+ * @param {Node} node Node the value will be set to
+ * @param {*} value Value to set
+ * @param {!Binding} binding Binding metadata
+ * @param {!BindingPart} part Binding part metadata
+ * @return {*} Transformed value to set
+ * @private
+ */
+function computeBindingValue(node, value, binding, part) {
+  if (binding.isCompound) {
+    let storage = node.__dataCompoundStorage[binding.target];
+    storage[part.compoundIndex] = value;
+    value = storage.join('');
+  }
+  if (binding.kind !== 'attribute') {
+    // Some browsers serialize `undefined` to `"undefined"`
+    if (binding.target === 'textContent' || node.localName == 'input' && binding.target == 'value') {
+      value = value == undefined ? '' : value;
+    }
+  }
+  return value;
+}
+
+/**
+ * Returns true if a binding's metadata meets all the requirements to allow
+ * 2-way binding, and therefore a `<property>-changed` event listener should be
+ * added:
+ * - used curly braces
+ * - is a property (not attribute) binding
+ * - is not a textContent binding
+ * - is not compound
+ *
+ * @param {!Binding} binding Binding metadata
+ * @return {boolean} True if 2-way listener should be added
+ * @private
+ */
+function shouldAddListener(binding) {
+  return Boolean(binding.target) && binding.kind != 'attribute' && binding.kind != 'text' && !binding.isCompound && binding.parts[0].mode === '{';
+}
+
+/**
+ * Setup compound binding storage structures, notify listeners, and dataHost
+ * references onto the bound nodeList.
+ *
+ * @param {!PropertyEffectsType} inst Instance that bas been previously bound
+ * @param {TemplateInfo} templateInfo Template metadata
+ * @private
+ */
+function setupBindings(inst, templateInfo) {
+  // Setup compound storage, dataHost, and notify listeners
+  let { nodeList, nodeInfoList } = templateInfo;
+  if (nodeInfoList.length) {
+    for (let i = 0; i < nodeInfoList.length; i++) {
+      let info = nodeInfoList[i];
+      let node = nodeList[i];
+      let bindings = info.bindings;
+      if (bindings) {
+        for (let i = 0; i < bindings.length; i++) {
+          let binding = bindings[i];
+          setupCompoundStorage(node, binding);
+          addNotifyListener(node, inst, binding);
+        }
+      }
+      node.__dataHost = inst;
+    }
+  }
+}
+
+/**
+ * Initializes `__dataCompoundStorage` local storage on a bound node with
+ * initial literal data for compound bindings, and sets the joined
+ * literal parts to the bound property.
+ *
+ * When changes to compound parts occur, they are first set into the compound
+ * storage array for that property, and then the array is joined to result in
+ * the final value set to the property/attribute.
+ *
+ * @param {Node} node Bound node to initialize
+ * @param {Binding} binding Binding metadata
+ * @private
+ */
+function setupCompoundStorage(node, binding) {
+  if (binding.isCompound) {
+    // Create compound storage map
+    let storage = node.__dataCompoundStorage || (node.__dataCompoundStorage = {});
+    let parts = binding.parts;
+    // Copy literals from parts into storage for this binding
+    let literals = new Array(parts.length);
+    for (let j = 0; j < parts.length; j++) {
+      literals[j] = parts[j].literal;
+    }
+    let target = binding.target;
+    storage[target] = literals;
+    // Configure properties with their literal parts
+    if (binding.literal && binding.kind == 'property') {
+      node[target] = binding.literal;
+    }
+  }
+}
+
+/**
+ * Adds a 2-way binding notification event listener to the node specified
+ *
+ * @param {Object} node Child element to add listener to
+ * @param {!PropertyEffectsType} inst Host element instance to handle notification event
+ * @param {Binding} binding Binding metadata
+ * @private
+ */
+function addNotifyListener(node, inst, binding) {
+  if (binding.listenerEvent) {
+    let part = binding.parts[0];
+    node.addEventListener(binding.listenerEvent, function (e) {
+      handleNotification(e, inst, binding.target, part.source, part.negate);
+    });
+  }
+}
+
+// -- for method-based effects (complexObserver & computed) --------------
+
+/**
+ * Adds property effects for each argument in the method signature (and
+ * optionally, for the method name if `dynamic` is true) that calls the
+ * provided effect function.
+ *
+ * @param {Element | Object} model Prototype or instance
+ * @param {!MethodSignature} sig Method signature metadata
+ * @param {string} type Type of property effect to add
+ * @param {Function} effectFn Function to run when arguments change
+ * @param {*=} methodInfo Effect-specific information to be included in
+ *   method effect metadata
+ * @param {boolean|Object=} dynamicFn Boolean or object map indicating whether
+ *   method names should be included as a dependency to the effect. Note,
+ *   defaults to true if the signature is static (sig.static is true).
+ * @private
+ */
+function createMethodEffect(model, sig, type, effectFn, methodInfo, dynamicFn) {
+  dynamicFn = sig.static || dynamicFn && (typeof dynamicFn !== 'object' || dynamicFn[sig.methodName]);
+  let info = {
+    methodName: sig.methodName,
+    args: sig.args,
+    methodInfo,
+    dynamicFn
+  };
+  for (let i = 0, arg; i < sig.args.length && (arg = sig.args[i]); i++) {
+    if (!arg.literal) {
+      model._addPropertyEffect(arg.rootProperty, type, {
+        fn: effectFn, info: info, trigger: arg
+      });
+    }
+  }
+  if (dynamicFn) {
+    model._addPropertyEffect(sig.methodName, type, {
+      fn: effectFn, info: info
+    });
+  }
+}
+
+/**
+ * Calls a method with arguments marshaled from properties on the instance
+ * based on the method signature contained in the effect metadata.
+ *
+ * Multi-property observers, computed properties, and inline computing
+ * functions call this function to invoke the method, then use the return
+ * value accordingly.
+ *
+ * @param {!PropertyEffectsType} inst The instance the effect will be run on
+ * @param {string} property Name of property
+ * @param {Object} props Bag of current property changes
+ * @param {Object} oldProps Bag of previous values for changed properties
+ * @param {?} info Effect metadata
+ * @return {*} Returns the return value from the method invocation
+ * @private
+ */
+function runMethodEffect(inst, property, props, oldProps, info) {
+  // Instances can optionally have a _methodHost which allows redirecting where
+  // to find methods. Currently used by `templatize`.
+  let context = inst._methodHost || inst;
+  let fn = context[info.methodName];
+  if (fn) {
+    let args = marshalArgs(inst.__data, info.args, property, props);
+    return fn.apply(context, args);
+  } else if (!info.dynamicFn) {
+    console.warn('method `' + info.methodName + '` not defined');
+  }
+}
+
+const emptyArray = [];
+
+// Regular expressions used for binding
+const IDENT = '(?:' + '[a-zA-Z_$][\\w.:$\\-*]*' + ')';
+const NUMBER = '(?:' + '[-+]?[0-9]*\\.?[0-9]+(?:[eE][-+]?[0-9]+)?' + ')';
+const SQUOTE_STRING = '(?:' + '\'(?:[^\'\\\\]|\\\\.)*\'' + ')';
+const DQUOTE_STRING = '(?:' + '"(?:[^"\\\\]|\\\\.)*"' + ')';
+const STRING = '(?:' + SQUOTE_STRING + '|' + DQUOTE_STRING + ')';
+const ARGUMENT = '(?:(' + IDENT + '|' + NUMBER + '|' + STRING + ')\\s*' + ')';
+const ARGUMENTS = '(?:' + ARGUMENT + '(?:,\\s*' + ARGUMENT + ')*' + ')';
+const ARGUMENT_LIST = '(?:' + '\\(\\s*' + '(?:' + ARGUMENTS + '?' + ')' + '\\)\\s*' + ')';
+const BINDING = '(' + IDENT + '\\s*' + ARGUMENT_LIST + '?' + ')'; // Group 3
+const OPEN_BRACKET = '(\\[\\[|{{)' + '\\s*';
+const CLOSE_BRACKET = '(?:]]|}})';
+const NEGATE = '(?:(!)\\s*)?'; // Group 2
+const EXPRESSION = OPEN_BRACKET + NEGATE + BINDING + CLOSE_BRACKET;
+const bindingRegex = new RegExp(EXPRESSION, "g");
+
+/**
+ * Create a string from binding parts of all the literal parts
+ *
+ * @param {!Array<BindingPart>} parts All parts to stringify
+ * @return {string} String made from the literal parts
+ */
+function literalFromParts(parts) {
+  let s = '';
+  for (let i = 0; i < parts.length; i++) {
+    let literal = parts[i].literal;
+    s += literal || '';
+  }
+  return s;
+}
+
+/**
+ * Parses an expression string for a method signature, and returns a metadata
+ * describing the method in terms of `methodName`, `static` (whether all the
+ * arguments are literals), and an array of `args`
+ *
+ * @param {string} expression The expression to parse
+ * @return {?MethodSignature} The method metadata object if a method expression was
+ *   found, otherwise `undefined`
+ * @private
+ */
+function parseMethod(expression) {
+  // tries to match valid javascript property names
+  let m = expression.match(/([^\s]+?)\(([\s\S]*)\)/);
+  if (m) {
+    let methodName = m[1];
+    let sig = { methodName, static: true, args: emptyArray };
+    if (m[2].trim()) {
+      // replace escaped commas with comma entity, split on un-escaped commas
+      let args = m[2].replace(/\\,/g, '&comma;').split(',');
+      return parseArgs(args, sig);
+    } else {
+      return sig;
+    }
+  }
+  return null;
+}
+
+/**
+ * Parses an array of arguments and sets the `args` property of the supplied
+ * signature metadata object. Sets the `static` property to false if any
+ * argument is a non-literal.
+ *
+ * @param {!Array<string>} argList Array of argument names
+ * @param {!MethodSignature} sig Method signature metadata object
+ * @return {!MethodSignature} The updated signature metadata object
+ * @private
+ */
+function parseArgs(argList, sig) {
+  sig.args = argList.map(function (rawArg) {
+    let arg = parseArg(rawArg);
+    if (!arg.literal) {
+      sig.static = false;
+    }
+    return arg;
+  }, this);
+  return sig;
+}
+
+/**
+ * Parses an individual argument, and returns an argument metadata object
+ * with the following fields:
+ *
+ *   {
+ *     value: 'prop',        // property/path or literal value
+ *     literal: false,       // whether argument is a literal
+ *     structured: false,    // whether the property is a path
+ *     rootProperty: 'prop', // the root property of the path
+ *     wildcard: false       // whether the argument was a wildcard '.*' path
+ *   }
+ *
+ * @param {string} rawArg The string value of the argument
+ * @return {!MethodArg} Argument metadata object
+ * @private
+ */
+function parseArg(rawArg) {
+  // clean up whitespace
+  let arg = rawArg.trim()
+  // replace comma entity with comma
+  .replace(/&comma;/g, ',')
+  // repair extra escape sequences; note only commas strictly need
+  // escaping, but we allow any other char to be escaped since its
+  // likely users will do this
+  .replace(/\\(.)/g, '\$1');
+  // basic argument descriptor
+  let a = {
+    name: arg,
+    value: '',
+    literal: false
+  };
+  // detect literal value (must be String or Number)
+  let fc = arg[0];
+  if (fc === '-') {
+    fc = arg[1];
+  }
+  if (fc >= '0' && fc <= '9') {
+    fc = '#';
+  }
+  switch (fc) {
+    case "'":
+    case '"':
+      a.value = arg.slice(1, -1);
+      a.literal = true;
+      break;
+    case '#':
+      a.value = Number(arg);
+      a.literal = true;
+      break;
+  }
+  // if not literal, look for structured path
+  if (!a.literal) {
+    a.rootProperty = (0, _path.root)(arg);
+    // detect structured path (has dots)
+    a.structured = (0, _path.isPath)(arg);
+    if (a.structured) {
+      a.wildcard = arg.slice(-2) == '.*';
+      if (a.wildcard) {
+        a.name = arg.slice(0, -2);
+      }
+    }
+  }
+  return a;
+}
+
+/**
+ * Gather the argument values for a method specified in the provided array
+ * of argument metadata.
+ *
+ * The `path` and `value` arguments are used to fill in wildcard descriptor
+ * when the method is being called as a result of a path notification.
+ *
+ * @param {Object} data Instance data storage object to read properties from
+ * @param {!Array<!MethodArg>} args Array of argument metadata
+ * @param {string} path Property/path name that triggered the method effect
+ * @param {Object} props Bag of current property changes
+ * @return {Array<*>} Array of argument values
+ * @private
+ */
+function marshalArgs(data, args, path, props) {
+  let values = [];
+  for (let i = 0, l = args.length; i < l; i++) {
+    let arg = args[i];
+    let name = arg.name;
+    let v;
+    if (arg.literal) {
+      v = arg.value;
+    } else {
+      if (arg.structured) {
+        v = (0, _path.get)(data, name);
+        // when data is not stored e.g. `splices`
+        if (v === undefined) {
+          v = props[name];
+        }
+      } else {
+        v = data[name];
+      }
+    }
+    if (arg.wildcard) {
+      // Only send the actual path changed info if the change that
+      // caused the observer to run matched the wildcard
+      let baseChanged = name.indexOf(path + '.') === 0;
+      let matches = path.indexOf(name) === 0 && !baseChanged;
+      values[i] = {
+        path: matches ? path : name,
+        value: matches ? props[path] : v,
+        base: v
+      };
+    } else {
+      values[i] = v;
+    }
+  }
+  return values;
+}
+
+// data api
+
+/**
+ * Sends array splice notifications (`.splices` and `.length`)
+ *
+ * Note: this implementation only accepts normalized paths
+ *
+ * @param {!PropertyEffectsType} inst Instance to send notifications to
+ * @param {Array} array The array the mutations occurred on
+ * @param {string} path The path to the array that was mutated
+ * @param {Array} splices Array of splice records
+ * @private
+ */
+function notifySplices(inst, array, path, splices) {
+  let splicesPath = path + '.splices';
+  inst.notifyPath(splicesPath, { indexSplices: splices });
+  inst.notifyPath(path + '.length', array.length);
+  // Null here to allow potentially large splice records to be GC'ed.
+  inst.__data[splicesPath] = { indexSplices: null };
+}
+
+/**
+ * Creates a splice record and sends an array splice notification for
+ * the described mutation
+ *
+ * Note: this implementation only accepts normalized paths
+ *
+ * @param {!PropertyEffectsType} inst Instance to send notifications to
+ * @param {Array} array The array the mutations occurred on
+ * @param {string} path The path to the array that was mutated
+ * @param {number} index Index at which the array mutation occurred
+ * @param {number} addedCount Number of added items
+ * @param {Array} removed Array of removed items
+ * @private
+ */
+function notifySplice(inst, array, path, index, addedCount, removed) {
+  notifySplices(inst, array, path, [{
+    index: index,
+    addedCount: addedCount,
+    removed: removed,
+    object: array,
+    type: 'splice'
+  }]);
+}
+
+/**
+ * Returns an upper-cased version of the string.
+ *
+ * @param {string} name String to uppercase
+ * @return {string} Uppercased string
+ * @private
+ */
+function upper(name) {
+  return name[0].toUpperCase() + name.substring(1);
+}
+
+const PropertyEffects = exports.PropertyEffects = (0, _mixin.dedupingMixin)(superClass => {
+
+  /**
+   * @constructor
+   * @extends {superClass}
+   * @implements {Polymer_PropertyAccessors}
+   * @implements {Polymer_TemplateStamp}
+   * @unrestricted
+   */
+  const propertyEffectsBase = (0, _templateStamp.TemplateStamp)((0, _propertyAccessors.PropertyAccessors)(superClass));
+
+  /**
+   * @polymer
+   * @mixinClass
+   * @implements {Polymer_PropertyEffects}
+   * @extends {propertyEffectsBase}
+   * @unrestricted
+   */
+  class PropertyEffects extends propertyEffectsBase {
+
+    constructor() {
+      super();
+      /** @type {boolean} */
+      this.__dataClientsReady;
+      /** @type {Array} */
+      this.__dataPendingClients;
+      /** @type {Object} */
+      this.__dataToNotify;
+      /** @type {Object} */
+      this.__dataLinkedPaths;
+      /** @type {boolean} */
+      this.__dataHasPaths;
+      /** @type {Object} */
+      this.__dataCompoundStorage;
+      /** @type {Polymer_PropertyEffects} */
+      this.__dataHost;
+      /** @type {!Object} */
+      this.__dataTemp;
+      /** @type {boolean} */
+      this.__dataClientsInitialized;
+      /** @type {!Object} */
+      this.__data;
+      /** @type {!Object} */
+      this.__dataPending;
+      /** @type {!Object} */
+      this.__dataOld;
+      /** @type {Object} */
+      this.__computeEffects;
+      /** @type {Object} */
+      this.__reflectEffects;
+      /** @type {Object} */
+      this.__notifyEffects;
+      /** @type {Object} */
+      this.__propagateEffects;
+      /** @type {Object} */
+      this.__observeEffects;
+      /** @type {Object} */
+      this.__readOnly;
+      /** @type {number} */
+      this.__dataCounter;
+      /** @type {!TemplateInfo} */
+      this.__templateInfo;
+    }
+
+    get PROPERTY_EFFECT_TYPES() {
+      return TYPES;
+    }
+
+    _initializeProperties() {
+      super._initializeProperties();
+      hostStack.registerHost(this);
+      this.__dataClientsReady = false;
+      this.__dataPendingClients = null;
+      this.__dataToNotify = null;
+      this.__dataLinkedPaths = null;
+      this.__dataHasPaths = false;
+      // May be set on instance prior to upgrade
+      this.__dataCompoundStorage = this.__dataCompoundStorage || null;
+      this.__dataHost = this.__dataHost || null;
+      this.__dataTemp = {};
+      this.__dataClientsInitialized = false;
+    }
+
+    /**
+     * Overrides `Polymer.PropertyAccessors` implementation to provide a
+     * more efficient implementation of initializing properties from
+     * the prototype on the instance.
+     *
+     * @override
+     * @param {Object} props Properties to initialize on the prototype
+     */
+    _initializeProtoProperties(props) {
+      this.__data = Object.create(props);
+      this.__dataPending = Object.create(props);
+      this.__dataOld = {};
+    }
+
+    /**
+     * Overrides `Polymer.PropertyAccessors` implementation to avoid setting
+     * `_setProperty`'s `shouldNotify: true`.
+     *
+     * @override
+     * @param {Object} props Properties to initialize on the instance
+     */
+    _initializeInstanceProperties(props) {
+      let readOnly = this[TYPES.READ_ONLY];
+      for (let prop in props) {
+        if (!readOnly || !readOnly[prop]) {
+          this.__dataPending = this.__dataPending || {};
+          this.__dataOld = this.__dataOld || {};
+          this.__data[prop] = this.__dataPending[prop] = props[prop];
+        }
+      }
+    }
+
+    // Prototype setup ----------------------------------------
+
+    /**
+     * Equivalent to static `addPropertyEffect` API but can be called on
+     * an instance to add effects at runtime.  See that method for
+     * full API docs.
+     *
+     * @param {string} property Property that should trigger the effect
+     * @param {string} type Effect type, from this.PROPERTY_EFFECT_TYPES
+     * @param {Object=} effect Effect metadata object
+     * @protected
+     */
+    _addPropertyEffect(property, type, effect) {
+      this._createPropertyAccessor(property, type == TYPES.READ_ONLY);
+      // effects are accumulated into arrays per property based on type
+      let effects = ensureOwnEffectMap(this, type)[property];
+      if (!effects) {
+        effects = this[type][property] = [];
+      }
+      effects.push(effect);
+    }
+
+    /**
+     * Removes the given property effect.
+     *
+     * @param {string} property Property the effect was associated with
+     * @param {string} type Effect type, from this.PROPERTY_EFFECT_TYPES
+     * @param {Object=} effect Effect metadata object to remove
+     */
+    _removePropertyEffect(property, type, effect) {
+      let effects = ensureOwnEffectMap(this, type)[property];
+      let idx = effects.indexOf(effect);
+      if (idx >= 0) {
+        effects.splice(idx, 1);
+      }
+    }
+
+    /**
+     * Returns whether the current prototype/instance has a property effect
+     * of a certain type.
+     *
+     * @param {string} property Property name
+     * @param {string=} type Effect type, from this.PROPERTY_EFFECT_TYPES
+     * @return {boolean} True if the prototype/instance has an effect of this type
+     * @protected
+     */
+    _hasPropertyEffect(property, type) {
+      let effects = this[type];
+      return Boolean(effects && effects[property]);
+    }
+
+    /**
+     * Returns whether the current prototype/instance has a "read only"
+     * accessor for the given property.
+     *
+     * @param {string} property Property name
+     * @return {boolean} True if the prototype/instance has an effect of this type
+     * @protected
+     */
+    _hasReadOnlyEffect(property) {
+      return this._hasPropertyEffect(property, TYPES.READ_ONLY);
+    }
+
+    /**
+     * Returns whether the current prototype/instance has a "notify"
+     * property effect for the given property.
+     *
+     * @param {string} property Property name
+     * @return {boolean} True if the prototype/instance has an effect of this type
+     * @protected
+     */
+    _hasNotifyEffect(property) {
+      return this._hasPropertyEffect(property, TYPES.NOTIFY);
+    }
+
+    /**
+     * Returns whether the current prototype/instance has a "reflect to attribute"
+     * property effect for the given property.
+     *
+     * @param {string} property Property name
+     * @return {boolean} True if the prototype/instance has an effect of this type
+     * @protected
+     */
+    _hasReflectEffect(property) {
+      return this._hasPropertyEffect(property, TYPES.REFLECT);
+    }
+
+    /**
+     * Returns whether the current prototype/instance has a "computed"
+     * property effect for the given property.
+     *
+     * @param {string} property Property name
+     * @return {boolean} True if the prototype/instance has an effect of this type
+     * @protected
+     */
+    _hasComputedEffect(property) {
+      return this._hasPropertyEffect(property, TYPES.COMPUTE);
+    }
+
+    // Runtime ----------------------------------------
+
+    /**
+     * Sets a pending property or path.  If the root property of the path in
+     * question had no accessor, the path is set, otherwise it is enqueued
+     * via `_setPendingProperty`.
+     *
+     * This function isolates relatively expensive functionality necessary
+     * for the public API (`set`, `setProperties`, `notifyPath`, and property
+     * change listeners via {{...}} bindings), such that it is only done
+     * when paths enter the system, and not at every propagation step.  It
+     * also sets a `__dataHasPaths` flag on the instance which is used to
+     * fast-path slower path-matching code in the property effects host paths.
+     *
+     * `path` can be a path string or array of path parts as accepted by the
+     * public API.
+     *
+     * @param {string | !Array<number|string>} path Path to set
+     * @param {*} value Value to set
+     * @param {boolean=} shouldNotify Set to true if this change should
+     *  cause a property notification event dispatch
+     * @param {boolean=} isPathNotification If the path being set is a path
+     *   notification of an already changed value, as opposed to a request
+     *   to set and notify the change.  In the latter `false` case, a dirty
+     *   check is performed and then the value is set to the path before
+     *   enqueuing the pending property change.
+     * @return {boolean} Returns true if the property/path was enqueued in
+     *   the pending changes bag.
+     * @protected
+     */
+    _setPendingPropertyOrPath(path, value, shouldNotify, isPathNotification) {
+      if (isPathNotification || (0, _path.root)(Array.isArray(path) ? path[0] : path) !== path) {
+        // Dirty check changes being set to a path against the actual object,
+        // since this is the entry point for paths into the system; from here
+        // the only dirty checks are against the `__dataTemp` cache to prevent
+        // duplicate work in the same turn only. Note, if this was a notification
+        // of a change already set to a path (isPathNotification: true),
+        // we always let the change through and skip the `set` since it was
+        // already dirty checked at the point of entry and the underlying
+        // object has already been updated
+        if (!isPathNotification) {
+          let old = (0, _path.get)(this, path);
+          path = /** @type {string} */(0, _path.set)(this, path, value);
+          // Use property-accessor's simpler dirty check
+          if (!path || !super._shouldPropertyChange(path, value, old)) {
+            return false;
+          }
+        }
+        this.__dataHasPaths = true;
+        if (this._setPendingProperty( /**@type{string}*/path, value, shouldNotify)) {
+          computeLinkedPaths(this, path, value);
+          return true;
+        }
+      } else {
+        if (this.__dataHasAccessor && this.__dataHasAccessor[path]) {
+          return this._setPendingProperty( /**@type{string}*/path, value, shouldNotify);
+        } else {
+          this[path] = value;
+        }
+      }
+      return false;
+    }
+
+    /**
+     * Applies a value to a non-Polymer element/node's property.
+     *
+     * The implementation makes a best-effort at binding interop:
+     * Some native element properties have side-effects when
+     * re-setting the same value (e.g. setting `<input>.value` resets the
+     * cursor position), so we do a dirty-check before setting the value.
+     * However, for better interop with non-Polymer custom elements that
+     * accept objects, we explicitly re-set object changes coming from the
+     * Polymer world (which may include deep object changes without the
+     * top reference changing), erring on the side of providing more
+     * information.
+     *
+     * Users may override this method to provide alternate approaches.
+     *
+     * @param {Node} node The node to set a property on
+     * @param {string} prop The property to set
+     * @param {*} value The value to set
+     * @protected
+     */
+    _setUnmanagedPropertyToNode(node, prop, value) {
+      // It is a judgment call that resetting primitives is
+      // "bad" and resettings objects is also "good"; alternatively we could
+      // implement a whitelist of tag & property values that should never
+      // be reset (e.g. <input>.value && <select>.value)
+      if (value !== node[prop] || typeof value == 'object') {
+        node[prop] = value;
+      }
+    }
+
+    /**
+     * Overrides the `PropertyAccessors` implementation to introduce special
+     * dirty check logic depending on the property & value being set:
+     *
+     * 1. Any value set to a path (e.g. 'obj.prop': 42 or 'obj.prop': {...})
+     *    Stored in `__dataTemp`, dirty checked against `__dataTemp`
+     * 2. Object set to simple property (e.g. 'prop': {...})
+     *    Stored in `__dataTemp` and `__data`, dirty checked against
+     *    `__dataTemp` by default implementation of `_shouldPropertyChange`
+     * 3. Primitive value set to simple property (e.g. 'prop': 42)
+     *    Stored in `__data`, dirty checked against `__data`
+     *
+     * The dirty-check is important to prevent cycles due to two-way
+     * notification, but paths and objects are only dirty checked against any
+     * previous value set during this turn via a "temporary cache" that is
+     * cleared when the last `_propertiesChaged` exits. This is so:
+     * a. any cached array paths (e.g. 'array.3.prop') may be invalidated
+     *    due to array mutations like shift/unshift/splice; this is fine
+     *    since path changes are dirty-checked at user entry points like `set`
+     * b. dirty-checking for objects only lasts one turn to allow the user
+     *    to mutate the object in-place and re-set it with the same identity
+     *    and have all sub-properties re-propagated in a subsequent turn.
+     *
+     * The temp cache is not necessarily sufficient to prevent invalid array
+     * paths, since a splice can happen during the same turn (with pathological
+     * user code); we could introduce a "fixup" for temporarily cached array
+     * paths if needed: https://github.com/Polymer/polymer/issues/4227
+     *
+     * @param {string} property Name of the property
+     * @param {*} value Value to set
+     * @param {boolean=} shouldNotify True if property should fire notification
+     *   event (applies only for `notify: true` properties)
+     * @return {boolean} Returns true if the property changed
+     * @override
+     */
+    _setPendingProperty(property, value, shouldNotify) {
+      let isPath = this.__dataHasPaths && (0, _path.isPath)(property);
+      let prevProps = isPath ? this.__dataTemp : this.__data;
+      if (this._shouldPropertyChange(property, value, prevProps[property])) {
+        if (!this.__dataPending) {
+          this.__dataPending = {};
+          this.__dataOld = {};
+        }
+        // Ensure old is captured from the last turn
+        if (!(property in this.__dataOld)) {
+          this.__dataOld[property] = this.__data[property];
+        }
+        // Paths are stored in temporary cache (cleared at end of turn),
+        // which is used for dirty-checking, all others stored in __data
+        if (isPath) {
+          this.__dataTemp[property] = value;
+        } else {
+          this.__data[property] = value;
+        }
+        // All changes go into pending property bag, passed to _propertiesChanged
+        this.__dataPending[property] = value;
+        // Track properties that should notify separately
+        if (isPath || this[TYPES.NOTIFY] && this[TYPES.NOTIFY][property]) {
+          this.__dataToNotify = this.__dataToNotify || {};
+          this.__dataToNotify[property] = shouldNotify;
+        }
+        return true;
+      }
+      return false;
+    }
+
+    /**
+     * Overrides base implementation to ensure all accessors set `shouldNotify`
+     * to true, for per-property notification tracking.
+     *
+     * @override
+     */
+    _setProperty(property, value) {
+      if (this._setPendingProperty(property, value, true)) {
+        this._invalidateProperties();
+      }
+    }
+
+    /**
+     * Overrides `PropertyAccessor`'s default async queuing of
+     * `_propertiesChanged`: if `__dataReady` is false (has not yet been
+     * manually flushed), the function no-ops; otherwise flushes
+     * `_propertiesChanged` synchronously.
+     *
+     * @override
+     */
+    _invalidateProperties() {
+      if (this.__dataReady) {
+        this._flushProperties();
+      }
+    }
+
+    /**
+     * Enqueues the given client on a list of pending clients, whose
+     * pending property changes can later be flushed via a call to
+     * `_flushClients`.
+     *
+     * @param {Object} client PropertyEffects client to enqueue
+     * @protected
+     */
+    _enqueueClient(client) {
+      this.__dataPendingClients = this.__dataPendingClients || [];
+      if (client !== this) {
+        this.__dataPendingClients.push(client);
+      }
+    }
+
+    /**
+     * Flushes any clients previously enqueued via `_enqueueClient`, causing
+     * their `_flushProperties` method to run.
+     *
+     * @protected
+     */
+    _flushClients() {
+      if (!this.__dataClientsReady) {
+        this.__dataClientsReady = true;
+        this._readyClients();
+        // Override point where accessors are turned on; importantly,
+        // this is after clients have fully readied, providing a guarantee
+        // that any property effects occur only after all clients are ready.
+        this.__dataReady = true;
+      } else {
+        this.__enableOrFlushClients();
+      }
+    }
+
+    // NOTE: We ensure clients either enable or flush as appropriate. This
+    // handles two corner cases:
+    // (1) clients flush properly when connected/enabled before the host
+    // enables; e.g.
+    //   (a) Templatize stamps with no properties and does not flush and
+    //   (b) the instance is inserted into dom and
+    //   (c) then the instance flushes.
+    // (2) clients enable properly when not connected/enabled when the host
+    // flushes; e.g.
+    //   (a) a template is runtime stamped and not yet connected/enabled
+    //   (b) a host sets a property, causing stamped dom to flush
+    //   (c) the stamped dom enables.
+    __enableOrFlushClients() {
+      let clients = this.__dataPendingClients;
+      if (clients) {
+        this.__dataPendingClients = null;
+        for (let i = 0; i < clients.length; i++) {
+          let client = clients[i];
+          if (!client.__dataEnabled) {
+            client._enableProperties();
+          } else if (client.__dataPending) {
+            client._flushProperties();
+          }
+        }
+      }
+    }
+
+    /**
+     * Perform any initial setup on client dom. Called before the first
+     * `_flushProperties` call on client dom and before any element
+     * observers are called.
+     *
+     * @protected
+     */
+    _readyClients() {
+      this.__enableOrFlushClients();
+    }
+
+    /**
+     * Sets a bag of property changes to this instance, and
+     * synchronously processes all effects of the properties as a batch.
+     *
+     * Property names must be simple properties, not paths.  Batched
+     * path propagation is not supported.
+     *
+     * @param {Object} props Bag of one or more key-value pairs whose key is
+     *   a property and value is the new value to set for that property.
+     * @param {boolean=} setReadOnly When true, any private values set in
+     *   `props` will be set. By default, `setProperties` will not set
+     *   `readOnly: true` root properties.
+     * @public
+     */
+    setProperties(props, setReadOnly) {
+      for (let path in props) {
+        if (setReadOnly || !this[TYPES.READ_ONLY] || !this[TYPES.READ_ONLY][path]) {
+          //TODO(kschaaf): explicitly disallow paths in setProperty?
+          // wildcard observers currently only pass the first changed path
+          // in the `info` object, and you could do some odd things batching
+          // paths, e.g. {'foo.bar': {...}, 'foo': null}
+          this._setPendingPropertyOrPath(path, props[path], true);
+        }
+      }
+      this._invalidateProperties();
+    }
+
+    /**
+     * Overrides `PropertyAccessors` so that property accessor
+     * side effects are not enabled until after client dom is fully ready.
+     * Also calls `_flushClients` callback to ensure client dom is enabled
+     * that was not enabled as a result of flushing properties.
+     *
+     * @override
+     */
+    ready() {
+      // It is important that `super.ready()` is not called here as it
+      // immediately turns on accessors. Instead, we wait until `readyClients`
+      // to enable accessors to provide a guarantee that clients are ready
+      // before processing any accessors side effects.
+      this._flushProperties();
+      // If no data was pending, `_flushProperties` will not `flushClients`
+      // so ensure this is done.
+      if (!this.__dataClientsReady) {
+        this._flushClients();
+      }
+      // Before ready, client notifications do not trigger _flushProperties.
+      // Therefore a flush is necessary here if data has been set.
+      if (this.__dataPending) {
+        this._flushProperties();
+      }
+    }
+
+    /**
+     * Implements `PropertyAccessors`'s properties changed callback.
+     *
+     * Runs each class of effects for the batch of changed properties in
+     * a specific order (compute, propagate, reflect, observe, notify).
+     *
+     * @override
+     */
+    _propertiesChanged(currentProps, changedProps, oldProps) {
+      // ----------------------------
+      // let c = Object.getOwnPropertyNames(changedProps || {});
+      // window.debug && console.group(this.localName + '#' + this.id + ': ' + c);
+      // if (window.debug) { debugger; }
+      // ----------------------------
+      let hasPaths = this.__dataHasPaths;
+      this.__dataHasPaths = false;
+      // Compute properties
+      runComputedEffects(this, changedProps, oldProps, hasPaths);
+      // Clear notify properties prior to possible reentry (propagate, observe),
+      // but after computing effects have a chance to add to them
+      let notifyProps = this.__dataToNotify;
+      this.__dataToNotify = null;
+      // Propagate properties to clients
+      this._propagatePropertyChanges(changedProps, oldProps, hasPaths);
+      // Flush clients
+      this._flushClients();
+      // Reflect properties
+      runEffects(this, this[TYPES.REFLECT], changedProps, oldProps, hasPaths);
+      // Observe properties
+      runEffects(this, this[TYPES.OBSERVE], changedProps, oldProps, hasPaths);
+      // Notify properties to host
+      if (notifyProps) {
+        runNotifyEffects(this, notifyProps, changedProps, oldProps, hasPaths);
+      }
+      // Clear temporary cache at end of turn
+      if (this.__dataCounter == 1) {
+        this.__dataTemp = {};
+      }
+      // ----------------------------
+      // window.debug && console.groupEnd(this.localName + '#' + this.id + ': ' + c);
+      // ----------------------------
+    }
+
+    /**
+     * Called to propagate any property changes to stamped template nodes
+     * managed by this element.
+     *
+     * @param {Object} changedProps Bag of changed properties
+     * @param {Object} oldProps Bag of previous values for changed properties
+     * @param {boolean} hasPaths True with `props` contains one or more paths
+     * @protected
+     */
+    _propagatePropertyChanges(changedProps, oldProps, hasPaths) {
+      if (this[TYPES.PROPAGATE]) {
+        runEffects(this, this[TYPES.PROPAGATE], changedProps, oldProps, hasPaths);
+      }
+      let templateInfo = this.__templateInfo;
+      while (templateInfo) {
+        runEffects(this, templateInfo.propertyEffects, changedProps, oldProps, hasPaths, templateInfo.nodeList);
+        templateInfo = templateInfo.nextTemplateInfo;
+      }
+    }
+
+    /**
+     * Aliases one data path as another, such that path notifications from one
+     * are routed to the other.
+     *
+     * @param {string | !Array<string|number>} to Target path to link.
+     * @param {string | !Array<string|number>} from Source path to link.
+     * @public
+     */
+    linkPaths(to, from) {
+      to = (0, _path.normalize)(to);
+      from = (0, _path.normalize)(from);
+      this.__dataLinkedPaths = this.__dataLinkedPaths || {};
+      this.__dataLinkedPaths[to] = from;
+    }
+
+    /**
+     * Removes a data path alias previously established with `_linkPaths`.
+     *
+     * Note, the path to unlink should be the target (`to`) used when
+     * linking the paths.
+     *
+     * @param {string | !Array<string|number>} path Target path to unlink.
+     * @public
+     */
+    unlinkPaths(path) {
+      path = (0, _path.normalize)(path);
+      if (this.__dataLinkedPaths) {
+        delete this.__dataLinkedPaths[path];
+      }
+    }
+
+    /**
+     * Notify that an array has changed.
+     *
+     * Example:
+     *
+     *     this.items = [ {name: 'Jim'}, {name: 'Todd'}, {name: 'Bill'} ];
+     *     ...
+     *     this.items.splice(1, 1, {name: 'Sam'});
+     *     this.items.push({name: 'Bob'});
+     *     this.notifySplices('items', [
+     *       { index: 1, removed: [{name: 'Todd'}], addedCount: 1, obect: this.items, type: 'splice' },
+     *       { index: 3, removed: [], addedCount: 1, object: this.items, type: 'splice'}
+     *     ]);
+     *
+     * @param {string} path Path that should be notified.
+     * @param {Array} splices Array of splice records indicating ordered
+     *   changes that occurred to the array. Each record should have the
+     *   following fields:
+     *    * index: index at which the change occurred
+     *    * removed: array of items that were removed from this index
+     *    * addedCount: number of new items added at this index
+     *    * object: a reference to the array in question
+     *    * type: the string literal 'splice'
+     *
+     *   Note that splice records _must_ be normalized such that they are
+     *   reported in index order (raw results from `Object.observe` are not
+     *   ordered and must be normalized/merged before notifying).
+     * @public
+    */
+    notifySplices(path, splices) {
+      let info = { path: '' };
+      let array = /** @type {Array} */(0, _path.get)(this, path, info);
+      notifySplices(this, array, info.path, splices);
+    }
+
+    /**
+     * Convenience method for reading a value from a path.
+     *
+     * Note, if any part in the path is undefined, this method returns
+     * `undefined` (this method does not throw when dereferencing undefined
+     * paths).
+     *
+     * @param {(string|!Array<(string|number)>)} path Path to the value
+     *   to read.  The path may be specified as a string (e.g. `foo.bar.baz`)
+     *   or an array of path parts (e.g. `['foo.bar', 'baz']`).  Note that
+     *   bracketed expressions are not supported; string-based path parts
+     *   *must* be separated by dots.  Note that when dereferencing array
+     *   indices, the index may be used as a dotted part directly
+     *   (e.g. `users.12.name` or `['users', 12, 'name']`).
+     * @param {Object=} root Root object from which the path is evaluated.
+     * @return {*} Value at the path, or `undefined` if any part of the path
+     *   is undefined.
+     * @public
+     */
+    get(path, root) {
+      return (0, _path.get)(root || this, path);
+    }
+
+    /**
+     * Convenience method for setting a value to a path and notifying any
+     * elements bound to the same path.
+     *
+     * Note, if any part in the path except for the last is undefined,
+     * this method does nothing (this method does not throw when
+     * dereferencing undefined paths).
+     *
+     * @param {(string|!Array<(string|number)>)} path Path to the value
+     *   to write.  The path may be specified as a string (e.g. `'foo.bar.baz'`)
+     *   or an array of path parts (e.g. `['foo.bar', 'baz']`).  Note that
+     *   bracketed expressions are not supported; string-based path parts
+     *   *must* be separated by dots.  Note that when dereferencing array
+     *   indices, the index may be used as a dotted part directly
+     *   (e.g. `'users.12.name'` or `['users', 12, 'name']`).
+     * @param {*} value Value to set at the specified path.
+     * @param {Object=} root Root object from which the path is evaluated.
+     *   When specified, no notification will occur.
+     * @public
+    */
+    set(path, value, root) {
+      if (root) {
+        (0, _path.set)(root, path, value);
+      } else {
+        if (!this[TYPES.READ_ONLY] || !this[TYPES.READ_ONLY][/** @type {string} */path]) {
+          if (this._setPendingPropertyOrPath(path, value, true)) {
+            this._invalidateProperties();
+          }
+        }
+      }
+    }
+
+    /**
+     * Adds items onto the end of the array at the path specified.
+     *
+     * The arguments after `path` and return value match that of
+     * `Array.prototype.push`.
+     *
+     * This method notifies other paths to the same array that a
+     * splice occurred to the array.
+     *
+     * @param {string | !Array<string|number>} path Path to array.
+     * @param {...*} items Items to push onto array
+     * @return {number} New length of the array.
+     * @public
+     */
+    push(path, ...items) {
+      let info = { path: '' };
+      let array = /** @type {Array}*/(0, _path.get)(this, path, info);
+      let len = array.length;
+      let ret = array.push(...items);
+      if (items.length) {
+        notifySplice(this, array, info.path, len, items.length, []);
+      }
+      return ret;
+    }
+
+    /**
+     * Removes an item from the end of array at the path specified.
+     *
+     * The arguments after `path` and return value match that of
+     * `Array.prototype.pop`.
+     *
+     * This method notifies other paths to the same array that a
+     * splice occurred to the array.
+     *
+     * @param {string | !Array<string|number>} path Path to array.
+     * @return {*} Item that was removed.
+     * @public
+     */
+    pop(path) {
+      let info = { path: '' };
+      let array = /** @type {Array} */(0, _path.get)(this, path, info);
+      let hadLength = Boolean(array.length);
+      let ret = array.pop();
+      if (hadLength) {
+        notifySplice(this, array, info.path, array.length, 0, [ret]);
+      }
+      return ret;
+    }
+
+    /**
+     * Starting from the start index specified, removes 0 or more items
+     * from the array and inserts 0 or more new items in their place.
+     *
+     * The arguments after `path` and return value match that of
+     * `Array.prototype.splice`.
+     *
+     * This method notifies other paths to the same array that a
+     * splice occurred to the array.
+     *
+     * @param {string | !Array<string|number>} path Path to array.
+     * @param {number} start Index from which to start removing/inserting.
+     * @param {number} deleteCount Number of items to remove.
+     * @param {...*} items Items to insert into array.
+     * @return {Array} Array of removed items.
+     * @public
+     */
+    splice(path, start, deleteCount, ...items) {
+      let info = { path: '' };
+      let array = /** @type {Array} */(0, _path.get)(this, path, info);
+      // Normalize fancy native splice handling of crazy start values
+      if (start < 0) {
+        start = array.length - Math.floor(-start);
+      } else {
+        start = Math.floor(start);
+      }
+      if (!start) {
+        start = 0;
+      }
+      let ret = array.splice(start, deleteCount, ...items);
+      if (items.length || ret.length) {
+        notifySplice(this, array, info.path, start, items.length, ret);
+      }
+      return ret;
+    }
+
+    /**
+     * Removes an item from the beginning of array at the path specified.
+     *
+     * The arguments after `path` and return value match that of
+     * `Array.prototype.pop`.
+     *
+     * This method notifies other paths to the same array that a
+     * splice occurred to the array.
+     *
+     * @param {string | !Array<string|number>} path Path to array.
+     * @return {*} Item that was removed.
+     * @public
+     */
+    shift(path) {
+      let info = { path: '' };
+      let array = /** @type {Array} */(0, _path.get)(this, path, info);
+      let hadLength = Boolean(array.length);
+      let ret = array.shift();
+      if (hadLength) {
+        notifySplice(this, array, info.path, 0, 0, [ret]);
+      }
+      return ret;
+    }
+
+    /**
+     * Adds items onto the beginning of the array at the path specified.
+     *
+     * The arguments after `path` and return value match that of
+     * `Array.prototype.push`.
+     *
+     * This method notifies other paths to the same array that a
+     * splice occurred to the array.
+     *
+     * @param {string | !Array<string|number>} path Path to array.
+     * @param {...*} items Items to insert info array
+     * @return {number} New length of the array.
+     * @public
+     */
+    unshift(path, ...items) {
+      let info = { path: '' };
+      let array = /** @type {Array} */(0, _path.get)(this, path, info);
+      let ret = array.unshift(...items);
+      if (items.length) {
+        notifySplice(this, array, info.path, 0, items.length, []);
+      }
+      return ret;
+    }
+
+    /**
+     * Notify that a path has changed.
+     *
+     * Example:
+     *
+     *     this.item.user.name = 'Bob';
+     *     this.notifyPath('item.user.name');
+     *
+     * @param {string} path Path that should be notified.
+     * @param {*=} value Value at the path (optional).
+     * @public
+    */
+    notifyPath(path, value) {
+      /** @type {string} */
+      let propPath;
+      if (arguments.length == 1) {
+        // Get value if not supplied
+        let info = { path: '' };
+        value = (0, _path.get)(this, path, info);
+        propPath = info.path;
+      } else if (Array.isArray(path)) {
+        // Normalize path if needed
+        propPath = (0, _path.normalize)(path);
+      } else {
+        propPath = /** @type{string} */path;
+      }
+      if (this._setPendingPropertyOrPath(propPath, value, true, true)) {
+        this._invalidateProperties();
+      }
+    }
+
+    /**
+     * Equivalent to static `createReadOnlyProperty` API but can be called on
+     * an instance to add effects at runtime.  See that method for
+     * full API docs.
+     *
+     * @param {string} property Property name
+     * @param {boolean=} protectedSetter Creates a custom protected setter
+     *   when `true`.
+     * @protected
+     */
+    _createReadOnlyProperty(property, protectedSetter) {
+      this._addPropertyEffect(property, TYPES.READ_ONLY);
+      if (protectedSetter) {
+        this['_set' + upper(property)] = /** @this {PropertyEffects} */function (value) {
+          this._setProperty(property, value);
+        };
+      }
+    }
+
+    /**
+     * Equivalent to static `createPropertyObserver` API but can be called on
+     * an instance to add effects at runtime.  See that method for
+     * full API docs.
+     *
+     * @param {string} property Property name
+     * @param {string} methodName Name of observer method to call
+     * @param {boolean=} dynamicFn Whether the method name should be included as
+     *   a dependency to the effect.
+     * @protected
+     */
+    _createPropertyObserver(property, methodName, dynamicFn) {
+      let info = { property, methodName, dynamicFn: Boolean(dynamicFn) };
+      this._addPropertyEffect(property, TYPES.OBSERVE, {
+        fn: runObserverEffect, info, trigger: { name: property }
+      });
+      if (dynamicFn) {
+        this._addPropertyEffect(methodName, TYPES.OBSERVE, {
+          fn: runObserverEffect, info, trigger: { name: methodName }
+        });
+      }
+    }
+
+    /**
+     * Equivalent to static `createMethodObserver` API but can be called on
+     * an instance to add effects at runtime.  See that method for
+     * full API docs.
+     *
+     * @param {string} expression Method expression
+     * @param {boolean|Object=} dynamicFn Boolean or object map indicating
+     *   whether method names should be included as a dependency to the effect.
+     * @protected
+     */
+    _createMethodObserver(expression, dynamicFn) {
+      let sig = parseMethod(expression);
+      if (!sig) {
+        throw new Error("Malformed observer expression '" + expression + "'");
+      }
+      createMethodEffect(this, sig, TYPES.OBSERVE, runMethodEffect, null, dynamicFn);
+    }
+
+    /**
+     * Equivalent to static `createNotifyingProperty` API but can be called on
+     * an instance to add effects at runtime.  See that method for
+     * full API docs.
+     *
+     * @param {string} property Property name
+     * @protected
+     */
+    _createNotifyingProperty(property) {
+      this._addPropertyEffect(property, TYPES.NOTIFY, {
+        fn: runNotifyEffect,
+        info: {
+          eventName: CaseMap.camelToDashCase(property) + '-changed',
+          property: property
+        }
+      });
+    }
+
+    /**
+     * Equivalent to static `createReflectedProperty` API but can be called on
+     * an instance to add effects at runtime.  See that method for
+     * full API docs.
+     *
+     * @param {string} property Property name
+     * @protected
+     */
+    _createReflectedProperty(property) {
+      let attr = CaseMap.camelToDashCase(property);
+      if (attr[0] === '-') {
+        console.warn('Property ' + property + ' cannot be reflected to attribute ' + attr + ' because "-" is not a valid starting attribute name. Use a lowercase first letter for the property thisead.');
+      } else {
+        this._addPropertyEffect(property, TYPES.REFLECT, {
+          fn: runReflectEffect,
+          info: {
+            attrName: attr
+          }
+        });
+      }
+    }
+
+    /**
+     * Equivalent to static `createComputedProperty` API but can be called on
+     * an instance to add effects at runtime.  See that method for
+     * full API docs.
+     *
+     * @param {string} property Name of computed property to set
+     * @param {string} expression Method expression
+     * @param {boolean|Object=} dynamicFn Boolean or object map indicating
+     *   whether method names should be included as a dependency to the effect.
+     * @protected
+     */
+    _createComputedProperty(property, expression, dynamicFn) {
+      let sig = parseMethod(expression);
+      if (!sig) {
+        throw new Error("Malformed computed expression '" + expression + "'");
+      }
+      createMethodEffect(this, sig, TYPES.COMPUTE, runComputedEffect, property, dynamicFn);
+    }
+
+    // -- static class methods ------------
+
+    /**
+     * Ensures an accessor exists for the specified property, and adds
+     * to a list of "property effects" that will run when the accessor for
+     * the specified property is set.  Effects are grouped by "type", which
+     * roughly corresponds to a phase in effect processing.  The effect
+     * metadata should be in the following form:
+     *
+     *     {
+     *       fn: effectFunction, // Reference to function to call to perform effect
+     *       info: { ... }       // Effect metadata passed to function
+     *       trigger: {          // Optional triggering metadata; if not provided
+     *         name: string      // the property is treated as a wildcard
+     *         structured: boolean
+     *         wildcard: boolean
+     *       }
+     *     }
+     *
+     * Effects are called from `_propertiesChanged` in the following order by
+     * type:
+     *
+     * 1. COMPUTE
+     * 2. PROPAGATE
+     * 3. REFLECT
+     * 4. OBSERVE
+     * 5. NOTIFY
+     *
+     * Effect functions are called with the following signature:
+     *
+     *     effectFunction(inst, path, props, oldProps, info, hasPaths)
+     *
+     * @param {string} property Property that should trigger the effect
+     * @param {string} type Effect type, from this.PROPERTY_EFFECT_TYPES
+     * @param {Object=} effect Effect metadata object
+     * @protected
+     */
+    static addPropertyEffect(property, type, effect) {
+      this.prototype._addPropertyEffect(property, type, effect);
+    }
+
+    /**
+     * Creates a single-property observer for the given property.
+     *
+     * @param {string} property Property name
+     * @param {string} methodName Name of observer method to call
+     * @param {boolean=} dynamicFn Whether the method name should be included as
+     *   a dependency to the effect.
+     * @protected
+     */
+    static createPropertyObserver(property, methodName, dynamicFn) {
+      this.prototype._createPropertyObserver(property, methodName, dynamicFn);
+    }
+
+    /**
+     * Creates a multi-property "method observer" based on the provided
+     * expression, which should be a string in the form of a normal Javascript
+     * function signature: `'methodName(arg1, [..., argn])'`.  Each argument
+     * should correspond to a property or path in the context of this
+     * prototype (or instance), or may be a literal string or number.
+     *
+     * @param {string} expression Method expression
+     * @param {boolean|Object=} dynamicFn Boolean or object map indicating
+     *   whether method names should be included as a dependency to the effect.
+     * @protected
+     */
+    static createMethodObserver(expression, dynamicFn) {
+      this.prototype._createMethodObserver(expression, dynamicFn);
+    }
+
+    /**
+     * Causes the setter for the given property to dispatch `<property>-changed`
+     * events to notify of changes to the property.
+     *
+     * @param {string} property Property name
+     * @protected
+     */
+    static createNotifyingProperty(property) {
+      this.prototype._createNotifyingProperty(property);
+    }
+
+    /**
+     * Creates a read-only accessor for the given property.
+     *
+     * To set the property, use the protected `_setProperty` API.
+     * To create a custom protected setter (e.g. `_setMyProp()` for
+     * property `myProp`), pass `true` for `protectedSetter`.
+     *
+     * Note, if the property will have other property effects, this method
+     * should be called first, before adding other effects.
+     *
+     * @param {string} property Property name
+     * @param {boolean=} protectedSetter Creates a custom protected setter
+     *   when `true`.
+     * @protected
+     */
+    static createReadOnlyProperty(property, protectedSetter) {
+      this.prototype._createReadOnlyProperty(property, protectedSetter);
+    }
+
+    /**
+     * Causes the setter for the given property to reflect the property value
+     * to a (dash-cased) attribute of the same name.
+     *
+     * @param {string} property Property name
+     * @protected
+     */
+    static createReflectedProperty(property) {
+      this.prototype._createReflectedProperty(property);
+    }
+
+    /**
+     * Creates a computed property whose value is set to the result of the
+     * method described by the given `expression` each time one or more
+     * arguments to the method changes.  The expression should be a string
+     * in the form of a normal Javascript function signature:
+     * `'methodName(arg1, [..., argn])'`
+     *
+     * @param {string} property Name of computed property to set
+     * @param {string} expression Method expression
+     * @param {boolean|Object=} dynamicFn Boolean or object map indicating whether
+     *   method names should be included as a dependency to the effect.
+     * @protected
+     */
+    static createComputedProperty(property, expression, dynamicFn) {
+      this.prototype._createComputedProperty(property, expression, dynamicFn);
+    }
+
+    /**
+     * Parses the provided template to ensure binding effects are created
+     * for them, and then ensures property accessors are created for any
+     * dependent properties in the template.  Binding effects for bound
+     * templates are stored in a linked list on the instance so that
+     * templates can be efficiently stamped and unstamped.
+     *
+     * @param {HTMLTemplateElement} template Template containing binding
+     *   bindings
+     * @return {Object} Template metadata object
+     * @protected
+     */
+    static bindTemplate(template) {
+      return this.prototype._bindTemplate(template);
+    }
+
+    // -- binding ----------------------------------------------
+
+    /**
+     * Equivalent to static `bindTemplate` API but can be called on
+     * an instance to add effects at runtime.  See that method for
+     * full API docs.
+     *
+     * This method may be called on the prototype (for prototypical template
+     * binding, to avoid creating accessors every instance) once per prototype,
+     * and will be called with `runtimeBinding: true` by `_stampTemplate` to
+     * create and link an instance of the template metadata associated with a
+     * particular stamping.
+     *
+     * @param {HTMLTemplateElement} template Template containing binding
+     *   bindings
+     * @param {boolean=} instanceBinding When false (default), performs
+     *   "prototypical" binding of the template and overwrites any previously
+     *   bound template for the class. When true (as passed from
+     *   `_stampTemplate`), the template info is instanced and linked into
+     *   the list of bound templates.
+     * @return {!TemplateInfo} Template metadata object; for `runtimeBinding`,
+     *   this is an instance of the prototypical template info
+     * @protected
+     */
+    _bindTemplate(template, instanceBinding) {
+      let templateInfo = this.constructor._parseTemplate(template);
+      let wasPreBound = this.__templateInfo == templateInfo;
+      // Optimization: since this is called twice for proto-bound templates,
+      // don't attempt to recreate accessors if this template was pre-bound
+      if (!wasPreBound) {
+        for (let prop in templateInfo.propertyEffects) {
+          this._createPropertyAccessor(prop);
+        }
+      }
+      if (instanceBinding) {
+        // For instance-time binding, create instance of template metadata
+        // and link into list of templates if necessary
+        templateInfo = /** @type {!TemplateInfo} */Object.create(templateInfo);
+        templateInfo.wasPreBound = wasPreBound;
+        if (!wasPreBound && this.__templateInfo) {
+          let last = this.__templateInfoLast || this.__templateInfo;
+          this.__templateInfoLast = last.nextTemplateInfo = templateInfo;
+          templateInfo.previousTemplateInfo = last;
+          return templateInfo;
+        }
+      }
+      return this.__templateInfo = templateInfo;
+    }
+
+    /**
+     * Adds a property effect to the given template metadata, which is run
+     * at the "propagate" stage of `_propertiesChanged` when the template
+     * has been bound to the element via `_bindTemplate`.
+     *
+     * The `effect` object should match the format in `_addPropertyEffect`.
+     *
+     * @param {Object} templateInfo Template metadata to add effect to
+     * @param {string} prop Property that should trigger the effect
+     * @param {Object=} effect Effect metadata object
+     * @protected
+     */
+    static _addTemplatePropertyEffect(templateInfo, prop, effect) {
+      let hostProps = templateInfo.hostProps = templateInfo.hostProps || {};
+      hostProps[prop] = true;
+      let effects = templateInfo.propertyEffects = templateInfo.propertyEffects || {};
+      let propEffects = effects[prop] = effects[prop] || [];
+      propEffects.push(effect);
+    }
+
+    /**
+     * Stamps the provided template and performs instance-time setup for
+     * Polymer template features, including data bindings, declarative event
+     * listeners, and the `this.$` map of `id`'s to nodes.  A document fragment
+     * is returned containing the stamped DOM, ready for insertion into the
+     * DOM.
+     *
+     * This method may be called more than once; however note that due to
+     * `shadycss` polyfill limitations, only styles from templates prepared
+     * using `ShadyCSS.prepareTemplate` will be correctly polyfilled (scoped
+     * to the shadow root and support CSS custom properties), and note that
+     * `ShadyCSS.prepareTemplate` may only be called once per element. As such,
+     * any styles required by in runtime-stamped templates must be included
+     * in the main element template.
+     *
+     * @param {!HTMLTemplateElement} template Template to stamp
+     * @return {!StampedTemplate} Cloned template content
+     * @override
+     * @protected
+     */
+    _stampTemplate(template) {
+      // Ensures that created dom is `_enqueueClient`'d to this element so
+      // that it can be flushed on next call to `_flushProperties`
+      hostStack.beginHosting(this);
+      let dom = super._stampTemplate(template);
+      hostStack.endHosting(this);
+      let templateInfo = /** @type {!TemplateInfo} */this._bindTemplate(template, true);
+      // Add template-instance-specific data to instanced templateInfo
+      templateInfo.nodeList = dom.nodeList;
+      // Capture child nodes to allow unstamping of non-prototypical templates
+      if (!templateInfo.wasPreBound) {
+        let nodes = templateInfo.childNodes = [];
+        for (let n = dom.firstChild; n; n = n.nextSibling) {
+          nodes.push(n);
+        }
+      }
+      dom.templateInfo = templateInfo;
+      // Setup compound storage, 2-way listeners, and dataHost for bindings
+      setupBindings(this, templateInfo);
+      // Flush properties into template nodes if already booted
+      if (this.__dataReady) {
+        runEffects(this, templateInfo.propertyEffects, this.__data, null, false, templateInfo.nodeList);
+      }
+      return dom;
+    }
+
+    /**
+     * Removes and unbinds the nodes previously contained in the provided
+     * DocumentFragment returned from `_stampTemplate`.
+     *
+     * @param {!StampedTemplate} dom DocumentFragment previously returned
+     *   from `_stampTemplate` associated with the nodes to be removed
+     * @protected
+     */
+    _removeBoundDom(dom) {
+      // Unlink template info
+      let templateInfo = dom.templateInfo;
+      if (templateInfo.previousTemplateInfo) {
+        templateInfo.previousTemplateInfo.nextTemplateInfo = templateInfo.nextTemplateInfo;
+      }
+      if (templateInfo.nextTemplateInfo) {
+        templateInfo.nextTemplateInfo.previousTemplateInfo = templateInfo.previousTemplateInfo;
+      }
+      if (this.__templateInfoLast == templateInfo) {
+        this.__templateInfoLast = templateInfo.previousTemplateInfo;
+      }
+      templateInfo.previousTemplateInfo = templateInfo.nextTemplateInfo = null;
+      // Remove stamped nodes
+      let nodes = templateInfo.childNodes;
+      for (let i = 0; i < nodes.length; i++) {
+        let node = nodes[i];
+        node.parentNode.removeChild(node);
+      }
+    }
+
+    /**
+     * Overrides default `TemplateStamp` implementation to add support for
+     * parsing bindings from `TextNode`'s' `textContent`.  A `bindings`
+     * array is added to `nodeInfo` and populated with binding metadata
+     * with information capturing the binding target, and a `parts` array
+     * with one or more metadata objects capturing the source(s) of the
+     * binding.
+     *
+     * @override
+     * @param {Node} node Node to parse
+     * @param {TemplateInfo} templateInfo Template metadata for current template
+     * @param {NodeInfo} nodeInfo Node metadata for current template node
+     * @return {boolean} `true` if the visited node added node-specific
+     *   metadata to `nodeInfo`
+     * @protected
+     * @suppress {missingProperties} Interfaces in closure do not inherit statics, but classes do
+     */
+    static _parseTemplateNode(node, templateInfo, nodeInfo) {
+      let noted = super._parseTemplateNode(node, templateInfo, nodeInfo);
+      if (node.nodeType === Node.TEXT_NODE) {
+        let parts = this._parseBindings(node.textContent, templateInfo);
+        if (parts) {
+          // Initialize the textContent with any literal parts
+          // NOTE: default to a space here so the textNode remains; some browsers
+          // (IE) evacipate an empty textNode following cloneNode/importNode.
+          node.textContent = literalFromParts(parts) || ' ';
+          addBinding(this, templateInfo, nodeInfo, 'text', 'textContent', parts);
+          noted = true;
+        }
+      }
+      return noted;
+    }
+
+    /**
+     * Overrides default `TemplateStamp` implementation to add support for
+     * parsing bindings from attributes.  A `bindings`
+     * array is added to `nodeInfo` and populated with binding metadata
+     * with information capturing the binding target, and a `parts` array
+     * with one or more metadata objects capturing the source(s) of the
+     * binding.
+     *
+     * @override
+     * @param {Element} node Node to parse
+     * @param {TemplateInfo} templateInfo Template metadata for current template
+     * @param {NodeInfo} nodeInfo Node metadata for current template node
+     * @return {boolean} `true` if the visited node added node-specific
+     *   metadata to `nodeInfo`
+     * @protected
+     * @suppress {missingProperties} Interfaces in closure do not inherit statics, but classes do
+     */
+    static _parseTemplateNodeAttribute(node, templateInfo, nodeInfo, name, value) {
+      let parts = this._parseBindings(value, templateInfo);
+      if (parts) {
+        // Attribute or property
+        let origName = name;
+        let kind = 'property';
+        if (name[name.length - 1] == '$') {
+          name = name.slice(0, -1);
+          kind = 'attribute';
+        }
+        // Initialize attribute bindings with any literal parts
+        let literal = literalFromParts(parts);
+        if (literal && kind == 'attribute') {
+          node.setAttribute(name, literal);
+        }
+        // Clear attribute before removing, since IE won't allow removing
+        // `value` attribute if it previously had a value (can't
+        // unconditionally set '' before removing since attributes with `$`
+        // can't be set using setAttribute)
+        if (node.localName === 'input' && origName === 'value') {
+          node.setAttribute(origName, '');
+        }
+        // Remove annotation
+        node.removeAttribute(origName);
+        // Case hackery: attributes are lower-case, but bind targets
+        // (properties) are case sensitive. Gambit is to map dash-case to
+        // camel-case: `foo-bar` becomes `fooBar`.
+        // Attribute bindings are excepted.
+        if (kind === 'property') {
+          name = (0, _caseMap.dashToCamelCase)(name);
+        }
+        addBinding(this, templateInfo, nodeInfo, kind, name, parts, literal);
+        return true;
+      } else {
+        return super._parseTemplateNodeAttribute(node, templateInfo, nodeInfo, name, value);
+      }
+    }
+
+    /**
+     * Overrides default `TemplateStamp` implementation to add support for
+     * binding the properties that a nested template depends on to the template
+     * as `_host_<property>`.
+     *
+     * @override
+     * @param {Node} node Node to parse
+     * @param {TemplateInfo} templateInfo Template metadata for current template
+     * @param {NodeInfo} nodeInfo Node metadata for current template node
+     * @return {boolean} `true` if the visited node added node-specific
+     *   metadata to `nodeInfo`
+     * @protected
+     * @suppress {missingProperties} Interfaces in closure do not inherit statics, but classes do
+     */
+    static _parseTemplateNestedTemplate(node, templateInfo, nodeInfo) {
+      let noted = super._parseTemplateNestedTemplate(node, templateInfo, nodeInfo);
+      // Merge host props into outer template and add bindings
+      let hostProps = nodeInfo.templateInfo.hostProps;
+      let mode = '{';
+      for (let source in hostProps) {
+        let parts = [{ mode, source, dependencies: [source] }];
+        addBinding(this, templateInfo, nodeInfo, 'property', '_host_' + source, parts);
+      }
+      return noted;
+    }
+
+    /**
+     * Called to parse text in a template (either attribute values or
+     * textContent) into binding metadata.
+     *
+     * Any overrides of this method should return an array of binding part
+     * metadata  representing one or more bindings found in the provided text
+     * and any "literal" text in between.  Any non-literal parts will be passed
+     * to `_evaluateBinding` when any dependencies change.  The only required
+     * fields of each "part" in the returned array are as follows:
+     *
+     * - `dependencies` - Array containing trigger metadata for each property
+     *   that should trigger the binding to update
+     * - `literal` - String containing text if the part represents a literal;
+     *   in this case no `dependencies` are needed
+     *
+     * Additional metadata for use by `_evaluateBinding` may be provided in
+     * each part object as needed.
+     *
+     * The default implementation handles the following types of bindings
+     * (one or more may be intermixed with literal strings):
+     * - Property binding: `[[prop]]`
+     * - Path binding: `[[object.prop]]`
+     * - Negated property or path bindings: `[[!prop]]` or `[[!object.prop]]`
+     * - Two-way property or path bindings (supports negation):
+     *   `{{prop}}`, `{{object.prop}}`, `{{!prop}}` or `{{!object.prop}}`
+     * - Inline computed method (supports negation):
+     *   `[[compute(a, 'literal', b)]]`, `[[!compute(a, 'literal', b)]]`
+     *
+     * @param {string} text Text to parse from attribute or textContent
+     * @param {Object} templateInfo Current template metadata
+     * @return {Array<!BindingPart>} Array of binding part metadata
+     * @protected
+     */
+    static _parseBindings(text, templateInfo) {
+      let parts = [];
+      let lastIndex = 0;
+      let m;
+      // Example: "literal1{{prop}}literal2[[!compute(foo,bar)]]final"
+      // Regex matches:
+      //        Iteration 1:  Iteration 2:
+      // m[1]: '{{'          '[['
+      // m[2]: ''            '!'
+      // m[3]: 'prop'        'compute(foo,bar)'
+      while ((m = bindingRegex.exec(text)) !== null) {
+        // Add literal part
+        if (m.index > lastIndex) {
+          parts.push({ literal: text.slice(lastIndex, m.index) });
+        }
+        // Add binding part
+        let mode = m[1][0];
+        let negate = Boolean(m[2]);
+        let source = m[3].trim();
+        let customEvent = false,
+            notifyEvent = '',
+            colon = -1;
+        if (mode == '{' && (colon = source.indexOf('::')) > 0) {
+          notifyEvent = source.substring(colon + 2);
+          source = source.substring(0, colon);
+          customEvent = true;
+        }
+        let signature = parseMethod(source);
+        let dependencies = [];
+        if (signature) {
+          // Inline computed function
+          let { args, methodName } = signature;
+          for (let i = 0; i < args.length; i++) {
+            let arg = args[i];
+            if (!arg.literal) {
+              dependencies.push(arg);
+            }
+          }
+          let dynamicFns = templateInfo.dynamicFns;
+          if (dynamicFns && dynamicFns[methodName] || signature.static) {
+            dependencies.push(methodName);
+            signature.dynamicFn = true;
+          }
+        } else {
+          // Property or path
+          dependencies.push(source);
+        }
+        parts.push({
+          source, mode, negate, customEvent, signature, dependencies,
+          event: notifyEvent
+        });
+        lastIndex = bindingRegex.lastIndex;
+      }
+      // Add a final literal part
+      if (lastIndex && lastIndex < text.length) {
+        let literal = text.substring(lastIndex);
+        if (literal) {
+          parts.push({
+            literal: literal
+          });
+        }
+      }
+      if (parts.length) {
+        return parts;
+      } else {
+        return null;
+      }
+    }
+
+    /**
+     * Called to evaluate a previously parsed binding part based on a set of
+     * one or more changed dependencies.
+     *
+     * @param {this} inst Element that should be used as scope for
+     *   binding dependencies
+     * @param {BindingPart} part Binding part metadata
+     * @param {string} path Property/path that triggered this effect
+     * @param {Object} props Bag of current property changes
+     * @param {Object} oldProps Bag of previous values for changed properties
+     * @param {boolean} hasPaths True with `props` contains one or more paths
+     * @return {*} Value the binding part evaluated to
+     * @protected
+     */
+    static _evaluateBinding(inst, part, path, props, oldProps, hasPaths) {
+      let value;
+      if (part.signature) {
+        value = runMethodEffect(inst, path, props, oldProps, part.signature);
+      } else if (path != part.source) {
+        value = (0, _path.get)(inst, part.source);
+      } else {
+        if (hasPaths && (0, _path.isPath)(path)) {
+          value = (0, _path.get)(inst, path);
+        } else {
+          value = inst.__data[path];
+        }
+      }
+      if (part.negate) {
+        value = !value;
+      }
+      return value;
+    }
+
+  }
+
+  // make a typing for closure :P
+  PropertyEffectsType = PropertyEffects;
+
+  return PropertyEffects;
+});
+
+/**
+ * Helper api for enqueing client dom created by a host element.
+ *
+ * By default elements are flushed via `_flushProperties` when
+ * `connectedCallback` is called. Elements attach their client dom to
+ * themselves at `ready` time which results from this first flush.
+ * This provides an ordering guarantee that the client dom an element
+ * creates is flushed before the element itself (i.e. client `ready`
+ * fires before host `ready`).
+ *
+ * However, if `_flushProperties` is called *before* an element is connected,
+ * as for example `Templatize` does, this ordering guarantee cannot be
+ * satisfied because no elements are connected. (Note: Bound elements that
+ * receive data do become enqueued clients and are properly ordered but
+ * unbound elements are not.)
+ *
+ * To maintain the desired "client before host" ordering guarantee for this
+ * case we rely on the "host stack. Client nodes registers themselves with
+ * the creating host element when created. This ensures that all client dom
+ * is readied in the proper order, maintaining the desired guarantee.
+ *
+ * @private
+ */
+let hostStack = {
+
+  stack: [],
+
+  /**
+   * @param {*} inst Instance to add to hostStack
+   * @this {hostStack}
+   */
+  registerHost(inst) {
+    if (this.stack.length) {
+      let host = this.stack[this.stack.length - 1];
+      host._enqueueClient(inst);
+    }
+  },
+
+  /**
+   * @param {*} inst Instance to begin hosting
+   * @this {hostStack}
+   */
+  beginHosting(inst) {
+    this.stack.push(inst);
+  },
+
+  /**
+   * @param {*} inst Instance to end hosting
+   * @this {hostStack}
+   */
+  endHosting(inst) {
+    let stackLen = this.stack.length;
+    if (stackLen && this.stack[stackLen - 1] == inst) {
+      this.stack.pop();
+    }
+  }
+
+};
+
+/***/ }),
+/* 18 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+/**
 @license
 Copyright (c) 2017 The Polymer Project Authors. All rights reserved.
 This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
@@ -405,7 +5065,49 @@ The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
 The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
 Code distributed by Google as part of the polymer project is also
 subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
-*/function n(e){t.nativeCssVariables=e&&e.shimcssproperties?o=!1:o=a||!!(!navigator.userAgent.match(/AppleWebKit\/601|Edge\/15/)&&window.CSS&&CSS.supports&&CSS.supports('box-shadow','0 0 0 var(--foo)'))}Object.defineProperty(t,'__esModule',{value:!0});let a=t.nativeShadow=!(window.ShadyDOM&&window.ShadyDOM.inUse),o=t.nativeCssVariables=void 0;window.ShadyCSS&&window.ShadyCSS.nativeCss!==void 0?t.nativeCssVariables=o=window.ShadyCSS.nativeCss:window.ShadyCSS?(n(window.ShadyCSS),window.ShadyCSS=void 0):n(window.WebComponents&&window.WebComponents.flags)},function(e,t){'use strict';/**
+*/
+
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+let nativeShadow = exports.nativeShadow = !(window['ShadyDOM'] && window['ShadyDOM']['inUse']);
+let nativeCssVariables = exports.nativeCssVariables = undefined;
+
+/**
+ * @param {(ShadyCSSOptions | ShadyCSSInterface)=} settings
+ */
+function calcCssVariables(settings) {
+  if (settings && settings['shimcssproperties']) {
+    exports.nativeCssVariables = nativeCssVariables = false;
+  } else {
+    // chrome 49 has semi-working css vars, check if box-shadow works
+    // safari 9.1 has a recalc bug: https://bugs.webkit.org/show_bug.cgi?id=155782
+    // However, shim css custom properties are only supported with ShadyDOM enabled,
+    // so fall back on native if we do not detect ShadyDOM
+    // Edge 15: custom properties used in ::before and ::after will also be used in the parent element
+    // https://developer.microsoft.com/en-us/microsoft-edge/platform/issues/12414257/
+    exports.nativeCssVariables = nativeCssVariables = nativeShadow || Boolean(!navigator.userAgent.match(/AppleWebKit\/601|Edge\/15/) && window.CSS && CSS.supports && CSS.supports('box-shadow', '0 0 0 var(--foo)'));
+  }
+}
+
+if (window.ShadyCSS && window.ShadyCSS.nativeCss !== undefined) {
+  exports.nativeCssVariables = nativeCssVariables = window.ShadyCSS.nativeCss;
+} else if (window.ShadyCSS) {
+  calcCssVariables(window.ShadyCSS);
+  // reset window variable to let ShadyCSS API take its place
+  window.ShadyCSS = undefined;
+} else {
+  calcCssVariables(window['WebComponents'] && window['WebComponents']['flags']);
+}
+
+/***/ }),
+/* 19 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+/**
 @license
 Copyright (c) 2017 The Polymer Project Authors. All rights reserved.
 This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
@@ -413,7 +5115,274 @@ The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
 The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
 Code distributed by Google as part of the polymer project is also
 subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
-*/function n(e){return e.replace(y.comments,'').replace(y.port,'')}function a(e){let t=new c;t.start=0,t.end=e.length;let a=t;for(let n=0,o=e.length;n<o;n++)if(e[n]===m){a.rules||(a.rules=[]);let e=a,t=e.rules[e.rules.length-1]||null;a=new c,a.start=n+1,a.parent=e,a.previous=t,e.rules.push(a)}else e[n]===h&&(a.end=n+1,a=a.parent||t);return t}function o(e,n){let a=n.substring(e.start,e.end-1);if(e.parsedCssText=e.cssText=a.trim(),e.parent){let t=e.previous?e.previous.end:e.parent.start;a=n.substring(t,e.start-1),a=r(a),a=a.replace(y.multipleSpaces,' '),a=a.substring(a.lastIndexOf(';')+1);let o=e.parsedSelector=e.selector=a.trim();e.atRule=0===o.indexOf(v),e.atRule?0===o.indexOf(g)?e.type=u.MEDIA_RULE:o.match(y.keyframesRule)&&(e.type=u.KEYFRAMES_RULE,e.keyframesName=e.selector.split(y.multipleSpaces).pop()):0===o.indexOf(f)?e.type=u.MIXIN_RULE:e.type=u.STYLE_RULE}let t=e.rules;if(t)for(let e=0,a=t.length,s;e<a&&(s=t[e]);e++)o(s,n);return e}function r(e){return e.replace(/\\([0-9a-f]{1,6})\s/gi,function(){let e=arguments[1],t=6-e.length;for(;t--;)e='0'+e;return'\\'+e})}function s(e,t,n=''){let a='';if(e.cssText||e.rules){let n=e.rules;if(n&&!d(n))for(let e=0,o=n.length,d;e<o&&(d=n[e]);e++)a=s(d,t,a);else a=t?e.cssText:l(e.cssText),a=a.trim(),a&&(a='  '+a+'\n')}return a&&(e.selector&&(n+=e.selector+' '+m+'\n'),n+=a,e.selector&&(n+=h+'\n\n')),n}function d(e){let t=e[0];return!!t&&!!t.selector&&0===t.selector.indexOf(f)}function l(e){return e=p(e),_(e)}function p(e){return e.replace(y.customProp,'').replace(y.mixinProp,'')}function _(e){return e.replace(y.mixinApply,'').replace(y.varApply,'')}Object.defineProperty(t,'__esModule',{value:!0}),t.parse=function(e){return e=n(e),o(a(e),e)},t.stringify=s,t.removeCustomPropAssignment=p;class c{constructor(){this.start=0,this.end=0,this.previous=null,this.parent=null,this.rules=null,this.parsedCssText='',this.cssText='',this.atRule=!1,this.type=0,this.keyframesName='',this.selector='',this.parsedSelector=''}}t.StyleNode=c;const u=t.types={STYLE_RULE:1,KEYFRAMES_RULE:7,MEDIA_RULE:4,MIXIN_RULE:1e3},m='{',h='}',y={comments:/\/\*[^*]*\*+([^/*][^*]*\*+)*\//gim,port:/@import[^;]*;/gim,customProp:/(?:^[^;\-\s}]+)?--[^;{}]*?:[^{};]*?(?:[;\n]|$)/gim,mixinProp:/(?:^[^;\-\s}]+)?--[^;{}]*?:[^{};]*?{[^}]*?}(?:[;\n]|$)?/gim,mixinApply:/@apply\s*\(?[^);]*\)?\s*(?:[;\n]|$)?/gim,varApply:/[^;:]*?:[^;]*?var\([^;]*\)(?:[;\n]|$)?/gim,keyframesRule:/^@[^\s]*keyframes/,multipleSpaces:/\s+/g},f='--',g='@media',v='@'},function(e,t){'use strict';Object.defineProperty(t,'__esModule',{value:!0});/**
+*/
+
+/*
+Extremely simple css parser. Intended to be not more than what we need
+and definitely not necessarily correct =).
+*/
+
+
+
+/** @unrestricted */
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.parse = parse;
+exports.stringify = stringify;
+exports.removeCustomPropAssignment = removeCustomPropAssignment;
+class StyleNode {
+  constructor() {
+    /** @type {number} */
+    this['start'] = 0;
+    /** @type {number} */
+    this['end'] = 0;
+    /** @type {StyleNode} */
+    this['previous'] = null;
+    /** @type {StyleNode} */
+    this['parent'] = null;
+    /** @type {Array<StyleNode>} */
+    this['rules'] = null;
+    /** @type {string} */
+    this['parsedCssText'] = '';
+    /** @type {string} */
+    this['cssText'] = '';
+    /** @type {boolean} */
+    this['atRule'] = false;
+    /** @type {number} */
+    this['type'] = 0;
+    /** @type {string} */
+    this['keyframesName'] = '';
+    /** @type {string} */
+    this['selector'] = '';
+    /** @type {string} */
+    this['parsedSelector'] = '';
+  }
+}
+
+exports.StyleNode = StyleNode;
+
+// given a string of css, return a simple rule tree
+/**
+ * @param {string} text
+ * @return {StyleNode}
+ */
+
+function parse(text) {
+  text = clean(text);
+  return parseCss(lex(text), text);
+}
+
+// remove stuff we don't care about that may hinder parsing
+/**
+ * @param {string} cssText
+ * @return {string}
+ */
+function clean(cssText) {
+  return cssText.replace(RX.comments, '').replace(RX.port, '');
+}
+
+// super simple {...} lexer that returns a node tree
+/**
+ * @param {string} text
+ * @return {StyleNode}
+ */
+function lex(text) {
+  let root = new StyleNode();
+  root['start'] = 0;
+  root['end'] = text.length;
+  let n = root;
+  for (let i = 0, l = text.length; i < l; i++) {
+    if (text[i] === OPEN_BRACE) {
+      if (!n['rules']) {
+        n['rules'] = [];
+      }
+      let p = n;
+      let previous = p['rules'][p['rules'].length - 1] || null;
+      n = new StyleNode();
+      n['start'] = i + 1;
+      n['parent'] = p;
+      n['previous'] = previous;
+      p['rules'].push(n);
+    } else if (text[i] === CLOSE_BRACE) {
+      n['end'] = i + 1;
+      n = n['parent'] || root;
+    }
+  }
+  return root;
+}
+
+// add selectors/cssText to node tree
+/**
+ * @param {StyleNode} node
+ * @param {string} text
+ * @return {StyleNode}
+ */
+function parseCss(node, text) {
+  let t = text.substring(node['start'], node['end'] - 1);
+  node['parsedCssText'] = node['cssText'] = t.trim();
+  if (node['parent']) {
+    let ss = node['previous'] ? node['previous']['end'] : node['parent']['start'];
+    t = text.substring(ss, node['start'] - 1);
+    t = _expandUnicodeEscapes(t);
+    t = t.replace(RX.multipleSpaces, ' ');
+    // TODO(sorvell): ad hoc; make selector include only after last ;
+    // helps with mixin syntax
+    t = t.substring(t.lastIndexOf(';') + 1);
+    let s = node['parsedSelector'] = node['selector'] = t.trim();
+    node['atRule'] = s.indexOf(AT_START) === 0;
+    // note, support a subset of rule types...
+    if (node['atRule']) {
+      if (s.indexOf(MEDIA_START) === 0) {
+        node['type'] = types.MEDIA_RULE;
+      } else if (s.match(RX.keyframesRule)) {
+        node['type'] = types.KEYFRAMES_RULE;
+        node['keyframesName'] = node['selector'].split(RX.multipleSpaces).pop();
+      }
+    } else {
+      if (s.indexOf(VAR_START) === 0) {
+        node['type'] = types.MIXIN_RULE;
+      } else {
+        node['type'] = types.STYLE_RULE;
+      }
+    }
+  }
+  let r$ = node['rules'];
+  if (r$) {
+    for (let i = 0, l = r$.length, r; i < l && (r = r$[i]); i++) {
+      parseCss(r, text);
+    }
+  }
+  return node;
+}
+
+/**
+ * conversion of sort unicode escapes with spaces like `\33 ` (and longer) into
+ * expanded form that doesn't require trailing space `\000033`
+ * @param {string} s
+ * @return {string}
+ */
+function _expandUnicodeEscapes(s) {
+  return s.replace(/\\([0-9a-f]{1,6})\s/gi, function () {
+    let code = arguments[1],
+        repeat = 6 - code.length;
+    while (repeat--) {
+      code = '0' + code;
+    }
+    return '\\' + code;
+  });
+}
+
+/**
+ * stringify parsed css.
+ * @param {StyleNode} node
+ * @param {boolean=} preserveProperties
+ * @param {string=} text
+ * @return {string}
+ */
+function stringify(node, preserveProperties, text = '') {
+  // calc rule cssText
+  let cssText = '';
+  if (node['cssText'] || node['rules']) {
+    let r$ = node['rules'];
+    if (r$ && !_hasMixinRules(r$)) {
+      for (let i = 0, l = r$.length, r; i < l && (r = r$[i]); i++) {
+        cssText = stringify(r, preserveProperties, cssText);
+      }
+    } else {
+      cssText = preserveProperties ? node['cssText'] : removeCustomProps(node['cssText']);
+      cssText = cssText.trim();
+      if (cssText) {
+        cssText = '  ' + cssText + '\n';
+      }
+    }
+  }
+  // emit rule if there is cssText
+  if (cssText) {
+    if (node['selector']) {
+      text += node['selector'] + ' ' + OPEN_BRACE + '\n';
+    }
+    text += cssText;
+    if (node['selector']) {
+      text += CLOSE_BRACE + '\n\n';
+    }
+  }
+  return text;
+}
+
+/**
+ * @param {Array<StyleNode>} rules
+ * @return {boolean}
+ */
+function _hasMixinRules(rules) {
+  let r = rules[0];
+  return Boolean(r) && Boolean(r['selector']) && r['selector'].indexOf(VAR_START) === 0;
+}
+
+/**
+ * @param {string} cssText
+ * @return {string}
+ */
+function removeCustomProps(cssText) {
+  cssText = removeCustomPropAssignment(cssText);
+  return removeCustomPropApply(cssText);
+}
+
+/**
+ * @param {string} cssText
+ * @return {string}
+ */
+function removeCustomPropAssignment(cssText) {
+  return cssText.replace(RX.customProp, '').replace(RX.mixinProp, '');
+}
+
+/**
+ * @param {string} cssText
+ * @return {string}
+ */
+function removeCustomPropApply(cssText) {
+  return cssText.replace(RX.mixinApply, '').replace(RX.varApply, '');
+}
+
+/** @enum {number} */
+const types = exports.types = {
+  STYLE_RULE: 1,
+  KEYFRAMES_RULE: 7,
+  MEDIA_RULE: 4,
+  MIXIN_RULE: 1000
+};
+
+const OPEN_BRACE = '{';
+const CLOSE_BRACE = '}';
+
+// helper regexp's
+const RX = {
+  comments: /\/\*[^*]*\*+([^/*][^*]*\*+)*\//gim,
+  port: /@import[^;]*;/gim,
+  customProp: /(?:^[^;\-\s}]+)?--[^;{}]*?:[^{};]*?(?:[;\n]|$)/gim,
+  mixinProp: /(?:^[^;\-\s}]+)?--[^;{}]*?:[^{};]*?{[^}]*?}(?:[;\n]|$)?/gim,
+  mixinApply: /@apply\s*\(?[^);]*\)?\s*(?:[;\n]|$)?/gim,
+  varApply: /[^;:]*?:[^;]*?var\([^;]*\)(?:[;\n]|$)?/gim,
+  keyframesRule: /^@[^\s]*keyframes/,
+  multipleSpaces: /\s+/g
+};
+
+const VAR_START = '--';
+const MEDIA_START = '@media';
+const AT_START = '@';
+
+/***/ }),
+/* 20 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+/**
 @license
 Copyright (c) 2017 The Polymer Project Authors. All rights reserved.
 This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
@@ -421,7 +5390,24 @@ The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
 The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
 Code distributed by Google as part of the polymer project is also
 subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
-*/const n=t.VAR_ASSIGN=/(?:^|[;\s{]\s*)(--[\w-]*?)\s*:\s*(?:((?:'(?:\\'|.)*?'|"(?:\\"|.)*?"|\([^)]*?\)|[^};{])+)|\{([^}]*)\}(?:(?=[;\s}])|$))/gi,a=t.MIXIN_MATCH=/(?:^|\W+)@apply\s*\(?([^);\n]*)\)?/gi,o=t.VAR_CONSUMED=/(--[\w-]+)\s*([:,;)]|$)/gi,r=t.ANIMATION_MATCH=/(animation\s*:)|(animation-name\s*:)/,s=t.MEDIA_MATCH=/@media\s(.*)/,d=t.IS_VAR=/^--/,l=t.BRACKETED=/\{[^}]*\}/g,p=t.HOST_PREFIX='(?:^|[^.#[:])',_=t.HOST_SUFFIX='($|[.:[\\s>+~])'},function(e,t,n){'use strict';/**
+*/
+
+const VAR_ASSIGN = exports.VAR_ASSIGN = /(?:^|[;\s{]\s*)(--[\w-]*?)\s*:\s*(?:((?:'(?:\\'|.)*?'|"(?:\\"|.)*?"|\([^)]*?\)|[^};{])+)|\{([^}]*)\}(?:(?=[;\s}])|$))/gi;
+const MIXIN_MATCH = exports.MIXIN_MATCH = /(?:^|\W+)@apply\s*\(?([^);\n]*)\)?/gi;
+const VAR_CONSUMED = exports.VAR_CONSUMED = /(--[\w-]+)\s*([:,;)]|$)/gi;
+const ANIMATION_MATCH = exports.ANIMATION_MATCH = /(animation\s*:)|(animation-name\s*:)/;
+const MEDIA_MATCH = exports.MEDIA_MATCH = /@media\s(.*)/;
+const IS_VAR = exports.IS_VAR = /^--/;
+const BRACKETED = exports.BRACKETED = /\{[^}]*\}/g;
+const HOST_PREFIX = exports.HOST_PREFIX = '(?:^|[^.#[:])';
+const HOST_SUFFIX = exports.HOST_SUFFIX = '($|[.:[\\s>+~])';
+
+/***/ }),
+/* 21 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+/**
 @license
 Copyright (c) 2017 The Polymer Project Authors. All rights reserved.
 This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
@@ -429,7 +5415,595 @@ The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
 The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
 Code distributed by Google as part of the polymer project is also
 subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
-*/Object.defineProperty(t,'__esModule',{value:!0}),t.updateNativeProperties=function(e,t){for(let n in t)null===n?e.style.removeProperty(n):e.style.setProperty(n,t[n])},t.getComputedStyleValue=function(e,t){const n=window.getComputedStyle(e).getPropertyValue(t);return n?n.trim():''},t.detectMixin=function(e){const t=a.MIXIN_MATCH.test(e)||a.VAR_ASSIGN.test(e);return a.MIXIN_MATCH.lastIndex=0,a.VAR_ASSIGN.lastIndex=0,t};var a=n(20)},function(e,t,n){'use strict';function a(){return h}function o(e,t){h=e,Object.setPrototypeOf(e,t.prototype),new t,h=null}function r(e){let t=e.__dataHost;return t&&t._methodHost||t}function s(e,t,n){let a=n.mutableData?b:v,o=class extends a{};return o.prototype.__templatizeOptions=n,o.prototype._bindTemplate(e),p(o,e,t,n),o}function d(e,t,n){let a=n.forwardHostProp;if(a){let r=t.templatizeTemplateClass;if(!r){let e=n.mutableData?f:y;r=t.templatizeTemplateClass=class extends e{};let o=t.hostProps;for(let e in o)r.prototype._addPropertyEffect('_host_'+e,r.prototype.PROPERTY_EFFECT_TYPES.PROPAGATE,{fn:l(e,a)}),r.prototype._createNotifyingProperty('_host_'+e)}o(e,r),e.__dataProto&&Object.assign(e.__data,e.__dataProto),e.__dataTemp={},e.__dataPending=null,e.__dataOld=null,e._enableProperties()}}function l(e,t){return function(e,n,a){t.call(e.__templatizeOwner,n.substring(6),a[n])}}function p(e,t,n,a){let o=n.hostProps||{};for(let r in a.instanceProps){delete o[r];let t=a.notifyInstanceProp;t&&e.prototype._addPropertyEffect(r,e.prototype.PROPERTY_EFFECT_TYPES.NOTIFY,{fn:_(r,t)})}if(a.forwardHostProp&&t.__dataHost)for(let t in o)e.prototype._addPropertyEffect(t,e.prototype.PROPERTY_EFFECT_TYPES.NOTIFY,{fn:c()})}function _(e,t){return function(e,n,a){t.call(e.__templatizeOwner,e,n,a[n])}}function c(){return function(e,t,n){e.__dataHost._setPendingPropertyOrPath('_host_'+t,n[t],!0,!0)}}Object.defineProperty(t,'__esModule',{value:!0}),t.TemplateInstanceBase=t.Templatize=void 0,n(1);var u=n(17),m=n(14);let h=null;a.prototype=Object.create(HTMLTemplateElement.prototype,{constructor:{value:a,writable:!0}});const y=(0,u.PropertyEffects)(a),f=(0,m.MutableData)(y),g=(0,u.PropertyEffects)(class{});class v extends g{constructor(e){super(),this._configureProperties(e),this.root=this._stampTemplate(this.__dataHost);let t=this.children=[];for(let a=this.root.firstChild;a;a=a.nextSibling)t.push(a),a.__templatizeInstance=this;this.__templatizeOwner.__hideTemplateChildren__&&this._showHideChildren(!0);let n=this.__templatizeOptions;(e&&n.instanceProps||!n.instanceProps)&&this._enableProperties()}_configureProperties(e){let t=this.__templatizeOptions;if(e)for(let n in t.instanceProps)n in e&&this._setPendingProperty(n,e[n]);for(let t in this.__hostProps)this._setPendingProperty(t,this.__dataHost['_host_'+t])}forwardHostProp(e,t){this._setPendingPropertyOrPath(e,t,!1,!0)&&this.__dataHost._enqueueClient(this)}_addEventListenerToNode(e,t,n){if(this._methodHost&&this.__templatizeOptions.parentModel)this._methodHost._addEventListenerToNode(e,t,(t)=>{t.model=this,n(t)});else{let a=this.__dataHost.__dataHost;a&&a._addEventListenerToNode(e,t,n)}}_showHideChildren(e){let t=this.children;for(let a=0,o;a<t.length;a++)o=t[a],!!e!=!!o.__hideTemplateChildren__&&(o.nodeType===Node.TEXT_NODE?e?(o.__polymerTextContent__=o.textContent,o.textContent=''):o.textContent=o.__polymerTextContent__:o.style&&(e?(o.__polymerDisplay__=o.style.display,o.style.display='none'):o.style.display=o.__polymerDisplay__)),o.__hideTemplateChildren__=e,o._showHideChildren&&o._showHideChildren(e)}_setUnmanagedPropertyToNode(e,t,n){e.__hideTemplateChildren__&&e.nodeType==Node.TEXT_NODE&&'textContent'==t?e.__polymerTextContent__=n:super._setUnmanagedPropertyToNode(e,t,n)}get parentModel(){let e=this.__parentModel;if(!e){let t;e=this;do e=e.__dataHost.__dataHost;while((t=e.__templatizeOptions)&&!t.parentModel);this.__parentModel=e}return e}}v.prototype.__dataHost,v.prototype.__templatizeOptions,v.prototype._methodHost,v.prototype.__templatizeOwner,v.prototype.__hostProps;const b=(0,m.MutableData)(v),S={templatize(e,t,n){if(n=n||{},e.__templatizeOwner)throw new Error('A <template> can only be templatized once');e.__templatizeOwner=t;let a=t.constructor._parseTemplate(e),o=a.templatizeInstanceClass;o||(o=s(e,a,n),a.templatizeInstanceClass=o),d(e,a,n);let l=class extends o{};return l.prototype._methodHost=r(e),l.prototype.__dataHost=e,l.prototype.__templatizeOwner=t,l.prototype.__hostProps=a.hostProps,l},modelForElement(e,t){for(let n;t;)if(!(n=t.__templatizeInstance))t=t.parentNode;else if(n.__dataHost!=e)t=n.__dataHost;else return n;return null}};t.Templatize=S,t.TemplateInstanceBase=v},function(e,t,n){'use strict';var a=n(0);n(40),n(7);var o=n(3),r=n(2);(0,o.Polymer)({_template:`
+*/
+
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.updateNativeProperties = updateNativeProperties;
+exports.getComputedStyleValue = getComputedStyleValue;
+exports.detectMixin = detectMixin;
+
+var _commonRegex = __webpack_require__(20);
+
+/**
+ * @param {Element} element
+ * @param {Object=} properties
+ */
+function updateNativeProperties(element, properties) {
+  // remove previous properties
+  for (let p in properties) {
+    // NOTE: for bc with shim, don't apply null values.
+    if (p === null) {
+      element.style.removeProperty(p);
+    } else {
+      element.style.setProperty(p, properties[p]);
+    }
+  }
+}
+
+/**
+ * @param {Element} element
+ * @param {string} property
+ * @return {string}
+ */
+function getComputedStyleValue(element, property) {
+  /**
+   * @const {string}
+   */
+  const value = window.getComputedStyle(element).getPropertyValue(property);
+  if (!value) {
+    return '';
+  } else {
+    return value.trim();
+  }
+}
+
+/**
+ * return true if `cssText` contains a mixin definition or consumption
+ * @param {string} cssText
+ * @return {boolean}
+ */
+function detectMixin(cssText) {
+  const has = _commonRegex.MIXIN_MATCH.test(cssText) || _commonRegex.VAR_ASSIGN.test(cssText);
+  // reset state of the regexes
+  _commonRegex.MIXIN_MATCH.lastIndex = 0;
+  _commonRegex.VAR_ASSIGN.lastIndex = 0;
+  return has;
+}
+
+/***/ }),
+/* 22 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.TemplateInstanceBase = exports.Templatize = undefined;
+
+__webpack_require__(1);
+
+var _propertyEffects = __webpack_require__(17);
+
+var _mutableData = __webpack_require__(14);
+
+// Base class for HTMLTemplateElement extension that has property effects
+// machinery for propagating host properties to children. This is an ES5
+// class only because Babel (incorrectly) requires super() in the class
+// constructor even though no `this` is used and it returns an instance.
+let newInstance = null;
+/**
+ * @constructor
+ * @extends {HTMLTemplateElement}
+ */
+function HTMLTemplateElementExtension() {
+  return newInstance;
+}
+HTMLTemplateElementExtension.prototype = Object.create(HTMLTemplateElement.prototype, {
+  constructor: {
+    value: HTMLTemplateElementExtension,
+    writable: true
+  }
+});
+/**
+ * @constructor
+ * @implements {Polymer_PropertyEffects}
+ * @extends {HTMLTemplateElementExtension}
+ */
+const DataTemplate = (0, _propertyEffects.PropertyEffects)(HTMLTemplateElementExtension);
+/**
+ * @constructor
+ * @implements {Polymer_MutableData}
+ * @extends {DataTemplate}
+ */
+const MutableDataTemplate = (0, _mutableData.MutableData)(DataTemplate);
+
+// Applies a DataTemplate subclass to a <template> instance
+function upgradeTemplate(template, constructor) {
+  newInstance = template;
+  Object.setPrototypeOf(template, constructor.prototype);
+  new constructor();
+  newInstance = null;
+}
+
+// Base class for TemplateInstance's
+/**
+ * @constructor
+ * @implements {Polymer_PropertyEffects}
+ */
+const base = (0, _propertyEffects.PropertyEffects)(class {});
+
+/**
+ * @polymer
+ * @customElement
+ * @appliesMixin Polymer.PropertyEffects
+ * @unrestricted
+ */
+class TemplateInstanceBase extends base {
+  constructor(props) {
+    super();
+    this._configureProperties(props);
+    this.root = this._stampTemplate(this.__dataHost);
+    // Save list of stamped children
+    let children = this.children = [];
+    for (let n = this.root.firstChild; n; n = n.nextSibling) {
+      children.push(n);
+      n.__templatizeInstance = this;
+    }
+    if (this.__templatizeOwner.__hideTemplateChildren__) {
+      this._showHideChildren(true);
+    }
+    // Flush props only when props are passed if instance props exist
+    // or when there isn't instance props.
+    let options = this.__templatizeOptions;
+    if (props && options.instanceProps || !options.instanceProps) {
+      this._enableProperties();
+    }
+  }
+  /**
+   * Configure the given `props` by calling `_setPendingProperty`. Also
+   * sets any properties stored in `__hostProps`.
+   * @private
+   * @param {Object} props Object of property name-value pairs to set.
+   */
+  _configureProperties(props) {
+    let options = this.__templatizeOptions;
+    if (props) {
+      for (let iprop in options.instanceProps) {
+        if (iprop in props) {
+          this._setPendingProperty(iprop, props[iprop]);
+        }
+      }
+    }
+    for (let hprop in this.__hostProps) {
+      this._setPendingProperty(hprop, this.__dataHost['_host_' + hprop]);
+    }
+  }
+  /**
+   * Forwards a host property to this instance.  This method should be
+   * called on instances from the `options.forwardHostProp` callback
+   * to propagate changes of host properties to each instance.
+   *
+   * Note this method enqueues the change, which are flushed as a batch.
+   *
+   * @param {string} prop Property or path name
+   * @param {*} value Value of the property to forward
+   */
+  forwardHostProp(prop, value) {
+    if (this._setPendingPropertyOrPath(prop, value, false, true)) {
+      this.__dataHost._enqueueClient(this);
+    }
+  }
+  /**
+   * @override
+   */
+  _addEventListenerToNode(node, eventName, handler) {
+    if (this._methodHost && this.__templatizeOptions.parentModel) {
+      // If this instance should be considered a parent model, decorate
+      // events this template instance as `model`
+      this._methodHost._addEventListenerToNode(node, eventName, e => {
+        e.model = this;
+        handler(e);
+      });
+    } else {
+      // Otherwise delegate to the template's host (which could be)
+      // another template instance
+      let templateHost = this.__dataHost.__dataHost;
+      if (templateHost) {
+        templateHost._addEventListenerToNode(node, eventName, handler);
+      }
+    }
+  }
+  /**
+   * Shows or hides the template instance top level child elements. For
+   * text nodes, `textContent` is removed while "hidden" and replaced when
+   * "shown."
+   * @param {boolean} hide Set to true to hide the children;
+   * set to false to show them.
+   * @protected
+   */
+  _showHideChildren(hide) {
+    let c = this.children;
+    for (let i = 0; i < c.length; i++) {
+      let n = c[i];
+      // Ignore non-changes
+      if (Boolean(hide) != Boolean(n.__hideTemplateChildren__)) {
+        if (n.nodeType === Node.TEXT_NODE) {
+          if (hide) {
+            n.__polymerTextContent__ = n.textContent;
+            n.textContent = '';
+          } else {
+            n.textContent = n.__polymerTextContent__;
+          }
+        } else if (n.style) {
+          if (hide) {
+            n.__polymerDisplay__ = n.style.display;
+            n.style.display = 'none';
+          } else {
+            n.style.display = n.__polymerDisplay__;
+          }
+        }
+      }
+      n.__hideTemplateChildren__ = hide;
+      if (n._showHideChildren) {
+        n._showHideChildren(hide);
+      }
+    }
+  }
+  /**
+   * Overrides default property-effects implementation to intercept
+   * textContent bindings while children are "hidden" and cache in
+   * private storage for later retrieval.
+   *
+   * @override
+   */
+  _setUnmanagedPropertyToNode(node, prop, value) {
+    if (node.__hideTemplateChildren__ && node.nodeType == Node.TEXT_NODE && prop == 'textContent') {
+      node.__polymerTextContent__ = value;
+    } else {
+      super._setUnmanagedPropertyToNode(node, prop, value);
+    }
+  }
+  /**
+   * Find the parent model of this template instance.  The parent model
+   * is either another templatize instance that had option `parentModel: true`,
+   * or else the host element.
+   *
+   * @return {Polymer_PropertyEffects} The parent model of this instance
+   */
+  get parentModel() {
+    let model = this.__parentModel;
+    if (!model) {
+      let options;
+      model = this;
+      do {
+        // A template instance's `__dataHost` is a <template>
+        // `model.__dataHost.__dataHost` is the template's host
+        model = model.__dataHost.__dataHost;
+      } while ((options = model.__templatizeOptions) && !options.parentModel);
+      this.__parentModel = model;
+    }
+    return model;
+  }
+}
+
+/** @type {!DataTemplate} */
+TemplateInstanceBase.prototype.__dataHost;
+/** @type {!TemplatizeOptions} */
+TemplateInstanceBase.prototype.__templatizeOptions;
+/** @type {!Polymer_PropertyEffects} */
+TemplateInstanceBase.prototype._methodHost;
+/** @type {!Object} */
+TemplateInstanceBase.prototype.__templatizeOwner;
+/** @type {!Object} */
+TemplateInstanceBase.prototype.__hostProps;
+
+/**
+ * @constructor
+ * @extends {TemplateInstanceBase}
+ * @implements {Polymer_MutableData}
+ */
+const MutableTemplateInstanceBase = (0, _mutableData.MutableData)(TemplateInstanceBase);
+
+function findMethodHost(template) {
+  // Technically this should be the owner of the outermost template.
+  // In shadow dom, this is always getRootNode().host, but we can
+  // approximate this via cooperation with our dataHost always setting
+  // `_methodHost` as long as there were bindings (or id's) on this
+  // instance causing it to get a dataHost.
+  let templateHost = template.__dataHost;
+  return templateHost && templateHost._methodHost || templateHost;
+}
+
+/* eslint-disable valid-jsdoc */
+/**
+ * @suppress {missingProperties} class.prototype is not defined for some reason
+ */
+function createTemplatizerClass(template, templateInfo, options) {
+  // Anonymous class created by the templatize
+  let base = options.mutableData ? MutableTemplateInstanceBase : TemplateInstanceBase;
+  /**
+   * @constructor
+   * @extends {base}
+   */
+  let klass = class extends base {};
+  klass.prototype.__templatizeOptions = options;
+  klass.prototype._bindTemplate(template);
+  addNotifyEffects(klass, template, templateInfo, options);
+  return klass;
+}
+
+/**
+ * @suppress {missingProperties} class.prototype is not defined for some reason
+ */
+function addPropagateEffects(template, templateInfo, options) {
+  let userForwardHostProp = options.forwardHostProp;
+  if (userForwardHostProp) {
+    // Provide data API and property effects on memoized template class
+    let klass = templateInfo.templatizeTemplateClass;
+    if (!klass) {
+      let base = options.mutableData ? MutableDataTemplate : DataTemplate;
+      klass = templateInfo.templatizeTemplateClass = class TemplatizedTemplate extends base {};
+      // Add template - >instances effects
+      // and host <- template effects
+      let hostProps = templateInfo.hostProps;
+      for (let prop in hostProps) {
+        klass.prototype._addPropertyEffect('_host_' + prop, klass.prototype.PROPERTY_EFFECT_TYPES.PROPAGATE, { fn: createForwardHostPropEffect(prop, userForwardHostProp) });
+        klass.prototype._createNotifyingProperty('_host_' + prop);
+      }
+    }
+    upgradeTemplate(template, klass);
+    // Mix any pre-bound data into __data; no need to flush this to
+    // instances since they pull from the template at instance-time
+    if (template.__dataProto) {
+      // Note, generally `__dataProto` could be chained, but it's guaranteed
+      // to not be since this is a vanilla template we just added effects to
+      Object.assign(template.__data, template.__dataProto);
+    }
+    // Clear any pending data for performance
+    template.__dataTemp = {};
+    template.__dataPending = null;
+    template.__dataOld = null;
+    template._enableProperties();
+  }
+}
+/* eslint-enable valid-jsdoc */
+
+function createForwardHostPropEffect(hostProp, userForwardHostProp) {
+  return function forwardHostProp(template, prop, props) {
+    userForwardHostProp.call(template.__templatizeOwner, prop.substring('_host_'.length), props[prop]);
+  };
+}
+
+function addNotifyEffects(klass, template, templateInfo, options) {
+  let hostProps = templateInfo.hostProps || {};
+  for (let iprop in options.instanceProps) {
+    delete hostProps[iprop];
+    let userNotifyInstanceProp = options.notifyInstanceProp;
+    if (userNotifyInstanceProp) {
+      klass.prototype._addPropertyEffect(iprop, klass.prototype.PROPERTY_EFFECT_TYPES.NOTIFY, { fn: createNotifyInstancePropEffect(iprop, userNotifyInstanceProp) });
+    }
+  }
+  if (options.forwardHostProp && template.__dataHost) {
+    for (let hprop in hostProps) {
+      klass.prototype._addPropertyEffect(hprop, klass.prototype.PROPERTY_EFFECT_TYPES.NOTIFY, { fn: createNotifyHostPropEffect() });
+    }
+  }
+}
+
+function createNotifyInstancePropEffect(instProp, userNotifyInstanceProp) {
+  return function notifyInstanceProp(inst, prop, props) {
+    userNotifyInstanceProp.call(inst.__templatizeOwner, inst, prop, props[prop]);
+  };
+}
+
+function createNotifyHostPropEffect() {
+  return function notifyHostProp(inst, prop, props) {
+    inst.__dataHost._setPendingPropertyOrPath('_host_' + prop, props[prop], true, true);
+  };
+}
+
+/**
+ * Module for preparing and stamping instances of templates that utilize
+ * Polymer's data-binding and declarative event listener features.
+ *
+ * Example:
+ *
+ *     // Get a template from somewhere, e.g. light DOM
+ *     let template = this.querySelector('template');
+ *     // Prepare the template
+ *     let TemplateClass = Polymer.Templatize.templatize(template);
+ *     // Instance the template with an initial data model
+ *     let instance = new TemplateClass({myProp: 'initial'});
+ *     // Insert the instance's DOM somewhere, e.g. element's shadow DOM
+ *     this.shadowRoot.appendChild(instance.root);
+ *     // Changing a property on the instance will propagate to bindings
+ *     // in the template
+ *     instance.myProp = 'new value';
+ *
+ * The `options` dictionary passed to `templatize` allows for customizing
+ * features of the generated template class, including how outer-scope host
+ * properties should be forwarded into template instances, how any instance
+ * properties added into the template's scope should be notified out to
+ * the host, and whether the instance should be decorated as a "parent model"
+ * of any event handlers.
+ *
+ *     // Customze property forwarding and event model decoration
+ *     let TemplateClass = Polymer.Templatize.templatize(template, this, {
+ *       parentModel: true,
+ *       instanceProps: {...},
+ *       forwardHostProp(property, value) {...},
+ *       notifyInstanceProp(instance, property, value) {...},
+ *     });
+ *
+ *
+ * @namespace
+ * @memberof Polymer
+ * @summary Module for preparing and stamping instances of templates
+ *   utilizing Polymer templating features.
+ */
+
+const Templatize = {
+
+  /**
+   * Returns an anonymous `Polymer.PropertyEffects` class bound to the
+   * `<template>` provided.  Instancing the class will result in the
+   * template being stamped into document fragment stored as the instance's
+   * `root` property, after which it can be appended to the DOM.
+   *
+   * Templates may utilize all Polymer data-binding features as well as
+   * declarative event listeners.  Event listeners and inline computing
+   * functions in the template will be called on the host of the template.
+   *
+   * The constructor returned takes a single argument dictionary of initial
+   * property values to propagate into template bindings.  Additionally
+   * host properties can be forwarded in, and instance properties can be
+   * notified out by providing optional callbacks in the `options` dictionary.
+   *
+   * Valid configuration in `options` are as follows:
+   *
+   * - `forwardHostProp(property, value)`: Called when a property referenced
+   *   in the template changed on the template's host. As this library does
+   *   not retain references to templates instanced by the user, it is the
+   *   templatize owner's responsibility to forward host property changes into
+   *   user-stamped instances.  The `instance.forwardHostProp(property, value)`
+   *    method on the generated class should be called to forward host
+   *   properties into the template to prevent unnecessary property-changed
+   *   notifications. Any properties referenced in the template that are not
+   *   defined in `instanceProps` will be notified up to the template's host
+   *   automatically.
+   * - `instanceProps`: Dictionary of property names that will be added
+   *   to the instance by the templatize owner.  These properties shadow any
+   *   host properties, and changes within the template to these properties
+   *   will result in `notifyInstanceProp` being called.
+   * - `mutableData`: When `true`, the generated class will skip strict
+   *   dirty-checking for objects and arrays (always consider them to be
+   *   "dirty").
+   * - `notifyInstanceProp(instance, property, value)`: Called when
+   *   an instance property changes.  Users may choose to call `notifyPath`
+   *   on e.g. the owner to notify the change.
+   * - `parentModel`: When `true`, events handled by declarative event listeners
+   *   (`on-event="handler"`) will be decorated with a `model` property pointing
+   *   to the template instance that stamped it.  It will also be returned
+   *   from `instance.parentModel` in cases where template instance nesting
+   *   causes an inner model to shadow an outer model.
+   *
+   * Note that the class returned from `templatize` is generated only once
+   * for a given `<template>` using `options` from the first call for that
+   * template, and the cached class is returned for all subsequent calls to
+   * `templatize` for that template.  As such, `options` callbacks should not
+   * close over owner-specific properties since only the first `options` is
+   * used; rather, callbacks are called bound to the `owner`, and so context
+   * needed from the callbacks (such as references to `instances` stamped)
+   * should be stored on the `owner` such that they can be retrieved via `this`.
+   *
+   * @memberof Polymer.Templatize
+   * @param {!HTMLTemplateElement} template Template to templatize
+   * @param {!Polymer_PropertyEffects} owner Owner of the template instances;
+   *   any optional callbacks will be bound to this owner.
+   * @param {Object=} options Options dictionary (see summary for details)
+   * @return {function(new:TemplateInstanceBase)} Generated class bound to the template
+   *   provided
+   * @suppress {invalidCasts}
+   */
+  templatize(template, owner, options) {
+    options = /** @type {!TemplatizeOptions} */options || {};
+    if (template.__templatizeOwner) {
+      throw new Error('A <template> can only be templatized once');
+    }
+    template.__templatizeOwner = owner;
+    let templateInfo = owner.constructor._parseTemplate(template);
+    // Get memoized base class for the prototypical template, which
+    // includes property effects for binding template & forwarding
+    let baseClass = templateInfo.templatizeInstanceClass;
+    if (!baseClass) {
+      baseClass = createTemplatizerClass(template, templateInfo, options);
+      templateInfo.templatizeInstanceClass = baseClass;
+    }
+    // Host property forwarding must be installed onto template instance
+    addPropagateEffects(template, templateInfo, options);
+    // Subclass base class and add reference for this specific template
+    let klass = class TemplateInstance extends baseClass {};
+    klass.prototype._methodHost = findMethodHost(template);
+    klass.prototype.__dataHost = template;
+    klass.prototype.__templatizeOwner = owner;
+    klass.prototype.__hostProps = templateInfo.hostProps;
+    return (/** @type {function(new:TemplateInstanceBase)} */klass
+    );
+  },
+
+  /**
+   * Returns the template "model" associated with a given element, which
+   * serves as the binding scope for the template instance the element is
+   * contained in. A template model is an instance of
+   * `TemplateInstanceBase`, and should be used to manipulate data
+   * associated with this template instance.
+   *
+   * Example:
+   *
+   *   let model = modelForElement(el);
+   *   if (model.index < 10) {
+   *     model.set('item.checked', true);
+   *   }
+   *
+   * @memberof Polymer.Templatize
+   * @param {HTMLTemplateElement} template The model will be returned for
+   *   elements stamped from this template
+   * @param {Node} node Node for which to return a template model.
+   * @return {TemplateInstanceBase} Template instance representing the
+   *   binding scope for the element
+   */
+  modelForElement(template, node) {
+    let model;
+    while (node) {
+      // An element with a __templatizeInstance marks the top boundary
+      // of a scope; walk up until we find one, and then ensure that
+      // its __dataHost matches `this`, meaning this dom-repeat stamped it
+      if (model = node.__templatizeInstance) {
+        // Found an element stamped by another template; keep walking up
+        // from its __dataHost
+        if (model.__dataHost != template) {
+          node = model.__dataHost;
+        } else {
+          return model;
+        }
+      } else {
+        // Still in a template scope, keep going up until
+        // a __templatizeInstance is found
+        node = node.parentNode;
+      }
+    }
+    return null;
+  }
+};
+
+exports.Templatize = Templatize;
+exports.TemplateInstanceBase = TemplateInstanceBase;
+
+/***/ }),
+/* 23 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var _polymer = __webpack_require__(0);
+
+__webpack_require__(40);
+
+__webpack_require__(7);
+
+var _polymerFn = __webpack_require__(3);
+
+var _polymerDom = __webpack_require__(2);
+
+(0, _polymerFn.Polymer)({
+  _template: `
     <style>
       :host {
         @apply --layout-inline;
@@ -450,7 +6024,904 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         display: none;
       }
     </style>
-`,is:'iron-icon',properties:{icon:{type:String},theme:{type:String},src:{type:String},_meta:{value:a.Base.create('iron-meta',{type:'iconset'})}},observers:['_updateIcon(_meta, isAttached)','_updateIcon(theme, isAttached)','_srcChanged(src, isAttached)','_iconChanged(icon, isAttached)'],_DEFAULT_ICONSET:'icons',_iconChanged:function(e){var t=(e||'').split(':');this._iconName=t.pop(),this._iconsetName=t.pop()||this._DEFAULT_ICONSET,this._updateIcon()},_srcChanged:function(){this._updateIcon()},_usesIconset:function(){return this.icon||!this.src},_updateIcon:function(){this._usesIconset()?(this._img&&this._img.parentNode&&(0,r.dom)(this.root).removeChild(this._img),''===this._iconName?this._iconset&&this._iconset.removeIcon(this):this._iconsetName&&this._meta&&(this._iconset=this._meta.byKey(this._iconsetName),this._iconset?(this._iconset.applyIcon(this,this._iconName,this.theme),this.unlisten(window,'iron-iconset-added','_updateIcon')):this.listen(window,'iron-iconset-added','_updateIcon'))):(this._iconset&&this._iconset.removeIcon(this),!this._img&&(this._img=document.createElement('img'),this._img.style.width='100%',this._img.style.height='100%',this._img.draggable=!1),this._img.src=this.src,(0,r.dom)(this.root).appendChild(this._img))}})},function(e,t,n){'use strict';Object.defineProperty(t,'__esModule',{value:!0}),t.IronButtonState=t.IronButtonStateImpl=void 0,n(0);var a=n(25);n(26);var o=n(2);const r=t.IronButtonStateImpl={properties:{pressed:{type:Boolean,readOnly:!0,value:!1,reflectToAttribute:!0,observer:'_pressedChanged'},toggles:{type:Boolean,value:!1,reflectToAttribute:!0},active:{type:Boolean,value:!1,notify:!0,reflectToAttribute:!0},pointerDown:{type:Boolean,readOnly:!0,value:!1},receivedFocusFromKeyboard:{type:Boolean,readOnly:!0},ariaActiveAttribute:{type:String,value:'aria-pressed',observer:'_ariaActiveAttributeChanged'}},listeners:{down:'_downHandler',up:'_upHandler',tap:'_tapHandler'},observers:['_focusChanged(focused)','_activeChanged(active, ariaActiveAttribute)'],keyBindings:{"enter:keydown":'_asyncClick',"space:keydown":'_spaceKeyDownHandler',"space:keyup":'_spaceKeyUpHandler'},_mouseEventRe:/^mouse/,_tapHandler:function(){this.toggles?this._userActivate(!this.active):this.active=!1},_focusChanged:function(e){this._detectKeyboardFocus(e),e||this._setPressed(!1)},_detectKeyboardFocus:function(e){this._setReceivedFocusFromKeyboard(!this.pointerDown&&e)},_userActivate:function(e){this.active!==e&&(this.active=e,this.fire('change'))},_downHandler:function(){this._setPointerDown(!0),this._setPressed(!0),this._setReceivedFocusFromKeyboard(!1)},_upHandler:function(){this._setPointerDown(!1),this._setPressed(!1)},_spaceKeyDownHandler:function(e){var t=e.detail.keyboardEvent,n=(0,o.dom)(t).localTarget;this.isLightDescendant(n)||(t.preventDefault(),t.stopImmediatePropagation(),this._setPressed(!0))},_spaceKeyUpHandler:function(e){var t=e.detail.keyboardEvent,n=(0,o.dom)(t).localTarget;this.isLightDescendant(n)||(this.pressed&&this._asyncClick(),this._setPressed(!1))},_asyncClick:function(){this.async(function(){this.click()},1)},_pressedChanged:function(){this._changedButtonState()},_ariaActiveAttributeChanged:function(e,t){t&&t!=e&&this.hasAttribute(t)&&this.removeAttribute(t)},_activeChanged:function(e){this.toggles?this.setAttribute(this.ariaActiveAttribute,e?'true':'false'):this.removeAttribute(this.ariaActiveAttribute),this._changedButtonState()},_controlStateChanged:function(){this.disabled?this._setPressed(!1):this._changedButtonState()},_changedButtonState:function(){this._buttonStateChanged&&this._buttonStateChanged()}},s=t.IronButtonState=[a.IronA11yKeysBehavior,r]},function(e,t,n){'use strict';function a(e,t){var n='';if(e){var a=e.toLowerCase();' '===a||g.test(a)?n='space':v.test(a)?n='esc':1==a.length?(!t||h.test(a))&&(n=a):f.test(a)?n=a.replace('arrow',''):'multiply'==a?n='*':n=a}return n}function o(e){var t='';return e&&(e in c?t=c[e]:y.test(e)?(e=parseInt(e.replace('U+','0x'),16),t=_(e).toLowerCase()):t=e.toLowerCase()),t}function r(e){var t='';return+e&&(65<=e&&90>=e?t=_(32+e):112<=e&&123>=e?t='f'+(e-112+1):48<=e&&57>=e?t=e-48+'':96<=e&&105>=e?t=e-96+'':t=u[e]),t}function s(e,t){return e.key?a(e.key,t):e.detail&&e.detail.key?a(e.detail.key,t):o(e.keyIdentifier)||r(e.keyCode)||''}function d(e,t){var n=s(t,e.hasModifiers);return n===e.key&&(!e.hasModifiers||!!t.shiftKey==!!e.shiftKey&&!!t.ctrlKey==!!e.ctrlKey&&!!t.altKey==!!e.altKey&&!!t.metaKey==!!e.metaKey)}function l(e){return 1===e.length?{combo:e,key:e,event:'keydown'}:e.split('+').reduce(function(e,t){var n=t.split(':'),a=n[0],o=n[1];return a in m?(e[m[a]]=!0,e.hasModifiers=!0):(e.key=a,e.event=o||'keydown'),e},{combo:e.split(':').shift()})}function p(e){return e.trim().split(' ').map(function(e){return l(e)})}var _=String.fromCharCode;Object.defineProperty(t,'__esModule',{value:!0}),t.IronA11yKeysBehavior=void 0,n(0);var c={"U+0008":'backspace',"U+0009":'tab',"U+001B":'esc',"U+0020":'space',"U+007F":'del'},u={8:'backspace',9:'tab',13:'enter',27:'esc',32:'space',33:'pageup',34:'pagedown',35:'end',36:'home',37:'left',38:'up',39:'right',40:'down',46:'del',106:'*'},m={shift:'shiftKey',ctrl:'ctrlKey',alt:'altKey',meta:'metaKey'},h=/[a-z0-9*]/,y=/U\+/,f=/^arrow/,g=/^space(bar)?/,v=/^escape$/;t.IronA11yKeysBehavior={properties:{keyEventTarget:{type:Object,value:function(){return this}},stopKeyboardEventPropagation:{type:Boolean,value:!1},_boundKeyHandlers:{type:Array,value:function(){return[]}},_imperativeKeyBindings:{type:Object,value:function(){return{}}}},observers:['_resetKeyEventListeners(keyEventTarget, _boundKeyHandlers)'],keyBindings:{},registered:function(){this._prepKeyBindings()},attached:function(){this._listenKeyEventListeners()},detached:function(){this._unlistenKeyEventListeners()},addOwnKeyBinding:function(e,t){this._imperativeKeyBindings[e]=t,this._prepKeyBindings(),this._resetKeyEventListeners()},removeOwnKeyBindings:function(){this._imperativeKeyBindings={},this._prepKeyBindings(),this._resetKeyEventListeners()},keyboardEventMatchesKeys:function(e,t){for(var n=p(t),a=0;a<n.length;++a)if(d(n[a],e))return!0;return!1},_collectKeyBindings:function(){var e=this.behaviors.map(function(e){return e.keyBindings});return-1===e.indexOf(this.keyBindings)&&e.push(this.keyBindings),e},_prepKeyBindings:function(){for(var e in this._keyBindings={},this._collectKeyBindings().forEach(function(e){for(var t in e)this._addKeyBinding(t,e[t])},this),this._imperativeKeyBindings)this._addKeyBinding(e,this._imperativeKeyBindings[e]);for(var t in this._keyBindings)this._keyBindings[t].sort(function(e,t){var n=e[0].hasModifiers,a=t[0].hasModifiers;return n===a?0:n?-1:1})},_addKeyBinding:function(e,t){p(e).forEach(function(e){this._keyBindings[e.event]=this._keyBindings[e.event]||[],this._keyBindings[e.event].push([e,t])},this)},_resetKeyEventListeners:function(){this._unlistenKeyEventListeners(),this.isAttached&&this._listenKeyEventListeners()},_listenKeyEventListeners:function(){this.keyEventTarget&&Object.keys(this._keyBindings).forEach(function(e){var t=this._keyBindings[e],n=this._onKeyBindingEvent.bind(this,t);this._boundKeyHandlers.push([this.keyEventTarget,e,n]),this.keyEventTarget.addEventListener(e,n)},this)},_unlistenKeyEventListeners:function(){for(var e,t,n,a;this._boundKeyHandlers.length;)e=this._boundKeyHandlers.pop(),t=e[0],n=e[1],a=e[2],t.removeEventListener(n,a)},_onKeyBindingEvent:function(e,t){if(this.stopKeyboardEventPropagation&&t.stopPropagation(),!t.defaultPrevented)for(var n=0;n<e.length;n++){var a=e[n][0],o=e[n][1];if(d(a,t)&&(this._triggerKeyHandler(a,o,t),t.defaultPrevented))return}},_triggerKeyHandler:function(e,t,n){var a=Object.create(e);a.keyboardEvent=n;var o=new CustomEvent(e.event,{detail:a,cancelable:!0});this[t].call(this,o),o.defaultPrevented&&n.preventDefault()}}},function(e,t,n){'use strict';Object.defineProperty(t,'__esModule',{value:!0}),t.IronControlState=void 0,n(0);var a=n(5),o=n(2);t.IronControlState={properties:{focused:{type:Boolean,value:!1,notify:!0,readOnly:!0,reflectToAttribute:!0},disabled:{type:Boolean,value:!1,notify:!0,observer:'_disabledChanged',reflectToAttribute:!0},_oldTabIndex:{type:Number},_boundFocusBlurHandler:{type:Function,value:function(){return this._focusBlurHandler.bind(this)}},__handleEventRetargeting:{type:Boolean,value:function(){return!this.shadowRoot&&!a.Element}}},observers:['_changedControlState(focused, disabled)'],ready:function(){this.addEventListener('focus',this._boundFocusBlurHandler,!0),this.addEventListener('blur',this._boundFocusBlurHandler,!0)},_focusBlurHandler:function(e){if(a.Element)return void this._setFocused('focus'===e.type);if(e.target===this)this._setFocused('focus'===e.type);else if(this.__handleEventRetargeting){var t=(0,o.dom)(e).localTarget;this.isLightDescendant(t)||this.fire(e.type,{sourceEvent:e},{node:this,bubbles:e.bubbles,cancelable:e.cancelable})}},_disabledChanged:function(e){this.setAttribute('aria-disabled',e?'true':'false'),this.style.pointerEvents=e?'none':'',e?(this._oldTabIndex=this.tabIndex,this._setFocused(!1),this.tabIndex=-1,this.blur()):this._oldTabIndex!==void 0&&(this.tabIndex=this._oldTabIndex)},_changedControlState:function(){this._controlStateChanged&&this._controlStateChanged()}}},function(e,t,n){'use strict';n(0),n(84);const a=document.createElement('div');a.setAttribute('style','display: none;'),a.innerHTML=`<custom-style>
+`,
+
+  is: 'iron-icon',
+
+  properties: {
+
+    /**
+     * The name of the icon to use. The name should be of the form:
+     * `iconset_name:icon_name`.
+     */
+    icon: {
+      type: String
+    },
+
+    /**
+     * The name of the theme to used, if one is specified by the
+     * iconset.
+     */
+    theme: {
+      type: String
+    },
+
+    /**
+     * If using iron-icon without an iconset, you can set the src to be
+     * the URL of an individual icon image file. Note that this will take
+     * precedence over a given icon attribute.
+     */
+    src: {
+      type: String
+    },
+
+    /**
+     * @type {!Polymer.IronMeta}
+     */
+    _meta: {
+      value: _polymer.Base.create('iron-meta', { type: 'iconset' })
+    }
+
+  },
+
+  observers: ['_updateIcon(_meta, isAttached)', '_updateIcon(theme, isAttached)', '_srcChanged(src, isAttached)', '_iconChanged(icon, isAttached)'],
+
+  _DEFAULT_ICONSET: 'icons',
+
+  _iconChanged: function (icon) {
+    var parts = (icon || '').split(':');
+    this._iconName = parts.pop();
+    this._iconsetName = parts.pop() || this._DEFAULT_ICONSET;
+    this._updateIcon();
+  },
+
+  _srcChanged: function (src) {
+    this._updateIcon();
+  },
+
+  _usesIconset: function () {
+    return this.icon || !this.src;
+  },
+
+  /** @suppress {visibility} */
+  _updateIcon: function () {
+    if (this._usesIconset()) {
+      if (this._img && this._img.parentNode) {
+        (0, _polymerDom.dom)(this.root).removeChild(this._img);
+      }
+      if (this._iconName === "") {
+        if (this._iconset) {
+          this._iconset.removeIcon(this);
+        }
+      } else if (this._iconsetName && this._meta) {
+        this._iconset = /** @type {?Polymer.Iconset} */this._meta.byKey(this._iconsetName);
+        if (this._iconset) {
+          this._iconset.applyIcon(this, this._iconName, this.theme);
+          this.unlisten(window, 'iron-iconset-added', '_updateIcon');
+        } else {
+          this.listen(window, 'iron-iconset-added', '_updateIcon');
+        }
+      }
+    } else {
+      if (this._iconset) {
+        this._iconset.removeIcon(this);
+      }
+      if (!this._img) {
+        this._img = document.createElement('img');
+        this._img.style.width = '100%';
+        this._img.style.height = '100%';
+        this._img.draggable = false;
+      }
+      this._img.src = this.src;
+      (0, _polymerDom.dom)(this.root).appendChild(this._img);
+    }
+  }
+});
+
+/***/ }),
+/* 24 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.IronButtonState = exports.IronButtonStateImpl = undefined;
+
+__webpack_require__(0);
+
+var _ironA11yKeysBehavior = __webpack_require__(25);
+
+__webpack_require__(26);
+
+var _polymerDom = __webpack_require__(2);
+
+const IronButtonStateImpl = exports.IronButtonStateImpl = {
+
+  properties: {
+
+    /**
+     * If true, the user is currently holding down the button.
+     */
+    pressed: {
+      type: Boolean,
+      readOnly: true,
+      value: false,
+      reflectToAttribute: true,
+      observer: '_pressedChanged'
+    },
+
+    /**
+     * If true, the button toggles the active state with each tap or press
+     * of the spacebar.
+     */
+    toggles: {
+      type: Boolean,
+      value: false,
+      reflectToAttribute: true
+    },
+
+    /**
+     * If true, the button is a toggle and is currently in the active state.
+     */
+    active: {
+      type: Boolean,
+      value: false,
+      notify: true,
+      reflectToAttribute: true
+    },
+
+    /**
+     * True if the element is currently being pressed by a "pointer," which
+     * is loosely defined as mouse or touch input (but specifically excluding
+     * keyboard input).
+     */
+    pointerDown: {
+      type: Boolean,
+      readOnly: true,
+      value: false
+    },
+
+    /**
+     * True if the input device that caused the element to receive focus
+     * was a keyboard.
+     */
+    receivedFocusFromKeyboard: {
+      type: Boolean,
+      readOnly: true
+    },
+
+    /**
+     * The aria attribute to be set if the button is a toggle and in the
+     * active state.
+     */
+    ariaActiveAttribute: {
+      type: String,
+      value: 'aria-pressed',
+      observer: '_ariaActiveAttributeChanged'
+    }
+  },
+
+  listeners: {
+    down: '_downHandler',
+    up: '_upHandler',
+    tap: '_tapHandler'
+  },
+
+  observers: ['_focusChanged(focused)', '_activeChanged(active, ariaActiveAttribute)'],
+
+  keyBindings: {
+    'enter:keydown': '_asyncClick',
+    'space:keydown': '_spaceKeyDownHandler',
+    'space:keyup': '_spaceKeyUpHandler'
+  },
+
+  _mouseEventRe: /^mouse/,
+
+  _tapHandler: function () {
+    if (this.toggles) {
+      // a tap is needed to toggle the active state
+      this._userActivate(!this.active);
+    } else {
+      this.active = false;
+    }
+  },
+
+  _focusChanged: function (focused) {
+    this._detectKeyboardFocus(focused);
+
+    if (!focused) {
+      this._setPressed(false);
+    }
+  },
+
+  _detectKeyboardFocus: function (focused) {
+    this._setReceivedFocusFromKeyboard(!this.pointerDown && focused);
+  },
+
+  // to emulate native checkbox, (de-)activations from a user interaction fire
+  // 'change' events
+  _userActivate: function (active) {
+    if (this.active !== active) {
+      this.active = active;
+      this.fire('change');
+    }
+  },
+
+  _downHandler: function (event) {
+    this._setPointerDown(true);
+    this._setPressed(true);
+    this._setReceivedFocusFromKeyboard(false);
+  },
+
+  _upHandler: function () {
+    this._setPointerDown(false);
+    this._setPressed(false);
+  },
+
+  /**
+   * @param {!KeyboardEvent} event .
+   */
+  _spaceKeyDownHandler: function (event) {
+    var keyboardEvent = event.detail.keyboardEvent;
+    var target = (0, _polymerDom.dom)(keyboardEvent).localTarget;
+
+    // Ignore the event if this is coming from a focused light child, since that
+    // element will deal with it.
+    if (this.isLightDescendant( /** @type {Node} */target)) return;
+
+    keyboardEvent.preventDefault();
+    keyboardEvent.stopImmediatePropagation();
+    this._setPressed(true);
+  },
+
+  /**
+   * @param {!KeyboardEvent} event .
+   */
+  _spaceKeyUpHandler: function (event) {
+    var keyboardEvent = event.detail.keyboardEvent;
+    var target = (0, _polymerDom.dom)(keyboardEvent).localTarget;
+
+    // Ignore the event if this is coming from a focused light child, since that
+    // element will deal with it.
+    if (this.isLightDescendant( /** @type {Node} */target)) return;
+
+    if (this.pressed) {
+      this._asyncClick();
+    }
+    this._setPressed(false);
+  },
+
+  // trigger click asynchronously, the asynchrony is useful to allow one
+  // event handler to unwind before triggering another event
+  _asyncClick: function () {
+    this.async(function () {
+      this.click();
+    }, 1);
+  },
+
+  // any of these changes are considered a change to button state
+
+  _pressedChanged: function (pressed) {
+    this._changedButtonState();
+  },
+
+  _ariaActiveAttributeChanged: function (value, oldValue) {
+    if (oldValue && oldValue != value && this.hasAttribute(oldValue)) {
+      this.removeAttribute(oldValue);
+    }
+  },
+
+  _activeChanged: function (active, ariaActiveAttribute) {
+    if (this.toggles) {
+      this.setAttribute(this.ariaActiveAttribute, active ? 'true' : 'false');
+    } else {
+      this.removeAttribute(this.ariaActiveAttribute);
+    }
+    this._changedButtonState();
+  },
+
+  _controlStateChanged: function () {
+    if (this.disabled) {
+      this._setPressed(false);
+    } else {
+      this._changedButtonState();
+    }
+  },
+
+  // provide hook for follow-on behaviors to react to button-state
+
+  _changedButtonState: function () {
+    if (this._buttonStateChanged) {
+      this._buttonStateChanged(); // abstract
+    }
+  }
+
+};
+
+const IronButtonState = exports.IronButtonState = [_ironA11yKeysBehavior.IronA11yKeysBehavior, IronButtonStateImpl];
+
+/***/ }),
+/* 25 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.IronA11yKeysBehavior = undefined;
+
+__webpack_require__(0);
+
+/**
+ * Chrome uses an older version of DOM Level 3 Keyboard Events
+ *
+ * Most keys are labeled as text, but some are Unicode codepoints.
+ * Values taken from: http://www.w3.org/TR/2007/WD-DOM-Level-3-Events-20071221/keyset.html#KeySet-Set
+ */
+var KEY_IDENTIFIER = {
+  'U+0008': 'backspace',
+  'U+0009': 'tab',
+  'U+001B': 'esc',
+  'U+0020': 'space',
+  'U+007F': 'del'
+};
+
+/**
+ * Special table for KeyboardEvent.keyCode.
+ * KeyboardEvent.keyIdentifier is better, and KeyBoardEvent.key is even better
+ * than that.
+ *
+ * Values from: https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent.keyCode#Value_of_keyCode
+ */
+var KEY_CODE = {
+  8: 'backspace',
+  9: 'tab',
+  13: 'enter',
+  27: 'esc',
+  33: 'pageup',
+  34: 'pagedown',
+  35: 'end',
+  36: 'home',
+  32: 'space',
+  37: 'left',
+  38: 'up',
+  39: 'right',
+  40: 'down',
+  46: 'del',
+  106: '*'
+};
+
+/**
+ * MODIFIER_KEYS maps the short name for modifier keys used in a key
+ * combo string to the property name that references those same keys
+ * in a KeyboardEvent instance.
+ */
+var MODIFIER_KEYS = {
+  'shift': 'shiftKey',
+  'ctrl': 'ctrlKey',
+  'alt': 'altKey',
+  'meta': 'metaKey'
+};
+
+/**
+ * KeyboardEvent.key is mostly represented by printable character made by
+ * the keyboard, with unprintable keys labeled nicely.
+ *
+ * However, on OS X, Alt+char can make a Unicode character that follows an
+ * Apple-specific mapping. In this case, we fall back to .keyCode.
+ */
+var KEY_CHAR = /[a-z0-9*]/;
+
+/**
+ * Matches a keyIdentifier string.
+ */
+var IDENT_CHAR = /U\+/;
+
+/**
+ * Matches arrow keys in Gecko 27.0+
+ */
+var ARROW_KEY = /^arrow/;
+
+/**
+ * Matches space keys everywhere (notably including IE10's exceptional name
+ * `spacebar`).
+ */
+var SPACE_KEY = /^space(bar)?/;
+
+/**
+ * Matches ESC key.
+ *
+ * Value from: http://w3c.github.io/uievents-key/#key-Escape
+ */
+var ESC_KEY = /^escape$/;
+
+/**
+ * Transforms the key.
+ * @param {string} key The KeyBoardEvent.key
+ * @param {Boolean} [noSpecialChars] Limits the transformation to
+ * alpha-numeric characters.
+ */
+function transformKey(key, noSpecialChars) {
+  var validKey = '';
+  if (key) {
+    var lKey = key.toLowerCase();
+    if (lKey === ' ' || SPACE_KEY.test(lKey)) {
+      validKey = 'space';
+    } else if (ESC_KEY.test(lKey)) {
+      validKey = 'esc';
+    } else if (lKey.length == 1) {
+      if (!noSpecialChars || KEY_CHAR.test(lKey)) {
+        validKey = lKey;
+      }
+    } else if (ARROW_KEY.test(lKey)) {
+      validKey = lKey.replace('arrow', '');
+    } else if (lKey == 'multiply') {
+      // numpad '*' can map to Multiply on IE/Windows
+      validKey = '*';
+    } else {
+      validKey = lKey;
+    }
+  }
+  return validKey;
+}
+
+function transformKeyIdentifier(keyIdent) {
+  var validKey = '';
+  if (keyIdent) {
+    if (keyIdent in KEY_IDENTIFIER) {
+      validKey = KEY_IDENTIFIER[keyIdent];
+    } else if (IDENT_CHAR.test(keyIdent)) {
+      keyIdent = parseInt(keyIdent.replace('U+', '0x'), 16);
+      validKey = String.fromCharCode(keyIdent).toLowerCase();
+    } else {
+      validKey = keyIdent.toLowerCase();
+    }
+  }
+  return validKey;
+}
+
+function transformKeyCode(keyCode) {
+  var validKey = '';
+  if (Number(keyCode)) {
+    if (keyCode >= 65 && keyCode <= 90) {
+      // ascii a-z
+      // lowercase is 32 offset from uppercase
+      validKey = String.fromCharCode(32 + keyCode);
+    } else if (keyCode >= 112 && keyCode <= 123) {
+      // function keys f1-f12
+      validKey = 'f' + (keyCode - 112 + 1);
+    } else if (keyCode >= 48 && keyCode <= 57) {
+      // top 0-9 keys
+      validKey = String(keyCode - 48);
+    } else if (keyCode >= 96 && keyCode <= 105) {
+      // num pad 0-9
+      validKey = String(keyCode - 96);
+    } else {
+      validKey = KEY_CODE[keyCode];
+    }
+  }
+  return validKey;
+}
+
+/**
+  * Calculates the normalized key for a KeyboardEvent.
+  * @param {KeyboardEvent} keyEvent
+  * @param {Boolean} [noSpecialChars] Set to true to limit keyEvent.key
+  * transformation to alpha-numeric chars. This is useful with key
+  * combinations like shift + 2, which on FF for MacOS produces
+  * keyEvent.key = @
+  * To get 2 returned, set noSpecialChars = true
+  * To get @ returned, set noSpecialChars = false
+ */
+function normalizedKeyForEvent(keyEvent, noSpecialChars) {
+  // Fall back from .key, to .detail.key for artifical keyboard events,
+  // and then to deprecated .keyIdentifier and .keyCode.
+  if (keyEvent.key) {
+    return transformKey(keyEvent.key, noSpecialChars);
+  }
+  if (keyEvent.detail && keyEvent.detail.key) {
+    return transformKey(keyEvent.detail.key, noSpecialChars);
+  }
+  return transformKeyIdentifier(keyEvent.keyIdentifier) || transformKeyCode(keyEvent.keyCode) || '';
+}
+
+function keyComboMatchesEvent(keyCombo, event) {
+  // For combos with modifiers we support only alpha-numeric keys
+  var keyEvent = normalizedKeyForEvent(event, keyCombo.hasModifiers);
+  return keyEvent === keyCombo.key && (!keyCombo.hasModifiers || !!event.shiftKey === !!keyCombo.shiftKey && !!event.ctrlKey === !!keyCombo.ctrlKey && !!event.altKey === !!keyCombo.altKey && !!event.metaKey === !!keyCombo.metaKey);
+}
+
+function parseKeyComboString(keyComboString) {
+  if (keyComboString.length === 1) {
+    return {
+      combo: keyComboString,
+      key: keyComboString,
+      event: 'keydown'
+    };
+  }
+  return keyComboString.split('+').reduce(function (parsedKeyCombo, keyComboPart) {
+    var eventParts = keyComboPart.split(':');
+    var keyName = eventParts[0];
+    var event = eventParts[1];
+
+    if (keyName in MODIFIER_KEYS) {
+      parsedKeyCombo[MODIFIER_KEYS[keyName]] = true;
+      parsedKeyCombo.hasModifiers = true;
+    } else {
+      parsedKeyCombo.key = keyName;
+      parsedKeyCombo.event = event || 'keydown';
+    }
+
+    return parsedKeyCombo;
+  }, {
+    combo: keyComboString.split(':').shift()
+  });
+}
+
+function parseEventString(eventString) {
+  return eventString.trim().split(' ').map(function (keyComboString) {
+    return parseKeyComboString(keyComboString);
+  });
+}
+
+const IronA11yKeysBehavior = exports.IronA11yKeysBehavior = {
+  properties: {
+    /**
+     * The EventTarget that will be firing relevant KeyboardEvents. Set it to
+     * `null` to disable the listeners.
+     * @type {?EventTarget}
+     */
+    keyEventTarget: {
+      type: Object,
+      value: function () {
+        return this;
+      }
+    },
+
+    /**
+     * If true, this property will cause the implementing element to
+     * automatically stop propagation on any handled KeyboardEvents.
+     */
+    stopKeyboardEventPropagation: {
+      type: Boolean,
+      value: false
+    },
+
+    _boundKeyHandlers: {
+      type: Array,
+      value: function () {
+        return [];
+      }
+    },
+
+    // We use this due to a limitation in IE10 where instances will have
+    // own properties of everything on the "prototype".
+    _imperativeKeyBindings: {
+      type: Object,
+      value: function () {
+        return {};
+      }
+    }
+  },
+
+  observers: ['_resetKeyEventListeners(keyEventTarget, _boundKeyHandlers)'],
+
+  /**
+   * To be used to express what combination of keys  will trigger the relative
+   * callback. e.g. `keyBindings: { 'esc': '_onEscPressed'}`
+   * @type {!Object}
+   */
+  keyBindings: {},
+
+  registered: function () {
+    this._prepKeyBindings();
+  },
+
+  attached: function () {
+    this._listenKeyEventListeners();
+  },
+
+  detached: function () {
+    this._unlistenKeyEventListeners();
+  },
+
+  /**
+   * Can be used to imperatively add a key binding to the implementing
+   * element. This is the imperative equivalent of declaring a keybinding
+   * in the `keyBindings` prototype property.
+   *
+   * @param {string} eventString
+   * @param {string} handlerName
+   */
+  addOwnKeyBinding: function (eventString, handlerName) {
+    this._imperativeKeyBindings[eventString] = handlerName;
+    this._prepKeyBindings();
+    this._resetKeyEventListeners();
+  },
+
+  /**
+   * When called, will remove all imperatively-added key bindings.
+   */
+  removeOwnKeyBindings: function () {
+    this._imperativeKeyBindings = {};
+    this._prepKeyBindings();
+    this._resetKeyEventListeners();
+  },
+
+  /**
+   * Returns true if a keyboard event matches `eventString`.
+   *
+   * @param {KeyboardEvent} event
+   * @param {string} eventString
+   * @return {boolean}
+   */
+  keyboardEventMatchesKeys: function (event, eventString) {
+    var keyCombos = parseEventString(eventString);
+    for (var i = 0; i < keyCombos.length; ++i) {
+      if (keyComboMatchesEvent(keyCombos[i], event)) {
+        return true;
+      }
+    }
+    return false;
+  },
+
+  _collectKeyBindings: function () {
+    var keyBindings = this.behaviors.map(function (behavior) {
+      return behavior.keyBindings;
+    });
+
+    if (keyBindings.indexOf(this.keyBindings) === -1) {
+      keyBindings.push(this.keyBindings);
+    }
+
+    return keyBindings;
+  },
+
+  _prepKeyBindings: function () {
+    this._keyBindings = {};
+
+    this._collectKeyBindings().forEach(function (keyBindings) {
+      for (var eventString in keyBindings) {
+        this._addKeyBinding(eventString, keyBindings[eventString]);
+      }
+    }, this);
+
+    for (var eventString in this._imperativeKeyBindings) {
+      this._addKeyBinding(eventString, this._imperativeKeyBindings[eventString]);
+    }
+
+    // Give precedence to combos with modifiers to be checked first.
+    for (var eventName in this._keyBindings) {
+      this._keyBindings[eventName].sort(function (kb1, kb2) {
+        var b1 = kb1[0].hasModifiers;
+        var b2 = kb2[0].hasModifiers;
+        return b1 === b2 ? 0 : b1 ? -1 : 1;
+      });
+    }
+  },
+
+  _addKeyBinding: function (eventString, handlerName) {
+    parseEventString(eventString).forEach(function (keyCombo) {
+      this._keyBindings[keyCombo.event] = this._keyBindings[keyCombo.event] || [];
+
+      this._keyBindings[keyCombo.event].push([keyCombo, handlerName]);
+    }, this);
+  },
+
+  _resetKeyEventListeners: function () {
+    this._unlistenKeyEventListeners();
+
+    if (this.isAttached) {
+      this._listenKeyEventListeners();
+    }
+  },
+
+  _listenKeyEventListeners: function () {
+    if (!this.keyEventTarget) {
+      return;
+    }
+    Object.keys(this._keyBindings).forEach(function (eventName) {
+      var keyBindings = this._keyBindings[eventName];
+      var boundKeyHandler = this._onKeyBindingEvent.bind(this, keyBindings);
+
+      this._boundKeyHandlers.push([this.keyEventTarget, eventName, boundKeyHandler]);
+
+      this.keyEventTarget.addEventListener(eventName, boundKeyHandler);
+    }, this);
+  },
+
+  _unlistenKeyEventListeners: function () {
+    var keyHandlerTuple;
+    var keyEventTarget;
+    var eventName;
+    var boundKeyHandler;
+
+    while (this._boundKeyHandlers.length) {
+      // My kingdom for block-scope binding and destructuring assignment..
+      keyHandlerTuple = this._boundKeyHandlers.pop();
+      keyEventTarget = keyHandlerTuple[0];
+      eventName = keyHandlerTuple[1];
+      boundKeyHandler = keyHandlerTuple[2];
+
+      keyEventTarget.removeEventListener(eventName, boundKeyHandler);
+    }
+  },
+
+  _onKeyBindingEvent: function (keyBindings, event) {
+    if (this.stopKeyboardEventPropagation) {
+      event.stopPropagation();
+    }
+
+    // if event has been already prevented, don't do anything
+    if (event.defaultPrevented) {
+      return;
+    }
+
+    for (var i = 0; i < keyBindings.length; i++) {
+      var keyCombo = keyBindings[i][0];
+      var handlerName = keyBindings[i][1];
+      if (keyComboMatchesEvent(keyCombo, event)) {
+        this._triggerKeyHandler(keyCombo, handlerName, event);
+        // exit the loop if eventDefault was prevented
+        if (event.defaultPrevented) {
+          return;
+        }
+      }
+    }
+  },
+
+  _triggerKeyHandler: function (keyCombo, handlerName, keyboardEvent) {
+    var detail = Object.create(keyCombo);
+    detail.keyboardEvent = keyboardEvent;
+    var event = new CustomEvent(keyCombo.event, {
+      detail: detail,
+      cancelable: true
+    });
+    this[handlerName].call(this, event);
+    if (event.defaultPrevented) {
+      keyboardEvent.preventDefault();
+    }
+  }
+};
+
+/***/ }),
+/* 26 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.IronControlState = undefined;
+
+__webpack_require__(0);
+
+var _polymerElement = __webpack_require__(5);
+
+var _polymerDom = __webpack_require__(2);
+
+const IronControlState = exports.IronControlState = {
+
+  properties: {
+
+    /**
+     * If true, the element currently has focus.
+     */
+    focused: {
+      type: Boolean,
+      value: false,
+      notify: true,
+      readOnly: true,
+      reflectToAttribute: true
+    },
+
+    /**
+     * If true, the user cannot interact with this element.
+     */
+    disabled: {
+      type: Boolean,
+      value: false,
+      notify: true,
+      observer: '_disabledChanged',
+      reflectToAttribute: true
+    },
+
+    _oldTabIndex: {
+      type: Number
+    },
+
+    _boundFocusBlurHandler: {
+      type: Function,
+      value: function () {
+        return this._focusBlurHandler.bind(this);
+      }
+    },
+
+    __handleEventRetargeting: {
+      type: Boolean,
+      value: function () {
+        return !this.shadowRoot && !_polymerElement.Element;
+      }
+    }
+  },
+
+  observers: ['_changedControlState(focused, disabled)'],
+
+  ready: function () {
+    this.addEventListener('focus', this._boundFocusBlurHandler, true);
+    this.addEventListener('blur', this._boundFocusBlurHandler, true);
+  },
+
+  _focusBlurHandler: function (event) {
+    // In Polymer 2.0, the library takes care of retargeting events.
+    if (_polymerElement.Element) {
+      this._setFocused(event.type === 'focus');
+      return;
+    }
+
+    // NOTE(cdata):  if we are in ShadowDOM land, `event.target` will
+    // eventually become `this` due to retargeting; if we are not in
+    // ShadowDOM land, `event.target` will eventually become `this` due
+    // to the second conditional which fires a synthetic event (that is also
+    // handled). In either case, we can disregard `event.path`.
+    if (event.target === this) {
+      this._setFocused(event.type === 'focus');
+    } else if (this.__handleEventRetargeting) {
+      var target = /** @type {Node} */(0, _polymerDom.dom)(event).localTarget;
+      if (!this.isLightDescendant(target)) {
+        this.fire(event.type, { sourceEvent: event }, {
+          node: this,
+          bubbles: event.bubbles,
+          cancelable: event.cancelable
+        });
+      }
+    }
+  },
+
+  _disabledChanged: function (disabled, old) {
+    this.setAttribute('aria-disabled', disabled ? 'true' : 'false');
+    this.style.pointerEvents = disabled ? 'none' : '';
+    if (disabled) {
+      this._oldTabIndex = this.tabIndex;
+      this._setFocused(false);
+      this.tabIndex = -1;
+      this.blur();
+    } else if (this._oldTabIndex !== undefined) {
+      this.tabIndex = this._oldTabIndex;
+    }
+  },
+
+  _changedControlState: function () {
+    // _controlStateChanged is abstract, follow-on behaviors may implement it
+    if (this._controlStateChanged) {
+      this._controlStateChanged();
+    }
+  }
+
+};
+
+/***/ }),
+/* 27 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+__webpack_require__(0);
+
+__webpack_require__(84);
+
+const $_documentContainer = document.createElement('div');
+$_documentContainer.setAttribute('style', 'display: none;');
+
+$_documentContainer.innerHTML = `<custom-style>
   <style is="custom-style">
     html {
 
@@ -606,7 +7077,1192 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     }
 
   </style>
-</custom-style>`,document.head.appendChild(a)},function(e,t,n){'use strict';function a(e){const t=customElements.get('dom-module');return t?t.import(e):null}function o(e){let t=e.trim().split(/\s+/),n='';for(let a=0;a<t.length;a++)n+=r(t[a]);return n}function r(e){let n=a(e);if(n&&void 0===n._cssText){let e=d(n),a=n.querySelector('template');a&&(e+=s(a,n.assetpath)),n._cssText=e||null}return n||console.warn('Could not find style data in module named',e),n&&n._cssText||''}function s(e,t){let n='',a=e.content.querySelectorAll('style');for(let r=0;r<a.length;r++){let s=a[r],e=s.getAttribute(_);e&&(n+=o(e)),s.parentNode.removeChild(s),n+=t?(0,l.resolveCss)(s.textContent,t):s.textContent}return n}function d(e){let t='',n=e.querySelectorAll(p);for(let a=0,o;a<n.length;a++)if(o=n[a],o.import){let e=o.import,n=e.body?e.body:e;t+=(0,l.resolveCss)(n.textContent,e.baseURI)}return t}Object.defineProperty(t,'__esModule',{value:!0}),t.cssFromModules=o,t.cssFromModule=r,t.cssFromTemplate=s,t.cssFromModuleImports=function(e){let t=a(e);return t?d(t):''},t._cssFromModuleImports=d;var l=n(10);const p='link[rel=import][type~=css]',_='include'},function(e,t,n){'use strict';function a(e){return s[e]||d[e.toLowerCase()]}function o(e){e.querySelector('style')&&console.warn('dom-module %s has style outside template',e.id)}Object.defineProperty(t,'__esModule',{value:!0}),t.DomModule=void 0,n(1);var r=n(10);let s={},d={};class l extends HTMLElement{static get observedAttributes(){return['id']}static import(e,t){if(e){let n=a(e);return n&&t?n.querySelector(t):n}return null}attributeChangedCallback(e,t,n){t!==n&&this.register()}get assetpath(){if(!this.__assetpath){const e=window.HTMLImports&&HTMLImports.importForElement?HTMLImports.importForElement(this)||document:this.ownerDocument,t=(0,r.resolveUrl)(this.getAttribute('assetpath')||'',e.baseURI);this.__assetpath=(0,r.pathFromUrl)(t)}return this.__assetpath}register(e){e=e||this.id,e&&(this.id=e,s[e]=this,d[e.toLowerCase()]=this,o(this))}}l.prototype.modules=s,customElements.define('dom-module',l),t.DomModule=l},function(e,t,n){'use strict';Object.defineProperty(t,'__esModule',{value:!0}),t.LegacyElementMixin=void 0,n(48);var a=n(16),o=n(35),r=n(4),s=n(52);n(53),n(54);var d=n(2),l=n(36),p=n(8),_=n(6),c=n(12);let u=window.ShadyCSS;t.LegacyElementMixin=(0,r.dedupingMixin)((e)=>{const t=(0,o.GestureEventListeners)((0,a.ElementMixin)(e)),n={x:'pan-x',y:'pan-y',none:'none',all:'auto'};class r extends t{constructor(){super(),this.root=this,this.isAttached,this.__boundListeners,this._debouncers,this.created()}created(){}connectedCallback(){super.connectedCallback(),this.isAttached=!0,this.attached()}attached(){}disconnectedCallback(){super.disconnectedCallback(),this.isAttached=!1,this.detached()}detached(){}attributeChangedCallback(e,t,n){t!==n&&(super.attributeChangedCallback(e,t,n),this.attributeChanged(e,t,n))}attributeChanged(){}_initializeProperties(){let e=Object.getPrototypeOf(this);e.hasOwnProperty('__hasRegisterFinished')||(e.__hasRegisterFinished=!0,this._registered()),super._initializeProperties()}_registered(){}ready(){this._ensureAttributes(),this._applyListeners(),super.ready()}_ensureAttributes(){}_applyListeners(){}serialize(e){return this._serializeValue(e)}deserialize(e,t){return this._deserializeValue(e,t)}reflectPropertyToAttribute(e,t,n){this._propertyToAttribute(e,t,n)}serializeValueToAttribute(e,t,n){this._valueToNodeAttribute(n||this,e,t)}extend(e,t){if(!(e&&t))return e||t;let a=Object.getOwnPropertyNames(t);for(let o=0,r,n;o<a.length&&(r=a[o]);o++)n=Object.getOwnPropertyDescriptor(t,r),n&&Object.defineProperty(e,r,n);return e}mixin(e,t){for(let n in t)e[n]=t[n];return e}chainObject(e,t){return e&&t&&e!==t&&(e.__proto__=t),e}instanceTemplate(e){let t=this.constructor._contentForTemplate(e),n=document.importNode(t,!0);return n}fire(e,t,n){n=n||{},t=null===t||void 0===t?{}:t;let a=new Event(e,{bubbles:void 0===n.bubbles||n.bubbles,cancelable:!!n.cancelable,composed:void 0===n.composed||n.composed});a.detail=t;let o=n.node||this;return o.dispatchEvent(a),a}listen(e,t,n){e=e||this;let a=this.__boundListeners||(this.__boundListeners=new WeakMap),o=a.get(e);o||(o={},a.set(e,o));let r=t+n;o[r]||(o[r]=this._addMethodEventListenerToNode(e,t,n,this))}unlisten(e,t,n){e=e||this;let a=this.__boundListeners&&this.__boundListeners.get(e),o=t+n,r=a&&a[o];r&&(this._removeEventListenerFromNode(e,t,r),a[o]=null)}setScrollDirection(e,t){(0,l.setTouchAction)(t||this,n[e]||'auto')}$$(e){return this.root.querySelector(e)}get domHost(){let e=this.getRootNode();return e instanceof DocumentFragment?e.host:e}distributeContent(){window.ShadyDOM&&this.shadowRoot&&ShadyDOM.flush()}getEffectiveChildNodes(){return(0,d.dom)(this).getEffectiveChildNodes()}queryDistributedElements(e){return(0,d.dom)(this).queryDistributedElements(e)}getEffectiveChildren(){let e=this.getEffectiveChildNodes();return e.filter(function(e){return e.nodeType===Node.ELEMENT_NODE})}getEffectiveTextContent(){let e=this.getEffectiveChildNodes(),t=[];for(let n=0,a;a=e[n];n++)a.nodeType!==Node.COMMENT_NODE&&t.push(a.textContent);return t.join('')}queryEffectiveChildren(e){let t=this.queryDistributedElements(e);return t&&t[0]}queryAllEffectiveChildren(e){return this.queryDistributedElements(e)}getContentChildNodes(e){let t=this.root.querySelector(e||'slot');return t?(0,d.dom)(t).getDistributedNodes():[]}getContentChildren(e){return this.getContentChildNodes(e).filter(function(e){return e.nodeType===Node.ELEMENT_NODE})}isLightDescendant(e){return this!==e&&this.contains(e)&&this.getRootNode()===e.getRootNode()}isLocalDescendant(e){return this.root===e.getRootNode()}scopeSubtree(){}getComputedStyleValue(e){return u.getComputedStyleValue(this,e)}debounce(e,t,n){return this._debouncers=this._debouncers||{},this._debouncers[e]=p.Debouncer.debounce(this._debouncers[e],0<n?_.timeOut.after(n):_.microTask,t.bind(this))}isDebouncerActive(e){this._debouncers=this._debouncers||{};let t=this._debouncers[e];return!!(t&&t.isActive())}flushDebouncer(e){this._debouncers=this._debouncers||{};let t=this._debouncers[e];t&&t.flush()}cancelDebouncer(e){this._debouncers=this._debouncers||{};let t=this._debouncers[e];t&&t.cancel()}async(e,t){return 0<t?_.timeOut.run(e.bind(this),t):~_.microTask.run(e.bind(this))}cancelAsync(e){0>e?_.microTask.cancel(~e):_.timeOut.cancel(e)}create(e,t){let a=document.createElement(e);if(t)if(a.setProperties)a.setProperties(t);else for(let e in t)a[e]=t[e];return a}importHref(e,t,n,a){let o=t?t.bind(this):null,r=n?n.bind(this):null;return(0,s.importHref)(e,o,r,a)}elementMatches(e,t){return(0,d.matchesSelector)(t||this,e)}toggleAttribute(e,t,n){n=n||this,1==arguments.length&&(t=!n.hasAttribute(e)),t?n.setAttribute(e,''):n.removeAttribute(e)}toggleClass(e,t,n){n=n||this,1==arguments.length&&(t=!n.classList.contains(e)),t?n.classList.add(e):n.classList.remove(e)}transform(e,t){t=t||this,t.style.webkitTransform=e,t.style.transform=e}translate3d(e,t,n,a){a=a||this,this.transform('translate3d('+e+','+t+','+n+')',a)}arrayDelete(e,t){let n;if(!Array.isArray(e)){let a=(0,c.get)(this,e);if(n=a.indexOf(t),0<=n)return this.splice(e,n,1)}else if(n=e.indexOf(t),0<=n)return e.splice(n,1);return null}_logger(e,t){Array.isArray(t)&&1===t.length&&(t=t[0]),'log'===e||'warn'===e||'error'===e?console[e](...t):void 0}_log(...e){this._logger('log',e)}_warn(...e){this._logger('warn',e)}_error(...e){this._logger('error',e)}_logf(e,...t){return['[%s::%s]',this.is,e,...t]}}return r.prototype.is='',r})},function(e,t,n){'use strict';/**
+</custom-style>`;
+
+document.head.appendChild($_documentContainer);
+
+/***/ }),
+/* 28 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.cssFromModules = cssFromModules;
+exports.cssFromModule = cssFromModule;
+exports.cssFromTemplate = cssFromTemplate;
+exports.cssFromModuleImports = cssFromModuleImports;
+exports._cssFromModuleImports = _cssFromModuleImports;
+
+var _resolveUrl = __webpack_require__(10);
+
+const MODULE_STYLE_LINK_SELECTOR = 'link[rel=import][type~=css]';
+const INCLUDE_ATTR = 'include';
+
+function importModule(moduleId) {
+  const /** Polymer.DomModule */PolymerDomModule = customElements.get('dom-module');
+  if (!PolymerDomModule) {
+    return null;
+  }
+  return PolymerDomModule.import(moduleId);
+}
+
+/** @typedef {{assetpath: string}} */
+let templateWithAssetPath; // eslint-disable-line no-unused-vars
+
+function cssFromModules(moduleIds) {
+  let modules = moduleIds.trim().split(/\s+/);
+  let cssText = '';
+  for (let i = 0; i < modules.length; i++) {
+    cssText += cssFromModule(modules[i]);
+  }
+  return cssText;
+}
+
+function cssFromModule(moduleId) {
+  let m = importModule(moduleId);
+  if (m && m._cssText === undefined) {
+    // module imports: <link rel="import" type="css">
+    let cssText = _cssFromModuleImports(m);
+    // include css from the first template in the module
+    let t = m.querySelector('template');
+    if (t) {
+      cssText += cssFromTemplate(t, /** @type {templateWithAssetPath} */m.assetpath);
+    }
+    m._cssText = cssText || null;
+  }
+  if (!m) {
+    console.warn('Could not find style data in module named', moduleId);
+  }
+  return m && m._cssText || '';
+}
+
+function cssFromTemplate(template, baseURI) {
+  let cssText = '';
+  // if element is a template, get content from its .content
+  let e$ = template.content.querySelectorAll('style');
+  for (let i = 0; i < e$.length; i++) {
+    let e = e$[i];
+    // support style sharing by allowing styles to "include"
+    // other dom-modules that contain styling
+    let include = e.getAttribute(INCLUDE_ATTR);
+    if (include) {
+      cssText += cssFromModules(include);
+    }
+    e.parentNode.removeChild(e);
+    cssText += baseURI ? (0, _resolveUrl.resolveCss)(e.textContent, baseURI) : e.textContent;
+  }
+  return cssText;
+}
+
+function cssFromModuleImports(moduleId) {
+  let m = importModule(moduleId);
+  return m ? _cssFromModuleImports(m) : '';
+}
+
+function _cssFromModuleImports(module) {
+  let cssText = '';
+  let p$ = module.querySelectorAll(MODULE_STYLE_LINK_SELECTOR);
+  for (let i = 0; i < p$.length; i++) {
+    let p = p$[i];
+    if (p.import) {
+      let importDoc = p.import;
+      // NOTE: polyfill affordance.
+      // under the HTMLImports polyfill, there will be no 'body',
+      // but the import pseudo-doc can be used directly.
+      let container = importDoc.body ? importDoc.body : importDoc;
+      cssText += (0, _resolveUrl.resolveCss)(container.textContent, importDoc.baseURI);
+    }
+  }
+  return cssText;
+}
+
+/***/ }),
+/* 29 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.DomModule = undefined;
+
+__webpack_require__(1);
+
+var _resolveUrl = __webpack_require__(10);
+
+let modules = {};
+let lcModules = {};
+function findModule(id) {
+  return modules[id] || lcModules[id.toLowerCase()];
+}
+
+function styleOutsideTemplateCheck(inst) {
+  if (inst.querySelector('style')) {
+    console.warn('dom-module %s has style outside template', inst.id);
+  }
+}
+
+/**
+ * The `dom-module` element registers the dom it contains to the name given
+ * by the module's id attribute. It provides a unified database of dom
+ * accessible via its static `import` API.
+ *
+ * A key use case of `dom-module` is for providing custom element `<template>`s
+ * via HTML imports that are parsed by the native HTML parser, that can be
+ * relocated during a bundling pass and still looked up by `id`.
+ *
+ * Example:
+ *
+ *     <dom-module id="foo">
+ *       <img src="stuff.png">
+ *     </dom-module>
+ *
+ * Then in code in some other location that cannot access the dom-module above
+ *
+ *     let img = customElements.get('dom-module').import('foo', 'img');
+ *
+ * @customElement
+ * @extends HTMLElement
+ * @memberof Polymer
+ * @summary Custom element that provides a registry of relocatable DOM content
+ *   by `id` that is agnostic to bundling.
+ * @unrestricted
+ */
+class DomModule extends HTMLElement {
+
+  static get observedAttributes() {
+    return ['id'];
+  }
+
+  /**
+   * Retrieves the element specified by the css `selector` in the module
+   * registered by `id`. For example, this.import('foo', 'img');
+   * @param {string} id The id of the dom-module in which to search.
+   * @param {string=} selector The css selector by which to find the element.
+   * @return {Element} Returns the element which matches `selector` in the
+   * module registered at the specified `id`.
+   */
+  static import(id, selector) {
+    if (id) {
+      let m = findModule(id);
+      if (m && selector) {
+        return m.querySelector(selector);
+      }
+      return m;
+    }
+    return null;
+  }
+
+  attributeChangedCallback(name, old, value) {
+    if (old !== value) {
+      this.register();
+    }
+  }
+
+  /**
+   * The absolute URL of the original location of this `dom-module`.
+   *
+   * This value will differ from this element's `ownerDocument` in the
+   * following ways:
+   * - Takes into account any `assetpath` attribute added during bundling
+   *   to indicate the original location relative to the bundled location
+   * - Uses the HTMLImports polyfill's `importForElement` API to ensure
+   *   the path is relative to the import document's location since
+   *   `ownerDocument` is not currently polyfilled
+   */
+  get assetpath() {
+    // Don't override existing assetpath.
+    if (!this.__assetpath) {
+      // note: assetpath set via an attribute must be relative to this
+      // element's location; accomodate polyfilled HTMLImports
+      const owner = window.HTMLImports && HTMLImports.importForElement ? HTMLImports.importForElement(this) || document : this.ownerDocument;
+      const url = (0, _resolveUrl.resolveUrl)(this.getAttribute('assetpath') || '', owner.baseURI);
+      this.__assetpath = (0, _resolveUrl.pathFromUrl)(url);
+    }
+    return this.__assetpath;
+  }
+
+  /**
+   * Registers the dom-module at a given id. This method should only be called
+   * when a dom-module is imperatively created. For
+   * example, `document.createElement('dom-module').register('foo')`.
+   * @param {string=} id The id at which to register the dom-module.
+   */
+  register(id) {
+    id = id || this.id;
+    if (id) {
+      this.id = id;
+      // store id separate from lowercased id so that
+      // in all cases mixedCase id will stored distinctly
+      // and lowercase version is a fallback
+      modules[id] = this;
+      lcModules[id.toLowerCase()] = this;
+      styleOutsideTemplateCheck(this);
+    }
+  }
+}
+
+DomModule.prototype['modules'] = modules;
+
+customElements.define('dom-module', DomModule);
+
+exports.DomModule = DomModule;
+
+/***/ }),
+/* 30 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.LegacyElementMixin = undefined;
+
+__webpack_require__(48);
+
+var _elementMixin = __webpack_require__(16);
+
+var _gestureEventListeners = __webpack_require__(35);
+
+var _mixin = __webpack_require__(4);
+
+var _importHref = __webpack_require__(52);
+
+__webpack_require__(53);
+
+__webpack_require__(54);
+
+var _polymerDom = __webpack_require__(2);
+
+var _gestures = __webpack_require__(36);
+
+var _debounce = __webpack_require__(8);
+
+var _async = __webpack_require__(6);
+
+var _path = __webpack_require__(12);
+
+let styleInterface = window.ShadyCSS;
+
+const LegacyElementMixin = exports.LegacyElementMixin = (0, _mixin.dedupingMixin)(base => {
+
+  /**
+   * @constructor
+   * @extends {base}
+   * @implements {Polymer_ElementMixin}
+   * @implements {Polymer_GestureEventListeners}
+   */
+  const legacyElementBase = (0, _gestureEventListeners.GestureEventListeners)((0, _elementMixin.ElementMixin)(base));
+
+  /**
+   * Map of simple names to touch action names
+   * @dict
+   */
+  const DIRECTION_MAP = {
+    'x': 'pan-x',
+    'y': 'pan-y',
+    'none': 'none',
+    'all': 'auto'
+  };
+
+  /**
+   * @polymer
+   * @mixinClass
+   * @extends {legacyElementBase}
+   * @implements {Polymer_LegacyElementMixin}
+   * @unrestricted
+   */
+  class LegacyElement extends legacyElementBase {
+
+    constructor() {
+      super();
+      this.root = this;
+      /** @type {boolean} */
+      this.isAttached;
+      /** @type {WeakMap<!Element, !Object<string, !Function>>} */
+      this.__boundListeners;
+      /** @type {Object<string, Function>} */
+      this._debouncers;
+      this.created();
+    }
+
+    /**
+     * Legacy callback called during the `constructor`, for overriding
+     * by the user.
+     */
+    created() {}
+
+    /**
+     * Provides an implementation of `connectedCallback`
+     * which adds Polymer legacy API's `attached` method.
+     * @override
+     */
+    connectedCallback() {
+      super.connectedCallback();
+      this.isAttached = true;
+      this.attached();
+    }
+
+    /**
+     * Legacy callback called during `connectedCallback`, for overriding
+     * by the user.
+     */
+    attached() {}
+
+    /**
+     * Provides an implementation of `disconnectedCallback`
+     * which adds Polymer legacy API's `detached` method.
+     * @override
+     */
+    disconnectedCallback() {
+      super.disconnectedCallback();
+      this.isAttached = false;
+      this.detached();
+    }
+
+    /**
+     * Legacy callback called during `disconnectedCallback`, for overriding
+     * by the user.
+     */
+    detached() {}
+
+    /**
+     * Provides an override implementation of `attributeChangedCallback`
+     * which adds the Polymer legacy API's `attributeChanged` method.
+     * @param {string} name Name of attribute.
+     * @param {?string} old Old value of attribute.
+     * @param {?string} value Current value of attribute.
+     * @override
+     */
+    attributeChangedCallback(name, old, value) {
+      if (old !== value) {
+        super.attributeChangedCallback(name, old, value);
+        this.attributeChanged(name, old, value);
+      }
+    }
+
+    /**
+     * Legacy callback called during `attributeChangedChallback`, for overriding
+     * by the user.
+     * @param {string} name Name of attribute.
+     * @param {?string} old Old value of attribute.
+     * @param {?string} value Current value of attribute.
+     */
+    attributeChanged(name, old, value) {} // eslint-disable-line no-unused-vars
+
+    /**
+     * Overrides the default `Polymer.PropertyEffects` implementation to
+     * add support for class initialization via the `_registered` callback.
+     * This is called only when the first instance of the element is created.
+     *
+     * @override
+     */
+    _initializeProperties() {
+      let proto = Object.getPrototypeOf(this);
+      if (!proto.hasOwnProperty('__hasRegisterFinished')) {
+        proto.__hasRegisterFinished = true;
+        this._registered();
+      }
+      super._initializeProperties();
+    }
+
+    /**
+     * Called automatically when an element is initializing.
+     * Users may override this method to perform class registration time
+     * work. The implementation should ensure the work is performed
+     * only once for the class.
+     * @protected
+     */
+    _registered() {}
+
+    /**
+     * Overrides the default `Polymer.PropertyEffects` implementation to
+     * add support for installing `hostAttributes` and `listeners`.
+     *
+     * @override
+     */
+    ready() {
+      this._ensureAttributes();
+      this._applyListeners();
+      super.ready();
+    }
+
+    /**
+     * Ensures an element has required attributes. Called when the element
+     * is being readied via `ready`. Users should override to set the
+     * element's required attributes. The implementation should be sure
+     * to check and not override existing attributes added by
+     * the user of the element. Typically, setting attributes should be left
+     * to the element user and not done here; reasonable exceptions include
+     * setting aria roles and focusability.
+     * @protected
+     */
+    _ensureAttributes() {}
+
+    /**
+     * Adds element event listeners. Called when the element
+     * is being readied via `ready`. Users should override to
+     * add any required element event listeners.
+     * In performance critical elements, the work done here should be kept
+     * to a minimum since it is done before the element is rendered. In
+     * these elements, consider adding listeners asychronously so as not to
+     * block render.
+     * @protected
+     */
+    _applyListeners() {}
+
+    /**
+     * Converts a typed JavaScript value to a string.
+     *
+     * Note this method is provided as backward-compatible legacy API
+     * only.  It is not directly called by any Polymer features. To customize
+     * how properties are serialized to attributes for attribute bindings and
+     * `reflectToAttribute: true` properties as well as this method, override
+     * the `_serializeValue` method provided by `Polymer.PropertyAccessors`.
+     *
+     * @param {*} value Value to deserialize
+     * @return {string | undefined} Serialized value
+     */
+    serialize(value) {
+      return this._serializeValue(value);
+    }
+
+    /**
+     * Converts a string to a typed JavaScript value.
+     *
+     * Note this method is provided as backward-compatible legacy API
+     * only.  It is not directly called by any Polymer features.  To customize
+     * how attributes are deserialized to properties for in
+     * `attributeChangedCallback`, override `_deserializeValue` method
+     * provided by `Polymer.PropertyAccessors`.
+     *
+     * @param {string} value String to deserialize
+     * @param {*} type Type to deserialize the string to
+     * @return {*} Returns the deserialized value in the `type` given.
+     */
+    deserialize(value, type) {
+      return this._deserializeValue(value, type);
+    }
+
+    /**
+     * Serializes a property to its associated attribute.
+     *
+     * Note this method is provided as backward-compatible legacy API
+     * only.  It is not directly called by any Polymer features.
+     *
+     * @param {string} property Property name to reflect.
+     * @param {string=} attribute Attribute name to reflect.
+     * @param {*=} value Property value to refect.
+     */
+    reflectPropertyToAttribute(property, attribute, value) {
+      this._propertyToAttribute(property, attribute, value);
+    }
+
+    /**
+     * Sets a typed value to an HTML attribute on a node.
+     *
+     * Note this method is provided as backward-compatible legacy API
+     * only.  It is not directly called by any Polymer features.
+     *
+     * @param {*} value Value to serialize.
+     * @param {string} attribute Attribute name to serialize to.
+     * @param {Element} node Element to set attribute to.
+     */
+    serializeValueToAttribute(value, attribute, node) {
+      this._valueToNodeAttribute( /** @type {Element} */node || this, value, attribute);
+    }
+
+    /**
+     * Copies own properties (including accessor descriptors) from a source
+     * object to a target object.
+     *
+     * @param {Object} prototype Target object to copy properties to.
+     * @param {Object} api Source object to copy properties from.
+     * @return {Object} prototype object that was passed as first argument.
+     */
+    extend(prototype, api) {
+      if (!(prototype && api)) {
+        return prototype || api;
+      }
+      let n$ = Object.getOwnPropertyNames(api);
+      for (let i = 0, n; i < n$.length && (n = n$[i]); i++) {
+        let pd = Object.getOwnPropertyDescriptor(api, n);
+        if (pd) {
+          Object.defineProperty(prototype, n, pd);
+        }
+      }
+      return prototype;
+    }
+
+    /**
+     * Copies props from a source object to a target object.
+     *
+     * Note, this method uses a simple `for...in` strategy for enumerating
+     * properties.  To ensure only `ownProperties` are copied from source
+     * to target and that accessor implementations are copied, use `extend`.
+     *
+     * @param {Object} target Target object to copy properties to.
+     * @param {Object} source Source object to copy properties from.
+     * @return {Object} Target object that was passed as first argument.
+     */
+    mixin(target, source) {
+      for (let i in source) {
+        target[i] = source[i];
+      }
+      return target;
+    }
+
+    /**
+     * Sets the prototype of an object.
+     *
+     * Note this method is provided as backward-compatible legacy API
+     * only.  It is not directly called by any Polymer features.
+     * @param {Object} object The object on which to set the prototype.
+     * @param {Object} prototype The prototype that will be set on the given
+     * `object`.
+     * @return {Object} Returns the given `object` with its prototype set
+     * to the given `prototype` object.
+     */
+    chainObject(object, prototype) {
+      if (object && prototype && object !== prototype) {
+        object.__proto__ = prototype;
+      }
+      return object;
+    }
+
+    /* **** Begin Template **** */
+
+    /**
+     * Calls `importNode` on the `content` of the `template` specified and
+     * returns a document fragment containing the imported content.
+     *
+     * @param {HTMLTemplateElement} template HTML template element to instance.
+     * @return {DocumentFragment} Document fragment containing the imported
+     *   template content.
+    */
+    instanceTemplate(template) {
+      let content = this.constructor._contentForTemplate(template);
+      let dom = /** @type {DocumentFragment} */
+      document.importNode(content, true);
+      return dom;
+    }
+
+    /* **** Begin Events **** */
+
+    /**
+     * Dispatches a custom event with an optional detail value.
+     *
+     * @param {string} type Name of event type.
+     * @param {*=} detail Detail value containing event-specific
+     *   payload.
+     * @param {{ bubbles: (boolean|undefined), cancelable: (boolean|undefined), composed: (boolean|undefined) }=}
+     *  options Object specifying options.  These may include:
+     *  `bubbles` (boolean, defaults to `true`),
+     *  `cancelable` (boolean, defaults to false), and
+     *  `node` on which to fire the event (HTMLElement, defaults to `this`).
+     * @return {Event} The new event that was fired.
+     */
+    fire(type, detail, options) {
+      options = options || {};
+      detail = detail === null || detail === undefined ? {} : detail;
+      let event = new Event(type, {
+        bubbles: options.bubbles === undefined ? true : options.bubbles,
+        cancelable: Boolean(options.cancelable),
+        composed: options.composed === undefined ? true : options.composed
+      });
+      event.detail = detail;
+      let node = options.node || this;
+      node.dispatchEvent(event);
+      return event;
+    }
+
+    /**
+     * Convenience method to add an event listener on a given element,
+     * late bound to a named method on this element.
+     *
+     * @param {Element} node Element to add event listener to.
+     * @param {string} eventName Name of event to listen for.
+     * @param {string} methodName Name of handler method on `this` to call.
+     */
+    listen(node, eventName, methodName) {
+      node = /** @type {!Element} */node || this;
+      let hbl = this.__boundListeners || (this.__boundListeners = new WeakMap());
+      let bl = hbl.get(node);
+      if (!bl) {
+        bl = {};
+        hbl.set(node, bl);
+      }
+      let key = eventName + methodName;
+      if (!bl[key]) {
+        bl[key] = this._addMethodEventListenerToNode(node, eventName, methodName, this);
+      }
+    }
+
+    /**
+     * Convenience method to remove an event listener from a given element,
+     * late bound to a named method on this element.
+     *
+     * @param {Element} node Element to remove event listener from.
+     * @param {string} eventName Name of event to stop listening to.
+     * @param {string} methodName Name of handler method on `this` to not call
+     anymore.
+     */
+    unlisten(node, eventName, methodName) {
+      node = /** @type {!Element} */node || this;
+      let bl = this.__boundListeners && this.__boundListeners.get(node);
+      let key = eventName + methodName;
+      let handler = bl && bl[key];
+      if (handler) {
+        this._removeEventListenerFromNode(node, eventName, handler);
+        bl[key] = null;
+      }
+    }
+
+    /**
+     * Override scrolling behavior to all direction, one direction, or none.
+     *
+     * Valid scroll directions:
+     *   - 'all': scroll in any direction
+     *   - 'x': scroll only in the 'x' direction
+     *   - 'y': scroll only in the 'y' direction
+     *   - 'none': disable scrolling for this node
+     *
+     * @param {string=} direction Direction to allow scrolling
+     * Defaults to `all`.
+     * @param {Element=} node Element to apply scroll direction setting.
+     * Defaults to `this`.
+     */
+    setScrollDirection(direction, node) {
+      (0, _gestures.setTouchAction)(node || this, DIRECTION_MAP[direction] || 'auto');
+    }
+    /* **** End Events **** */
+
+    /**
+     * Convenience method to run `querySelector` on this local DOM scope.
+     *
+     * This function calls `Polymer.dom(this.root).querySelector(slctr)`.
+     *
+     * @param {string} slctr Selector to run on this local DOM scope
+     * @return {Element} Element found by the selector, or null if not found.
+     */
+    $$(slctr) {
+      return this.root.querySelector(slctr);
+    }
+
+    /**
+     * Return the element whose local dom within which this element
+     * is contained. This is a shorthand for
+     * `this.getRootNode().host`.
+     * @this {Element}
+     */
+    get domHost() {
+      let root = this.getRootNode();
+      return root instanceof DocumentFragment ? /** @type {ShadowRoot} */root.host : root;
+    }
+
+    /**
+     * Force this element to distribute its children to its local dom.
+     * This should not be necessary as of Polymer 2.0.2 and is provided only
+     * for backwards compatibility.
+     */
+    distributeContent() {
+      if (window.ShadyDOM && this.shadowRoot) {
+        ShadyDOM.flush();
+      }
+    }
+
+    /**
+     * Returns a list of nodes that are the effective childNodes. The effective
+     * childNodes list is the same as the element's childNodes except that
+     * any `<content>` elements are replaced with the list of nodes distributed
+     * to the `<content>`, the result of its `getDistributedNodes` method.
+     * @this {Element}
+     * @return {Array<Node>} List of effctive child nodes.
+     */
+    getEffectiveChildNodes() {
+      return (
+        /** @type {Polymer.DomApi} */(0, _polymerDom.dom)(this).getEffectiveChildNodes()
+      );
+    }
+
+    /**
+     * Returns a list of nodes distributed within this element that match
+     * `selector`. These can be dom children or elements distributed to
+     * children that are insertion points.
+     * @param {string} selector Selector to run.
+     * @this {Element}
+     * @return {Array<Node>} List of distributed elements that match selector.
+     */
+    queryDistributedElements(selector) {
+      return (
+        /** @type {Polymer.DomApi} */(0, _polymerDom.dom)(this).queryDistributedElements(selector)
+      );
+    }
+
+    /**
+     * Returns a list of elements that are the effective children. The effective
+     * children list is the same as the element's children except that
+     * any `<content>` elements are replaced with the list of elements
+     * distributed to the `<content>`.
+     *
+     * @return {Array<Node>} List of effctive children.
+     */
+    getEffectiveChildren() {
+      let list = this.getEffectiveChildNodes();
+      return list.filter(function ( /** @type {Node} */n) {
+        return n.nodeType === Node.ELEMENT_NODE;
+      });
+    }
+
+    /**
+     * Returns a string of text content that is the concatenation of the
+     * text content's of the element's effective childNodes (the elements
+     * returned by <a href="#getEffectiveChildNodes>getEffectiveChildNodes</a>.
+     *
+     * @return {string} List of effctive children.
+     */
+    getEffectiveTextContent() {
+      let cn = this.getEffectiveChildNodes();
+      let tc = [];
+      for (let i = 0, c; c = cn[i]; i++) {
+        if (c.nodeType !== Node.COMMENT_NODE) {
+          tc.push(c.textContent);
+        }
+      }
+      return tc.join('');
+    }
+
+    /**
+     * Returns the first effective childNode within this element that
+     * match `selector`. These can be dom child nodes or elements distributed
+     * to children that are insertion points.
+     * @param {string} selector Selector to run.
+     * @return {Object<Node>} First effective child node that matches selector.
+     */
+    queryEffectiveChildren(selector) {
+      let e$ = this.queryDistributedElements(selector);
+      return e$ && e$[0];
+    }
+
+    /**
+     * Returns a list of effective childNodes within this element that
+     * match `selector`. These can be dom child nodes or elements distributed
+     * to children that are insertion points.
+     * @param {string} selector Selector to run.
+     * @return {Array<Node>} List of effective child nodes that match selector.
+     */
+    queryAllEffectiveChildren(selector) {
+      return this.queryDistributedElements(selector);
+    }
+
+    /**
+     * Returns a list of nodes distributed to this element's `<slot>`.
+     *
+     * If this element contains more than one `<slot>` in its local DOM,
+     * an optional selector may be passed to choose the desired content.
+     *
+     * @param {string=} slctr CSS selector to choose the desired
+     *   `<slot>`.  Defaults to `content`.
+     * @return {Array<Node>} List of distributed nodes for the `<slot>`.
+     */
+    getContentChildNodes(slctr) {
+      let content = this.root.querySelector(slctr || 'slot');
+      return content ? /** @type {Polymer.DomApi} */(0, _polymerDom.dom)(content).getDistributedNodes() : [];
+    }
+
+    /**
+     * Returns a list of element children distributed to this element's
+     * `<slot>`.
+     *
+     * If this element contains more than one `<slot>` in its
+     * local DOM, an optional selector may be passed to choose the desired
+     * content.  This method differs from `getContentChildNodes` in that only
+     * elements are returned.
+     *
+     * @param {string=} slctr CSS selector to choose the desired
+     *   `<content>`.  Defaults to `content`.
+     * @return {Array<HTMLElement>} List of distributed nodes for the
+     *   `<slot>`.
+     * @suppress {invalidCasts}
+     */
+    getContentChildren(slctr) {
+      return (/** @type {Array<HTMLElement>} */this.getContentChildNodes(slctr).filter(function (n) {
+          return n.nodeType === Node.ELEMENT_NODE;
+        })
+      );
+    }
+
+    /**
+     * Checks whether an element is in this element's light DOM tree.
+     *
+     * @param {?Node} node The element to be checked.
+     * @this {Element}
+     * @return {boolean} true if node is in this element's light DOM tree.
+     */
+    isLightDescendant(node) {
+      return this !== node && this.contains(node) && this.getRootNode() === node.getRootNode();
+    }
+
+    /**
+     * Checks whether an element is in this element's local DOM tree.
+     *
+     * @param {Element=} node The element to be checked.
+     * @return {boolean} true if node is in this element's local DOM tree.
+     */
+    isLocalDescendant(node) {
+      return this.root === node.getRootNode();
+    }
+
+    // NOTE: should now be handled by ShadyCss library.
+    scopeSubtree(container, shouldObserve) {} // eslint-disable-line no-unused-vars
+
+
+    /**
+     * Returns the computed style value for the given property.
+     * @param {string} property The css property name.
+     * @return {string} Returns the computed css property value for the given
+     * `property`.
+     */
+    getComputedStyleValue(property) {
+      return styleInterface.getComputedStyleValue(this, property);
+    }
+
+    // debounce
+
+    /**
+     * Call `debounce` to collapse multiple requests for a named task into
+     * one invocation which is made after the wait time has elapsed with
+     * no new request.  If no wait time is given, the callback will be called
+     * at microtask timing (guaranteed before paint).
+     *
+     *     debouncedClickAction(e) {
+     *       // will not call `processClick` more than once per 100ms
+     *       this.debounce('click', function() {
+     *        this.processClick();
+     *       } 100);
+     *     }
+     *
+     * @param {string} jobName String to indentify the debounce job.
+     * @param {function()} callback Function that is called (with `this`
+     *   context) when the wait time elapses.
+     * @param {number} wait Optional wait time in milliseconds (ms) after the
+     *   last signal that must elapse before invoking `callback`
+     * @return {Object} Returns a debouncer object on which exists the
+     * following methods: `isActive()` returns true if the debouncer is
+     * active; `cancel()` cancels the debouncer if it is active;
+     * `flush()` immediately invokes the debounced callback if the debouncer
+     * is active.
+     */
+    debounce(jobName, callback, wait) {
+      this._debouncers = this._debouncers || {};
+      return this._debouncers[jobName] = _debounce.Debouncer.debounce(this._debouncers[jobName], wait > 0 ? _async.timeOut.after(wait) : _async.microTask, callback.bind(this));
+    }
+
+    /**
+     * Returns whether a named debouncer is active.
+     *
+     * @param {string} jobName The name of the debouncer started with `debounce`
+     * @return {boolean} Whether the debouncer is active (has not yet fired).
+     */
+    isDebouncerActive(jobName) {
+      this._debouncers = this._debouncers || {};
+      let debouncer = this._debouncers[jobName];
+      return !!(debouncer && debouncer.isActive());
+    }
+
+    /**
+     * Immediately calls the debouncer `callback` and inactivates it.
+     *
+     * @param {string} jobName The name of the debouncer started with `debounce`
+     */
+    flushDebouncer(jobName) {
+      this._debouncers = this._debouncers || {};
+      let debouncer = this._debouncers[jobName];
+      if (debouncer) {
+        debouncer.flush();
+      }
+    }
+
+    /**
+     * Cancels an active debouncer.  The `callback` will not be called.
+     *
+     * @param {string} jobName The name of the debouncer started with `debounce`
+     */
+    cancelDebouncer(jobName) {
+      this._debouncers = this._debouncers || {};
+      let debouncer = this._debouncers[jobName];
+      if (debouncer) {
+        debouncer.cancel();
+      }
+    }
+
+    /**
+     * Runs a callback function asyncronously.
+     *
+     * By default (if no waitTime is specified), async callbacks are run at
+     * microtask timing, which will occur before paint.
+     *
+     * @param {Function} callback The callback function to run, bound to `this`.
+     * @param {number=} waitTime Time to wait before calling the
+     *   `callback`.  If unspecified or 0, the callback will be run at microtask
+     *   timing (before paint).
+     * @return {number} Handle that may be used to cancel the async job.
+     */
+    async(callback, waitTime) {
+      return waitTime > 0 ? _async.timeOut.run(callback.bind(this), waitTime) : ~_async.microTask.run(callback.bind(this));
+    }
+
+    /**
+     * Cancels an async operation started with `async`.
+     *
+     * @param {number} handle Handle returned from original `async` call to
+     *   cancel.
+     */
+    cancelAsync(handle) {
+      handle < 0 ? _async.microTask.cancel(~handle) : _async.timeOut.cancel(handle);
+    }
+
+    // other
+
+    /**
+     * Convenience method for creating an element and configuring it.
+     *
+     * @param {string} tag HTML element tag to create.
+     * @param {Object} props Object of properties to configure on the
+     *    instance.
+     * @return {Element} Newly created and configured element.
+     */
+    create(tag, props) {
+      let elt = document.createElement(tag);
+      if (props) {
+        if (elt.setProperties) {
+          elt.setProperties(props);
+        } else {
+          for (let n in props) {
+            elt[n] = props[n];
+          }
+        }
+      }
+      return elt;
+    }
+
+    /**
+     * Convenience method for importing an HTML document imperatively.
+     *
+     * This method creates a new `<link rel="import">` element with
+     * the provided URL and appends it to the document to start loading.
+     * In the `onload` callback, the `import` property of the `link`
+     * element will contain the imported document contents.
+     *
+     * @param {string} href URL to document to load.
+     * @param {Function} onload Callback to notify when an import successfully
+     *   loaded.
+     * @param {Function} onerror Callback to notify when an import
+     *   unsuccessfully loaded.
+     * @param {boolean} optAsync True if the import should be loaded `async`.
+     *   Defaults to `false`.
+     * @return {HTMLLinkElement} The link element for the URL to be loaded.
+     */
+    importHref(href, onload, onerror, optAsync) {
+      // eslint-disable-line no-unused-vars
+      let loadFn = onload ? onload.bind(this) : null;
+      let errorFn = onerror ? onerror.bind(this) : null;
+      return (0, _importHref.importHref)(href, loadFn, errorFn, optAsync);
+    }
+
+    /**
+     * Polyfill for Element.prototype.matches, which is sometimes still
+     * prefixed.
+     *
+     * @param {string} selector Selector to test.
+     * @param {Element=} node Element to test the selector against.
+     * @return {boolean} Whether the element matches the selector.
+     */
+    elementMatches(selector, node) {
+      return (0, _polymerDom.matchesSelector)(node || this, selector);
+    }
+
+    /**
+     * Toggles an HTML attribute on or off.
+     *
+     * @param {string} name HTML attribute name
+     * @param {boolean=} bool Boolean to force the attribute on or off.
+     *    When unspecified, the state of the attribute will be reversed.
+     * @param {Element=} node Node to target.  Defaults to `this`.
+     */
+    toggleAttribute(name, bool, node) {
+      node = /** @type {Element} */node || this;
+      if (arguments.length == 1) {
+        bool = !node.hasAttribute(name);
+      }
+      if (bool) {
+        node.setAttribute(name, '');
+      } else {
+        node.removeAttribute(name);
+      }
+    }
+
+    /**
+     * Toggles a CSS class on or off.
+     *
+     * @param {string} name CSS class name
+     * @param {boolean=} bool Boolean to force the class on or off.
+     *    When unspecified, the state of the class will be reversed.
+     * @param {Element=} node Node to target.  Defaults to `this`.
+     */
+    toggleClass(name, bool, node) {
+      node = /** @type {Element} */node || this;
+      if (arguments.length == 1) {
+        bool = !node.classList.contains(name);
+      }
+      if (bool) {
+        node.classList.add(name);
+      } else {
+        node.classList.remove(name);
+      }
+    }
+
+    /**
+     * Cross-platform helper for setting an element's CSS `transform` property.
+     *
+     * @param {string} transformText Transform setting.
+     * @param {Element=} node Element to apply the transform to.
+     * Defaults to `this`
+     */
+    transform(transformText, node) {
+      node = /** @type {Element} */node || this;
+      node.style.webkitTransform = transformText;
+      node.style.transform = transformText;
+    }
+
+    /**
+     * Cross-platform helper for setting an element's CSS `translate3d`
+     * property.
+     *
+     * @param {number} x X offset.
+     * @param {number} y Y offset.
+     * @param {number} z Z offset.
+     * @param {Element=} node Element to apply the transform to.
+     * Defaults to `this`.
+     */
+    translate3d(x, y, z, node) {
+      node = /** @type {Element} */node || this;
+      this.transform('translate3d(' + x + ',' + y + ',' + z + ')', node);
+    }
+
+    /**
+     * Removes an item from an array, if it exists.
+     *
+     * If the array is specified by path, a change notification is
+     * generated, so that observers, data bindings and computed
+     * properties watching that path can update.
+     *
+     * If the array is passed directly, **no change
+     * notification is generated**.
+     *
+     * @param {string | !Array<number|string>} arrayOrPath Path to array from which to remove the item
+     *   (or the array itself).
+     * @param {*} item Item to remove.
+     * @return {Array} Array containing item removed.
+     */
+    arrayDelete(arrayOrPath, item) {
+      let index;
+      if (Array.isArray(arrayOrPath)) {
+        index = arrayOrPath.indexOf(item);
+        if (index >= 0) {
+          return arrayOrPath.splice(index, 1);
+        }
+      } else {
+        let arr = (0, _path.get)(this, arrayOrPath);
+        index = arr.indexOf(item);
+        if (index >= 0) {
+          return this.splice(arrayOrPath, index, 1);
+        }
+      }
+      return null;
+    }
+
+    // logging
+
+    /**
+     * Facades `console.log`/`warn`/`error` as override point.
+     *
+     * @param {string} level One of 'log', 'warn', 'error'
+     * @param {Array} args Array of strings or objects to log
+     */
+    _logger(level, args) {
+      // accept ['foo', 'bar'] and [['foo', 'bar']]
+      if (Array.isArray(args) && args.length === 1) {
+        args = args[0];
+      }
+      switch (level) {
+        case 'log':
+        case 'warn':
+        case 'error':
+          console[level](...args);
+      }
+    }
+
+    /**
+     * Facades `console.log` as an override point.
+     *
+     * @param {...*} args Array of strings or objects to log
+     */
+    _log(...args) {
+      this._logger('log', args);
+    }
+
+    /**
+     * Facades `console.warn` as an override point.
+     *
+     * @param {...*} args Array of strings or objects to log
+     */
+    _warn(...args) {
+      this._logger('warn', args);
+    }
+
+    /**
+     * Facades `console.error` as an override point.
+     *
+     * @param {...*} args Array of strings or objects to log
+     */
+    _error(...args) {
+      this._logger('error', args);
+    }
+
+    /**
+     * Formats a message using the element type an a method name.
+     *
+     * @param {string} methodName Method name to associate with message
+     * @param {...*} args Array of strings or objects to log
+     * @return {Array} Array with formatting information for `console`
+     *   logging.
+     */
+    _logf(methodName, ...args) {
+      return ['[%s::%s]', this.is, methodName, ...args];
+    }
+
+  }
+
+  LegacyElement.prototype.is = '';
+
+  return LegacyElement;
+});
+
+/***/ }),
+/* 31 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+/**
 @license
 Copyright (c) 2017 The Polymer Project Authors. All rights reserved.
 This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
@@ -614,7 +8270,317 @@ The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
 The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
 Code distributed by Google as part of the polymer project is also
 subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
-*/function a(e,t,n,o){if(!e)return;let r=!1,s=e.type;if(o&&s===p.types.MEDIA_RULE){let t=e.selector.match(_.MEDIA_MATCH);t&&!window.matchMedia(t[1]).matches&&(r=!0)}s===p.types.STYLE_RULE?t(e):n&&s===p.types.KEYFRAMES_RULE?n(e):s===p.types.MIXIN_RULE&&(r=!0);let d=e.rules;if(d&&!r)for(let e=0,s=d.length,l;e<s&&(l=d[e]);e++)a(l,t,n,o)}function o(e,t){let n=document.createElement('style');return t&&n.setAttribute('scope',t),n.textContent=e,n}function r(e,t,n){t=t||document.head;let a=n&&n.nextSibling||t.firstChild;if(t.insertBefore(e,a),!u)u=e;else{let t=e.compareDocumentPosition(u);t===Node.DOCUMENT_POSITION_PRECEDING&&(u=e)}}function s(e,t){let n=0;for(let a=t,o=e.length;a<o;a++)if('('===e[a])n++;else if(')'===e[a]&&0==--n)return a;return-1}function d(e,t){let n=e.indexOf('var(');if(-1===n)return t(e,'','','');let a=s(e,n+3),o=e.substring(n+4,a),r=e.substring(0,n),l=d(e.substring(a+1),t),p=o.indexOf(',');if(-1===p)return t(r,o.trim(),'',l);let _=o.substring(0,p).trim(),c=o.substring(p+1).trim();return t(r,_,c,l)}Object.defineProperty(t,'__esModule',{value:!0}),t.toCssText=function(e,t){return e?('string'==typeof e&&(e=(0,p.parse)(e)),t&&a(e,t),(0,p.stringify)(e,l.nativeCssVariables)):''},t.rulesForStyle=function(e){return!e.__cssRules&&e.textContent&&(e.__cssRules=(0,p.parse)(e.textContent)),e.__cssRules||null},t.isKeyframesSelector=function(e){return!!e.parent&&e.parent.type===p.types.KEYFRAMES_RULE},t.forEachRule=a,t.applyCss=function(e,t,n,a){let s=o(e,t);return r(s,n,a),s},t.createScopeStyle=o,t.applyStylePlaceHolder=function(e){let t=document.createComment(' Shady DOM styles for '+e+' '),n=u?u.nextSibling:null,a=document.head;return a.insertBefore(t,n||a.firstChild),u=t,t},t.applyStyle=r,t.isTargetedBuild=function(e){return l.nativeShadow?'shadow'===e:'shady'===e},t.getCssBuildType=function(e){return e.getAttribute('css-build')},t.processVariableAndFallback=d,t.setElementClassRaw=function(e,t){l.nativeShadow?e.setAttribute('class',t):window.ShadyDOM.nativeMethods.setAttribute.call(e,'class',t)},t.getIsExtends=function(e){let t=e.localName,n='',a='';return t?-1<t.indexOf('-')?n=t:(a=t,n=e.getAttribute&&e.getAttribute('is')||''):(n=e.is,a=e.extends),{is:n,typeExtension:a}},t.gatherStyleText=function(e){const t=[],n=e.querySelectorAll('style');for(let a=0;a<n.length;a++){const e=n[a];(0,c.isUnscopedStyle)(e)?!l.nativeShadow&&((0,c.processUnscopedStyle)(e),e.parentNode.removeChild(e)):(t.push(e.textContent),e.parentNode.removeChild(e))}return t.join('').trim()};var l=n(18),p=n(19),_=n(20),c=n(50);let u=null},function(e,t){'use strict';/**
+*/
+
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.toCssText = toCssText;
+exports.rulesForStyle = rulesForStyle;
+exports.isKeyframesSelector = isKeyframesSelector;
+exports.forEachRule = forEachRule;
+exports.applyCss = applyCss;
+exports.createScopeStyle = createScopeStyle;
+exports.applyStylePlaceHolder = applyStylePlaceHolder;
+exports.applyStyle = applyStyle;
+exports.isTargetedBuild = isTargetedBuild;
+exports.getCssBuildType = getCssBuildType;
+exports.processVariableAndFallback = processVariableAndFallback;
+exports.setElementClassRaw = setElementClassRaw;
+exports.getIsExtends = getIsExtends;
+exports.gatherStyleText = gatherStyleText;
+
+var _styleSettings = __webpack_require__(18);
+
+var _cssParse = __webpack_require__(19);
+
+var _commonRegex = __webpack_require__(20);
+
+var _unscopedStyleHandler = __webpack_require__(50);
+
+/**
+ * @param {string|StyleNode} rules
+ * @param {function(StyleNode)=} callback
+ * @return {string}
+ */
+// eslint-disable-line no-unused-vars
+function toCssText(rules, callback) {
+  if (!rules) {
+    return '';
+  }
+  if (typeof rules === 'string') {
+    rules = (0, _cssParse.parse)(rules);
+  }
+  if (callback) {
+    forEachRule(rules, callback);
+  }
+  return (0, _cssParse.stringify)(rules, _styleSettings.nativeCssVariables);
+}
+
+/**
+ * @param {HTMLStyleElement} style
+ * @return {StyleNode}
+ */
+function rulesForStyle(style) {
+  if (!style['__cssRules'] && style.textContent) {
+    style['__cssRules'] = (0, _cssParse.parse)(style.textContent);
+  }
+  return style['__cssRules'] || null;
+}
+
+// Tests if a rule is a keyframes selector, which looks almost exactly
+// like a normal selector but is not (it has nothing to do with scoping
+// for example).
+/**
+ * @param {StyleNode} rule
+ * @return {boolean}
+ */
+function isKeyframesSelector(rule) {
+  return Boolean(rule['parent']) && rule['parent']['type'] === _cssParse.types.KEYFRAMES_RULE;
+}
+
+/**
+ * @param {StyleNode} node
+ * @param {Function=} styleRuleCallback
+ * @param {Function=} keyframesRuleCallback
+ * @param {boolean=} onlyActiveRules
+ */
+function forEachRule(node, styleRuleCallback, keyframesRuleCallback, onlyActiveRules) {
+  if (!node) {
+    return;
+  }
+  let skipRules = false;
+  let type = node['type'];
+  if (onlyActiveRules) {
+    if (type === _cssParse.types.MEDIA_RULE) {
+      let matchMedia = node['selector'].match(_commonRegex.MEDIA_MATCH);
+      if (matchMedia) {
+        // if rule is a non matching @media rule, skip subrules
+        if (!window.matchMedia(matchMedia[1]).matches) {
+          skipRules = true;
+        }
+      }
+    }
+  }
+  if (type === _cssParse.types.STYLE_RULE) {
+    styleRuleCallback(node);
+  } else if (keyframesRuleCallback && type === _cssParse.types.KEYFRAMES_RULE) {
+    keyframesRuleCallback(node);
+  } else if (type === _cssParse.types.MIXIN_RULE) {
+    skipRules = true;
+  }
+  let r$ = node['rules'];
+  if (r$ && !skipRules) {
+    for (let i = 0, l = r$.length, r; i < l && (r = r$[i]); i++) {
+      forEachRule(r, styleRuleCallback, keyframesRuleCallback, onlyActiveRules);
+    }
+  }
+}
+
+// add a string of cssText to the document.
+/**
+ * @param {string} cssText
+ * @param {string} moniker
+ * @param {Node} target
+ * @param {Node} contextNode
+ * @return {HTMLStyleElement}
+ */
+function applyCss(cssText, moniker, target, contextNode) {
+  let style = createScopeStyle(cssText, moniker);
+  applyStyle(style, target, contextNode);
+  return style;
+}
+
+/**
+ * @param {string} cssText
+ * @param {string} moniker
+ * @return {HTMLStyleElement}
+ */
+function createScopeStyle(cssText, moniker) {
+  let style = /** @type {HTMLStyleElement} */document.createElement('style');
+  if (moniker) {
+    style.setAttribute('scope', moniker);
+  }
+  style.textContent = cssText;
+  return style;
+}
+
+/**
+ * Track the position of the last added style for placing placeholders
+ * @type {Node}
+ */
+let lastHeadApplyNode = null;
+
+// insert a comment node as a styling position placeholder.
+/**
+ * @param {string} moniker
+ * @return {!Comment}
+ */
+function applyStylePlaceHolder(moniker) {
+  let placeHolder = document.createComment(' Shady DOM styles for ' + moniker + ' ');
+  let after = lastHeadApplyNode ? lastHeadApplyNode['nextSibling'] : null;
+  let scope = document.head;
+  scope.insertBefore(placeHolder, after || scope.firstChild);
+  lastHeadApplyNode = placeHolder;
+  return placeHolder;
+}
+
+/**
+ * @param {HTMLStyleElement} style
+ * @param {?Node} target
+ * @param {?Node} contextNode
+ */
+function applyStyle(style, target, contextNode) {
+  target = target || document.head;
+  let after = contextNode && contextNode.nextSibling || target.firstChild;
+  target.insertBefore(style, after);
+  if (!lastHeadApplyNode) {
+    lastHeadApplyNode = style;
+  } else {
+    // only update lastHeadApplyNode if the new style is inserted after the old lastHeadApplyNode
+    let position = style.compareDocumentPosition(lastHeadApplyNode);
+    if (position === Node.DOCUMENT_POSITION_PRECEDING) {
+      lastHeadApplyNode = style;
+    }
+  }
+}
+
+/**
+ * @param {string} buildType
+ * @return {boolean}
+ */
+function isTargetedBuild(buildType) {
+  return _styleSettings.nativeShadow ? buildType === 'shadow' : buildType === 'shady';
+}
+
+/**
+ * @param {Element} element
+ * @return {?string}
+ */
+function getCssBuildType(element) {
+  return element.getAttribute('css-build');
+}
+
+/**
+ * Walk from text[start] matching parens and
+ * returns position of the outer end paren
+ * @param {string} text
+ * @param {number} start
+ * @return {number}
+ */
+function findMatchingParen(text, start) {
+  let level = 0;
+  for (let i = start, l = text.length; i < l; i++) {
+    if (text[i] === '(') {
+      level++;
+    } else if (text[i] === ')') {
+      if (--level === 0) {
+        return i;
+      }
+    }
+  }
+  return -1;
+}
+
+/**
+ * @param {string} str
+ * @param {function(string, string, string, string)} callback
+ */
+function processVariableAndFallback(str, callback) {
+  // find 'var('
+  let start = str.indexOf('var(');
+  if (start === -1) {
+    // no var?, everything is prefix
+    return callback(str, '', '', '');
+  }
+  //${prefix}var(${inner})${suffix}
+  let end = findMatchingParen(str, start + 3);
+  let inner = str.substring(start + 4, end);
+  let prefix = str.substring(0, start);
+  // suffix may have other variables
+  let suffix = processVariableAndFallback(str.substring(end + 1), callback);
+  let comma = inner.indexOf(',');
+  // value and fallback args should be trimmed to match in property lookup
+  if (comma === -1) {
+    // variable, no fallback
+    return callback(prefix, inner.trim(), '', suffix);
+  }
+  // var(${value},${fallback})
+  let value = inner.substring(0, comma).trim();
+  let fallback = inner.substring(comma + 1).trim();
+  return callback(prefix, value, fallback, suffix);
+}
+
+/**
+ * @param {Element} element
+ * @param {string} value
+ */
+function setElementClassRaw(element, value) {
+  // use native setAttribute provided by ShadyDOM when setAttribute is patched
+  if (_styleSettings.nativeShadow) {
+    element.setAttribute('class', value);
+  } else {
+    window['ShadyDOM']['nativeMethods']['setAttribute'].call(element, 'class', value);
+  }
+}
+
+/**
+ * @param {Element | {is: string, extends: string}} element
+ * @return {{is: string, typeExtension: string}}
+ */
+function getIsExtends(element) {
+  let localName = element['localName'];
+  let is = '',
+      typeExtension = '';
+  /*
+  NOTE: technically, this can be wrong for certain svg elements
+  with `-` in the name like `<font-face>`
+  */
+  if (localName) {
+    if (localName.indexOf('-') > -1) {
+      is = localName;
+    } else {
+      typeExtension = localName;
+      is = element.getAttribute && element.getAttribute('is') || '';
+    }
+  } else {
+    is = /** @type {?} */element.is;
+    typeExtension = /** @type {?} */element.extends;
+  }
+  return { is, typeExtension };
+}
+
+/**
+ * @param {Element|DocumentFragment} element
+ * @return {string}
+ */
+function gatherStyleText(element) {
+  /** @type {!Array<string>} */
+  const styleTextParts = [];
+  const styles = /** @type {!NodeList<!HTMLStyleElement>} */element.querySelectorAll('style');
+  for (let i = 0; i < styles.length; i++) {
+    const style = styles[i];
+    if ((0, _unscopedStyleHandler.isUnscopedStyle)(style)) {
+      if (!_styleSettings.nativeShadow) {
+        (0, _unscopedStyleHandler.processUnscopedStyle)(style);
+        style.parentNode.removeChild(style);
+      }
+    } else {
+      styleTextParts.push(style.textContent);
+      style.parentNode.removeChild(style);
+    }
+  }
+  return styleTextParts.join('').trim();
+}
+
+/***/ }),
+/* 32 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+/**
 @license
 Copyright (c) 2017 The Polymer Project Authors. All rights reserved.
 This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
@@ -622,7 +8588,26 @@ The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
 The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
 Code distributed by Google as part of the polymer project is also
 subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
-*/Object.defineProperty(t,'__esModule',{value:!0});t.default={}},function(e,t){'use strict';/**
+*/
+
+
+
+/**
+ * @const {!Object<string, !HTMLTemplateElement>}
+ */
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+const templateMap = {};
+exports.default = templateMap;
+
+/***/ }),
+/* 33 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+/**
 @license
 Copyright (c) 2017 The Polymer Project Authors. All rights reserved.
 This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
@@ -630,7 +8615,59 @@ The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
 The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
 Code distributed by Google as part of the polymer project is also
 subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
-*/Object.defineProperty(t,'__esModule',{value:!0}),t.default=function(e){requestAnimationFrame(function(){a?a(e):(!n&&(n=new Promise((e)=>{o=e}),'complete'===document.readyState?o():document.addEventListener('readystatechange',()=>{'complete'===document.readyState&&o()})),n.then(function(){e&&e()}))})};let n=null,a=window.HTMLImports&&window.HTMLImports.whenReady||null,o},function(e,t,n){'use strict';/**
+*/
+
+
+
+/** @type {Promise<void>} */
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = documentWait;
+let readyPromise = null;
+
+/** @type {?function(?function())} */
+let whenReady = window['HTMLImports'] && window['HTMLImports']['whenReady'] || null;
+
+/** @type {function()} */
+let resolveFn;
+
+/**
+ * @param {?function()} callback
+ */
+function documentWait(callback) {
+  requestAnimationFrame(function () {
+    if (whenReady) {
+      whenReady(callback);
+    } else {
+      if (!readyPromise) {
+        readyPromise = new Promise(resolve => {
+          resolveFn = resolve;
+        });
+        if (document.readyState === 'complete') {
+          resolveFn();
+        } else {
+          document.addEventListener('readystatechange', () => {
+            if (document.readyState === 'complete') {
+              resolveFn();
+            }
+          });
+        }
+      }
+      readyPromise.then(function () {
+        callback && callback();
+      });
+    }
+  });
+}
+
+/***/ }),
+/* 34 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+/**
 @license
 Copyright (c) 2017 The Polymer Project Authors. All rights reserved.
 This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
@@ -638,7 +8675,2280 @@ The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
 The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
 Code distributed by Google as part of the polymer project is also
 subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
-*/Object.defineProperty(t,'__esModule',{value:!0}),t.CustomStyleInterfaceInterface=t.CustomStyleProvider=void 0;var a=n(33),o=function(e){return e&&e.__esModule?e:{default:e}}(a);t.CustomStyleProvider=void 0;const r='__seenByShadyCSS',s='__shadyCSSCachedStyle';let d=null,l=null;class p{constructor(){this.customStyles=[],this.enqueued=!1}enqueueDocumentValidation(){this.enqueued||!l||(this.enqueued=!0,(0,o.default)(l))}addCustomStyle(e){e[r]||(e[r]=!0,this.customStyles.push(e),this.enqueueDocumentValidation())}getStyleForCustomStyle(e){if(e[s])return e[s];let t;return t=e.getStyle?e.getStyle():e,t}processStyles(){const e=this.customStyles;for(let t=0;t<e.length;t++){const n=e[t];if(n[s])continue;const a=this.getStyleForCustomStyle(n);if(a){const e=a.__appliedElement||a;d&&d(e),n[s]=e}}return e}}t.default=p,p.prototype.addCustomStyle=p.prototype.addCustomStyle,p.prototype.getStyleForCustomStyle=p.prototype.getStyleForCustomStyle,p.prototype.processStyles=p.prototype.processStyles,Object.defineProperties(p.prototype,{transformCallback:{get(){return d},set(e){d=e}},validateCallback:{get(){return l},set(e){let t=!1;l||(t=!0),l=e,t&&this.enqueueDocumentValidation()}}});t.CustomStyleInterfaceInterface=void 0},function(e,t,n){'use strict';Object.defineProperty(t,'__esModule',{value:!0}),t.GestureEventListeners=void 0,n(1);var a=n(4),o=n(36),r=function(e){if(e&&e.__esModule)return e;var t={};if(null!=e)for(var n in e)Object.prototype.hasOwnProperty.call(e,n)&&(t[n]=e[n]);return t.default=e,t}(o);const s=r,d=t.GestureEventListeners=(0,a.dedupingMixin)((e)=>{return class extends e{_addEventListenerToNode(e,t,n){s.addListener(e,t,n)||super._addEventListenerToNode(e,t,n)}_removeEventListenerFromNode(e,t,n){s.removeListener(e,t,n)||super._removeEventListenerFromNode(e,t,n)}}})},function(e,t,n){'use strict';function a(e){let t=L?['click']:N;for(let n=0,a;n<t.length;n++)a=t[n],e?document.addEventListener(a,H,!0):document.removeEventListener(a,H,!0)}function o(e){let t=e.type;if(-1===N.indexOf(t))return!1;if('mousemove'===t){let t=void 0===e.buttons?1:e.buttons;return e instanceof window.MouseEvent&&!D&&(t=w[e.which]||0),!!(1&t)}else{let t=void 0===e.button?0:e.button;return 0===t}}function r(e){if('click'===e.type){if(0===e.detail)return!0;let n=_(e);if(!n.nodeType||n.nodeType!==Node.ELEMENT_NODE)return!0;let t=n.getBoundingClientRect(),a=e.pageX,o=e.pageY;return!(a>=t.left&&a<=t.right&&o>=t.top&&o<=t.bottom)}return!1}function s(e){let t='auto',a=e.composedPath&&e.composedPath();if(a)for(let e=0,o;e<a.length;e++)if(o=a[e],o[M]){t=o[M];break}return t}function d(e,t,n){e.movefn=t,e.upfn=n,document.addEventListener('mousemove',t),document.addEventListener('mouseup',n)}function l(e){document.removeEventListener('mousemove',e.movefn),document.removeEventListener('mouseup',e.upfn),e.movefn=null,e.upfn=null}function p(e,t){let n=document.elementFromPoint(e,t),a=n;for(;a&&a.shadowRoot&&!window.ShadyDOM;){let o=a;if(a=a.shadowRoot.elementFromPoint(e,t),o===a)break;a&&(n=a)}return n}function _(e){return e.composedPath?e.composedPath()[0]:e.target}function c(e){let n=e.type,t=e.currentTarget,a=t[A],o;if(a){let t=a[n];if(t){if(!e[x]&&(e[x]={},'touch'===n.slice(0,5))){e=e;let a=e.changedTouches[0];if('touchstart'===n&&1===e.touches.length&&(B.touch.id=a.identifier),B.touch.id!==a.identifier)return;I||'touchstart'!==n&&'touchmove'!==n||u(e)}if(o=e[x],!o.skip){for(let n=0,a;n<U.length;n++)a=U[n],t[a.name]&&!o[a.name]&&a.flow&&-1<a.flow.start.indexOf(e.type)&&a.reset&&a.reset();for(let a=0,s;a<U.length;a++)s=U[a],t[s.name]&&!o[s.name]&&(o[s.name]=!0,s[n](e))}}}}function u(e){let n=e.changedTouches[0],t=e.type;if('touchstart'===t)B.touch.x=n.clientX,B.touch.y=n.clientY,B.touch.scrollDecided=!1;else if('touchmove'===t){if(B.touch.scrollDecided)return;B.touch.scrollDecided=!0;let t=s(e),a=!1,o=P(B.touch.x-n.clientX),r=P(B.touch.y-n.clientY);e.cancelable&&('none'===t?a=!0:'pan-x'===t?a=r>o:'pan-y'===t&&(a=o>r)),a?e.preventDefault():a('track')}}function m(e,t,n){return!!z[t]&&(y(e,t,n),!0)}function h(e,t,n){return!!z[t]&&(f(e,t,n),!0)}function y(e,t,n){let a=z[t],o=a.deps,r=a.name,s=e[A];s||(e[A]=s={});for(let a=0,d,l;a<o.length;a++)(d=o[a],!(L&&-1<N.indexOf(d)&&'click'!==d))&&(l=s[d],l||(s[d]=l={_count:0}),0===l._count&&e.addEventListener(d,c),l[r]=(l[r]||0)+1,l._count=(l._count||0)+1);e.addEventListener(t,n),a.touchAction&&b(e,a.touchAction)}function f(e,t,n){let a=z[t],o=a.deps,r=a.name,s=e[A];if(s)for(let t=0,n,a;t<o.length;t++)n=o[t],a=s[n],a&&a[r]&&(a[r]=(a[r]||1)-1,a._count=(a._count||1)-1,0===a._count&&e.removeEventListener(n,c));e.removeEventListener(t,n)}function g(e){U.push(e);for(let t=0;t<e.emits.length;t++)z[e.emits[t]]=e}function v(e){for(let t=0,a;t<U.length;t++){a=U[t];for(let t=0,o;t<a.emits.length;t++)if(o=a.emits[t],o===e)return a}return null}function b(e,t){I&&(e.style.touchAction=t),e[M]=t}function S(e,t,n){let a=new Event(t,{bubbles:!0,cancelable:!0,composed:!0});if(a.detail=n,e.dispatchEvent(a),a.defaultPrevented){let e=n.preventer||n.sourceEvent;e&&e.preventDefault&&e.preventDefault()}}function C(e){let t=v(e);t.info&&(t.info.prevent=!0)}var P=Math.abs;Object.defineProperty(t,'__esModule',{value:!0}),t.remove=t.add=t.findOriginalTarget=t.recognizers=t.gestures=void 0,t.deepTargetFind=p,t._findOriginalTarget=_,t._handleNative=c,t._handleTouchAction=u,t.addListener=m,t.removeListener=h,t._add=y,t._remove=f,t.register=g,t._findRecognizerByEvent=v,t.setTouchAction=b,t._fire=S,t.prevent=C,t.resetMouseCanceller=function(){B.mouse.mouseIgnoreJob&&B.mouse.mouseIgnoreJob.flush()},n(1);var E=n(6),T=n(8);let I='string'==typeof document.head.style.touchAction,A='__polymerGestures',x='__polymerGesturesHandled',M='__polymerGesturesTouchAction',O=25,R=5,N=['mousedown','mousemove','mouseup','click'],w=[0,1,4,2],D=function(){try{return 1===new MouseEvent('test',{buttons:1}).buttons}catch(t){return!1}}(),k=!1;(function(){try{let e=Object.defineProperty({},'passive',{get:function(){k=!0}});window.addEventListener('test',null,e),window.removeEventListener('test',null,e)}catch(t){}})();let L=navigator.userAgent.match(/iP(?:[oa]d|hone)|Android/),F=function(){};F.prototype.reset=function(){},F.prototype.mousedown,F.prototype.mousemove,F.prototype.mouseup,F.prototype.touchstart,F.prototype.touchmove,F.prototype.touchend,F.prototype.click;let H=function(e){let t=e.sourceCapabilities;if((!t||t.firesTouchEvents)&&(e[x]={skip:!0},'click'===e.type)){let t=e.composedPath&&e.composedPath();if(t)for(let e=0;e<t.length;e++)if(t[e]===B.mouse.target)return;e.preventDefault(),e.stopPropagation()}},B={mouse:{target:null,mouseIgnoreJob:null},touch:{x:0,y:0,id:-1,scrollDecided:!1}};document.addEventListener('touchend',function(t){B.mouse.mouseIgnoreJob||a(!0);B.mouse.target=t.composedPath()[0],B.mouse.mouseIgnoreJob=T.Debouncer.debounce(B.mouse.mouseIgnoreJob,E.timeOut.after(2500),function(){a(),B.mouse.target=null,B.mouse.mouseIgnoreJob=null})},!!k&&{passive:!0});const z=t.gestures={},U=t.recognizers=[];g({name:'downup',deps:['mousedown','touchstart','touchend'],flow:{start:['mousedown','touchstart'],end:['mouseup','touchend']},emits:['down','up'],info:{movefn:null,upfn:null},reset:function(){l(this.info)},mousedown:function(n){if(!o(n))return;let a=_(n),t=this;d(this.info,function(n){o(n)||(t._fire('up',a,n),l(t.info))},function(n){o(n)&&t._fire('up',a,n),l(t.info)}),this._fire('down',a,n)},touchstart:function(t){this._fire('down',_(t),t.changedTouches[0],t)},touchend:function(t){this._fire('up',_(t),t.changedTouches[0],t)},_fire:function(e,t,n,a){S(t,e,{x:n.clientX,y:n.clientY,sourceEvent:n,preventer:a,prevent:function(t){return C(t)}})}}),g({name:'track',touchAction:'none',deps:['mousedown','touchstart','touchmove','touchend'],flow:{start:['mousedown','touchstart'],end:['mouseup','touchend']},emits:['track'],info:{x:0,y:0,state:'start',started:!1,moves:[],addMove:function(e){this.moves.length>2&&this.moves.shift(),this.moves.push(e)},movefn:null,upfn:null,prevent:!1},reset:function(){this.info.state='start',this.info.started=!1,this.info.moves=[],this.info.x=0,this.info.y=0,this.info.prevent=!1,l(this.info)},hasMovedEnough:function(e,t){if(this.info.prevent)return!1;if(this.info.started)return!0;let n=P(this.info.x-e),a=P(this.info.y-t);return n>=R||a>=R},mousedown:function(n){if(!o(n))return;let a=_(n),t=this,r=function(n){let e=n.clientX,r=n.clientY;t.hasMovedEnough(e,r)&&(t.info.state=t.info.started?'mouseup'===n.type?'end':'track':'start','start'===t.info.state&&C('tap'),t.info.addMove({x:e,y:r}),!o(n)&&(t.info.state='end',l(t.info)),t._fire(a,n),t.info.started=!0)};d(this.info,r,function(n){t.info.started&&r(n),l(t.info)}),this.info.x=n.clientX,this.info.y=n.clientY},touchstart:function(t){let e=t.changedTouches[0];this.info.x=e.clientX,this.info.y=e.clientY},touchmove:function(n){let e=_(n),t=n.changedTouches[0],a=t.clientX,o=t.clientY;this.hasMovedEnough(a,o)&&('start'===this.info.state&&C('tap'),this.info.addMove({x:a,y:o}),this._fire(e,t),this.info.state='track',this.info.started=!0)},touchend:function(n){let e=_(n),t=n.changedTouches[0];this.info.started&&(this.info.state='end',this.info.addMove({x:t.clientX,y:t.clientY}),this._fire(e,t,n))},_fire:function(e,t){let n=this.info.moves[this.info.moves.length-2],a=this.info.moves[this.info.moves.length-1],o=a.x-this.info.x,r=a.y-this.info.y,s=0,d;n&&(d=a.x-n.x,s=a.y-n.y),S(e,'track',{state:this.info.state,x:t.clientX,y:t.clientY,dx:o,dy:r,ddx:d,ddy:s,sourceEvent:t,hover:function(){return p(t.clientX,t.clientY)}})}}),g({name:'tap',deps:['mousedown','click','touchstart','touchend'],flow:{start:['mousedown','touchstart'],end:['click','touchend']},emits:['tap'],info:{x:NaN,y:NaN,prevent:!1},reset:function(){this.info.x=NaN,this.info.y=NaN,this.info.prevent=!1},save:function(t){this.info.x=t.clientX,this.info.y=t.clientY},mousedown:function(t){o(t)&&this.save(t)},click:function(t){o(t)&&this.forward(t)},touchstart:function(t){this.save(t.changedTouches[0],t)},touchend:function(t){this.forward(t.changedTouches[0],t)},forward:function(n,a){let o=P(n.clientX-this.info.x),s=P(n.clientY-this.info.y),d=_(a||n);(isNaN(o)||isNaN(s)||o<=O&&s<=O||r(n))&&!this.info.prevent&&S(d,'tap',{x:n.clientX,y:n.clientY,sourceEvent:n,preventer:a})}});const V=t.findOriginalTarget=_,K=t.add=m,q=t.remove=h},function(e,t,n){'use strict';function a(e,t,n){return{index:e,removed:t,addedCount:n}}function o(e,t,n,a,o,r){let s=r-o+1,d=n-t+1,l=Array(s);for(let p=0;p<s;p++)l[p]=Array(d),l[p][0]=p;for(let s=0;s<d;s++)l[0][s]=s;for(let _=1;_<s;_++)for(let n=1;n<d;n++)if(p(e[t+n-1],a[o+_-1]))l[_][n]=l[_-1][n-1];else{let e=l[_-1][n]+1,t=l[_][n-1]+1;l[_][n]=e<t?e:t}return l}function r(e){let t=e.length-1,n=e[0].length-1,a=e[t][n],o=[];for(;0<t||0<n;){if(0==t){o.push(u),n--;continue}if(0==n){o.push(m),t--;continue}let r=e[t-1][n-1],s=e[t-1][n],d=e[t][n-1],l;l=s<d?s<r?s:r:d<r?d:r,l==r?(r==a?o.push(_):(o.push(c),a=r),t--,n--):l==s?(o.push(m),t--,a=s):(o.push(u),n--,a=d)}return o.reverse(),o}function s(e,t,n,s,p,h){let y=0,f=0,g=Math.min(n-t,h-p),v;if(0==t&&0==p&&(y=d(e,s,g)),n==e.length&&h==s.length&&(f=l(e,s,g-y)),t+=y,p+=y,n-=f,h-=f,0==n-t&&0==h-p)return[];if(t==n){for(v=a(t,[],0);p<h;)v.removed.push(s[p++]);return[v]}if(p==h)return[a(t,[],n-t)];let b=r(o(e,t,n,s,p,h));v=void 0;let S=[],C=t,P=p;for(let o=0;o<b.length;o++)switch(b[o]){case _:v&&(S.push(v),v=void 0),C++,P++;break;case c:v||(v=a(C,[],0)),v.addedCount++,C++,v.removed.push(s[P]),P++;break;case u:v||(v=a(C,[],0)),v.addedCount++,C++;break;case m:v||(v=a(C,[],0)),v.removed.push(s[P]),P++;}return v&&S.push(v),S}function d(e,t,n){for(let a=0;a<n;a++)if(!p(e[a],t[a]))return a;return n}function l(e,t,n){let a=e.length,o=t.length,r=0;for(;r<n&&p(e[--a],t[--o]);)r++;return r}function p(e,t){return e===t}Object.defineProperty(t,'__esModule',{value:!0}),t.calculateSplices=void 0,n(1);const _=0,c=1,u=2,m=3;t.calculateSplices=function(e,t){return s(e,0,e.length,t,0,t.length)}},function(e,t,n){'use strict';Object.defineProperty(t,'__esModule',{value:!0}),t.DomRepeat=void 0;var a=n(5),o=n(22),r=n(8),s=n(13),d=n(14),l=n(12),p=n(6);o.TemplateInstanceBase;const _=(0,d.OptionalMutableData)(a.Element);class c extends _{static get is(){return'dom-repeat'}static get template(){return null}static get properties(){return{items:{type:Array},as:{type:String,value:'item'},indexAs:{type:String,value:'index'},itemsIndexAs:{type:String,value:'itemsIndex'},sort:{type:Function,observer:'__sortChanged'},filter:{type:Function,observer:'__filterChanged'},observe:{type:String,observer:'__observeChanged'},delay:Number,renderedItemCount:{type:Number,notify:!0,readOnly:!0},initialCount:{type:Number,observer:'__initializeChunking'},targetFramerate:{type:Number,value:20},_targetFrameTime:{type:Number,computed:'__computeFrameTime(targetFramerate)'}}}static get observers(){return['__itemsChanged(items.*)']}constructor(){super(),this.__instances=[],this.__limit=Infinity,this.__pool=[],this.__renderDebouncer=null,this.__itemsIdxToInstIdx={},this.__chunkCount=null,this.__lastChunkTime=null,this.__sortFn=null,this.__filterFn=null,this.__observePaths=null,this.__ctor=null,this.__isDetached=!0,this.template=null}disconnectedCallback(){super.disconnectedCallback(),this.__isDetached=!0;for(let e=0;e<this.__instances.length;e++)this.__detachInstance(e)}connectedCallback(){if(super.connectedCallback(),this.__isDetached){this.__isDetached=!1;let e=this.parentNode;for(let t=0;t<this.__instances.length;t++)this.__attachInstance(t,e)}}__ensureTemplatized(){if(!this.__ctor){let e=this.template=this.querySelector('template');if(!e){let e=new MutationObserver(()=>{if(this.querySelector('template'))e.disconnect(),this.__render();else throw new Error('dom-repeat requires a <template> child')});return e.observe(this,{childList:!0}),!1}let t={};t[this.as]=!0,t[this.indexAs]=!0,t[this.itemsIndexAs]=!0,this.__ctor=o.Templatize.templatize(e,this,{mutableData:this.mutableData,parentModel:!0,instanceProps:t,forwardHostProp:function(e,t){let n=this.__instances;for(let a=0,o;a<n.length&&(o=n[a]);a++)o.forwardHostProp(e,t)},notifyInstanceProp:function(e,t,n){if((0,l.matches)(this.as,t)){let a=e[this.itemsIndexAs];t==this.as&&(this.items[a]=n);let o=(0,l.translate)(this.as,'items.'+a,t);this.notifyPath(o,n)}}})}return!0}__getMethodHost(){return this.__dataHost._methodHost||this.__dataHost}__sortChanged(e){let t=this.__getMethodHost();this.__sortFn=e&&('function'==typeof e?e:function(){return t[e].apply(t,arguments)}),this.items&&this.__debounceRender(this.__render)}__filterChanged(e){let t=this.__getMethodHost();this.__filterFn=e&&('function'==typeof e?e:function(){return t[e].apply(t,arguments)}),this.items&&this.__debounceRender(this.__render)}__computeFrameTime(e){return Math.ceil(1e3/e)}__initializeChunking(){this.initialCount&&(this.__limit=this.initialCount,this.__chunkCount=this.initialCount,this.__lastChunkTime=performance.now())}__tryRenderChunk(){this.items&&this.__limit<this.items.length&&this.__debounceRender(this.__requestRenderChunk)}__requestRenderChunk(){requestAnimationFrame(()=>this.__renderChunk())}__renderChunk(){let e=performance.now(),t=this._targetFrameTime/(e-this.__lastChunkTime);this.__chunkCount=Math.round(this.__chunkCount*t)||1,this.__limit+=this.__chunkCount,this.__lastChunkTime=e,this.__debounceRender(this.__render)}__observeChanged(){this.__observePaths=this.observe&&this.observe.replace('.*','.').split(' ')}__itemsChanged(e){this.items&&!Array.isArray(this.items)&&console.warn('dom-repeat expected array for `items`, found',this.items),this.__handleItemPath(e.path,e.value)||(this.__initializeChunking(),this.__debounceRender(this.__render))}__handleObservedPaths(e){if(this.__observePaths){e=e.substring(e.indexOf('.')+1);let t=this.__observePaths;for(let n=0;n<t.length;n++)if(0===e.indexOf(t[n]))return this.__debounceRender(this.__render,this.delay),!0}}__debounceRender(e,t=0){this.__renderDebouncer=r.Debouncer.debounce(this.__renderDebouncer,0<t?p.timeOut.after(t):p.microTask,e.bind(this)),(0,s.enqueueDebouncer)(this.__renderDebouncer)}render(){this.__debounceRender(this.__render),(0,s.flush)()}__render(){this.__ensureTemplatized()&&(this.__applyFullRefresh(),this.__pool.length=0,this._setRenderedItemCount(this.__instances.length),this.dispatchEvent(new CustomEvent('dom-change',{bubbles:!0,composed:!0})),this.__tryRenderChunk())}__applyFullRefresh(){let e=this.items||[],t=Array(e.length);for(let n=0;n<e.length;n++)t[n]=n;this.__filterFn&&(t=t.filter((t,n,a)=>this.__filterFn(e[t],n,a))),this.__sortFn&&t.sort((t,n)=>this.__sortFn(e[t],e[n]));const n=this.__itemsIdxToInstIdx={};let a=0;for(const o=Math.min(t.length,this.__limit);a<o;a++){let o=this.__instances[a],r=t[a],s=e[r];n[r]=a,o&&a<this.__limit?(o._setPendingProperty(this.as,s),o._setPendingProperty(this.indexAs,a),o._setPendingProperty(this.itemsIndexAs,r),o._flushProperties()):this.__insertInstance(s,a,r)}for(let e=this.__instances.length-1;e>=a;e--)this.__detachAndRemoveInstance(e)}__detachInstance(e){let t=this.__instances[e];for(let n=0,a;n<t.children.length;n++)a=t.children[n],t.root.appendChild(a);return t}__attachInstance(e,t){let n=this.__instances[e];t.insertBefore(n.root,this)}__detachAndRemoveInstance(e){let t=this.__detachInstance(e);t&&this.__pool.push(t),this.__instances.splice(e,1)}__stampInstance(e,t,n){let a={};return a[this.as]=e,a[this.indexAs]=t,a[this.itemsIndexAs]=n,new this.__ctor(a)}__insertInstance(e,t,n){let a=this.__pool.pop();a?(a._setPendingProperty(this.as,e),a._setPendingProperty(this.indexAs,t),a._setPendingProperty(this.itemsIndexAs,n),a._flushProperties()):a=this.__stampInstance(e,t,n);let o=this.__instances[t+1],r=o?o.children[0]:this;return this.parentNode.insertBefore(a.root,r),this.__instances[t]=a,a}_showHideChildren(e){for(let t=0;t<this.__instances.length;t++)this.__instances[t]._showHideChildren(e)}__handleItemPath(e,t){let n=e.slice(6),a=n.indexOf('.'),o=0>a?n:n.substring(0,a);if(o==parseInt(o,10)){let e=0>a?'':n.substring(a+1);this.__handleObservedPaths(e);let r=this.__itemsIdxToInstIdx[o],s=this.__instances[r];if(s){let n=this.as+(e?'.'+e:'');s._setPendingPropertyOrPath(n,t,!1,!0),s._flushProperties()}return!0}}itemForElement(e){let t=this.modelForElement(e);return t&&t[this.as]}indexForElement(e){let t=this.modelForElement(e);return t&&t[this.indexAs]}modelForElement(e){return o.Templatize.modelForElement(this.template,e)}}customElements.define(c.is,c),t.DomRepeat=c},function(e,t,n){'use strict';Object.defineProperty(t,'__esModule',{value:!0}),t.AppLayoutBehavior=void 0,n(0);var a=n(67),o=n(2),r=n(6),s=function(e){if(e&&e.__esModule)return e;var t={};if(null!=e)for(var n in e)Object.prototype.hasOwnProperty.call(e,n)&&(t[n]=e[n]);return t.default=e,t}(r),d=n(8),l=n(13);t.AppLayoutBehavior=[a.IronResizableBehavior,{listeners:{"app-reset-layout":'_appResetLayoutHandler',"iron-resize":'resetLayout'},attached:function(){this.fire('app-reset-layout')},_appResetLayoutHandler:function(t){(0,o.dom)(t).path[0]===this||(this.resetLayout(),t.stopPropagation())},_updateLayoutStates:function(){console.error('unimplemented')},resetLayout:function(){var e=this,t=this._updateLayoutStates.bind(this);s&&r.animationFrame?(this._layoutDebouncer=d.Debouncer.debounce(this._layoutDebouncer,r.animationFrame,t),(0,l.enqueueDebouncer)(this._layoutDebouncer)):this.debounce('resetLayout',t),this._notifyDescendantResize()},_notifyLayoutChanged:function(){var e=this;requestAnimationFrame(function(){e.fire('app-reset-layout')})},_notifyDescendantResize:function(){this.isAttached&&this._interestedResizables.forEach(function(e){this.resizerShouldNotify(e)&&this._notifyDescendant(e)},this)}}]},function(e,t,n){'use strict';function a(e){this.type=e&&e.type||'default',this.key=e&&e.key,'value'in e&&(this.value=e.value)}Object.defineProperty(t,'__esModule',{value:!0}),t.IronMeta=void 0,n(0);var o=n(3);a.types={},a.prototype={get value(){var e=this.type,t=this.key;if(e&&t)return a.types[e]&&a.types[e][t]},set value(e){var t=this.type,n=this.key;t&&n&&(t=a.types[t]=a.types[t]||{},null==e?delete t[n]:t[n]=e)},get list(){var e=this.type;if(e)return Object.keys(a.types[this.type]).map(function(e){return r[this.type][e]},this)},byKey:function(e){return this.key=e,this.value}},t.IronMeta=a;var r=a.types;(0,o.Polymer)({is:'iron-meta',properties:{type:{type:String,value:'default'},key:{type:String},value:{type:String,notify:!0},self:{type:Boolean,observer:'_selfChanged'},__meta:{type:Boolean,computed:'__computeMeta(type, key, value)'}},hostAttributes:{hidden:!0},__computeMeta:function(e,t,n){var o=new a({type:e,key:t});return void 0!==n&&n!==o.value?o.value=n:this.value!==o.value&&(this.value=o.value),o},get list(){return this.__meta&&this.__meta.list},_selfChanged:function(e){e&&(this.value=this)},byKey:function(e){return new a({type:this.type,key:e}).value}})},function(e,t,n){'use strict';n(0);const a=document.createElement('div');a.setAttribute('style','display: none;'),a.innerHTML=`<custom-style>
+*/
+
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.CustomStyleInterfaceInterface = exports.CustomStyleProvider = undefined;
+
+var _documentWait = __webpack_require__(33);
+
+var _documentWait2 = _interopRequireDefault(_documentWait);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+/**
+ * @typedef {HTMLStyleElement | {getStyle: function():HTMLStyleElement}}
+ */
+let CustomStyleProvider = exports.CustomStyleProvider = undefined;
+
+const SEEN_MARKER = '__seenByShadyCSS';
+const CACHED_STYLE = '__shadyCSSCachedStyle';
+
+/** @type {?function(!HTMLStyleElement)} */
+let transformFn = null;
+
+/** @type {?function()} */
+let validateFn = null;
+
+/**
+This interface is provided to add document-level <style> elements to ShadyCSS for processing.
+These styles must be processed by ShadyCSS to simulate ShadowRoot upper-bound encapsulation from outside styles
+In addition, these styles may also need to be processed for @apply rules and CSS Custom Properties
+
+To add document-level styles to ShadyCSS, one can call `ShadyCSS.addDocumentStyle(styleElement)` or `ShadyCSS.addDocumentStyle({getStyle: () => styleElement})`
+
+In addition, if the process used to discover document-level styles can be synchronously flushed, one should set `ShadyCSS.documentStyleFlush`.
+This function will be called when calculating styles.
+
+An example usage of the document-level styling api can be found in `examples/document-style-lib.js`
+
+@unrestricted
+*/
+class CustomStyleInterface {
+  constructor() {
+    /** @type {!Array<!CustomStyleProvider>} */
+    this['customStyles'] = [];
+    this['enqueued'] = false;
+  }
+  /**
+   * Queue a validation for new custom styles to batch style recalculations
+   */
+  enqueueDocumentValidation() {
+    if (this['enqueued'] || !validateFn) {
+      return;
+    }
+    this['enqueued'] = true;
+    (0, _documentWait2.default)(validateFn);
+  }
+  /**
+   * @param {!HTMLStyleElement} style
+   */
+  addCustomStyle(style) {
+    if (!style[SEEN_MARKER]) {
+      style[SEEN_MARKER] = true;
+      this['customStyles'].push(style);
+      this.enqueueDocumentValidation();
+    }
+  }
+  /**
+   * @param {!CustomStyleProvider} customStyle
+   * @return {HTMLStyleElement}
+   */
+  getStyleForCustomStyle(customStyle) {
+    if (customStyle[CACHED_STYLE]) {
+      return customStyle[CACHED_STYLE];
+    }
+    let style;
+    if (customStyle['getStyle']) {
+      style = customStyle['getStyle']();
+    } else {
+      style = customStyle;
+    }
+    return style;
+  }
+  /**
+   * @return {!Array<!CustomStyleProvider>}
+   */
+  processStyles() {
+    const cs = this['customStyles'];
+    for (let i = 0; i < cs.length; i++) {
+      const customStyle = cs[i];
+      if (customStyle[CACHED_STYLE]) {
+        continue;
+      }
+      const style = this.getStyleForCustomStyle(customStyle);
+      if (style) {
+        // HTMLImports polyfill may have cloned the style into the main document,
+        // which is referenced with __appliedElement.
+        const styleToTransform = /** @type {!HTMLStyleElement} */style['__appliedElement'] || style;
+        if (transformFn) {
+          transformFn(styleToTransform);
+        }
+        customStyle[CACHED_STYLE] = styleToTransform;
+      }
+    }
+    return cs;
+  }
+}
+
+exports.default = CustomStyleInterface;
+CustomStyleInterface.prototype['addCustomStyle'] = CustomStyleInterface.prototype.addCustomStyle;
+CustomStyleInterface.prototype['getStyleForCustomStyle'] = CustomStyleInterface.prototype.getStyleForCustomStyle;
+CustomStyleInterface.prototype['processStyles'] = CustomStyleInterface.prototype.processStyles;
+
+Object.defineProperties(CustomStyleInterface.prototype, {
+  'transformCallback': {
+    /** @return {?function(!HTMLStyleElement)} */
+    get() {
+      return transformFn;
+    },
+    /** @param {?function(!HTMLStyleElement)} fn */
+    set(fn) {
+      transformFn = fn;
+    }
+  },
+  'validateCallback': {
+    /** @return {?function()} */
+    get() {
+      return validateFn;
+    },
+    /**
+     * @param {?function()} fn
+     * @this {CustomStyleInterface}
+     */
+    set(fn) {
+      let needsEnqueue = false;
+      if (!validateFn) {
+        needsEnqueue = true;
+      }
+      validateFn = fn;
+      if (needsEnqueue) {
+        this.enqueueDocumentValidation();
+      }
+    }
+  }
+});
+
+/** @typedef {{
+ * customStyles: !Array<!CustomStyleProvider>,
+ * addCustomStyle: function(!CustomStyleProvider),
+ * getStyleForCustomStyle: function(!CustomStyleProvider): HTMLStyleElement,
+ * findStyles: function(),
+ * transformCallback: ?function(!HTMLStyleElement),
+ * validateCallback: ?function()
+ * }}
+ */
+let CustomStyleInterfaceInterface = exports.CustomStyleInterfaceInterface = undefined;
+
+/***/ }),
+/* 35 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.GestureEventListeners = undefined;
+
+__webpack_require__(1);
+
+var _mixin = __webpack_require__(4);
+
+var _gestures = __webpack_require__(36);
+
+var gestures$0 = _interopRequireWildcard(_gestures);
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+/**
+ * @const {Polymer.Gestures}
+ */
+const gestures = gestures$0;
+
+const GestureEventListeners = exports.GestureEventListeners = (0, _mixin.dedupingMixin)(superClass => {
+
+  /**
+   * @polymer
+   * @mixinClass
+   * @implements {Polymer_GestureEventListeners}
+   */
+  class GestureEventListeners extends superClass {
+
+    _addEventListenerToNode(node, eventName, handler) {
+      if (!gestures.addListener(node, eventName, handler)) {
+        super._addEventListenerToNode(node, eventName, handler);
+      }
+    }
+
+    _removeEventListenerFromNode(node, eventName, handler) {
+      if (!gestures.removeListener(node, eventName, handler)) {
+        super._removeEventListenerFromNode(node, eventName, handler);
+      }
+    }
+
+  }
+
+  return GestureEventListeners;
+});
+
+/***/ }),
+/* 36 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.remove = exports.add = exports.findOriginalTarget = exports.recognizers = exports.gestures = undefined;
+exports.deepTargetFind = deepTargetFind;
+exports._findOriginalTarget = _findOriginalTarget;
+exports._handleNative = _handleNative;
+exports._handleTouchAction = _handleTouchAction;
+exports.addListener = addListener;
+exports.removeListener = removeListener;
+exports._add = _add;
+exports._remove = _remove;
+exports.register = register;
+exports._findRecognizerByEvent = _findRecognizerByEvent;
+exports.setTouchAction = setTouchAction;
+exports._fire = _fire;
+exports.prevent = prevent;
+exports.resetMouseCanceller = resetMouseCanceller;
+
+__webpack_require__(1);
+
+var _async = __webpack_require__(6);
+
+var _debounce = __webpack_require__(8);
+
+// detect native touch action support
+let HAS_NATIVE_TA = typeof document.head.style.touchAction === 'string';
+let GESTURE_KEY = '__polymerGestures';
+let HANDLED_OBJ = '__polymerGesturesHandled';
+let TOUCH_ACTION = '__polymerGesturesTouchAction';
+// radius for tap and track
+let TAP_DISTANCE = 25;
+let TRACK_DISTANCE = 5;
+// number of last N track positions to keep
+let TRACK_LENGTH = 2;
+
+// Disabling "mouse" handlers for 2500ms is enough
+let MOUSE_TIMEOUT = 2500;
+let MOUSE_EVENTS = ['mousedown', 'mousemove', 'mouseup', 'click'];
+// an array of bitmask values for mapping MouseEvent.which to MouseEvent.buttons
+let MOUSE_WHICH_TO_BUTTONS = [0, 1, 4, 2];
+let MOUSE_HAS_BUTTONS = function () {
+  try {
+    return new MouseEvent('test', { buttons: 1 }).buttons === 1;
+  } catch (e) {
+    return false;
+  }
+}();
+
+/* eslint no-empty: ["error", { "allowEmptyCatch": true }] */
+// check for passive event listeners
+let SUPPORTS_PASSIVE = false;
+(function () {
+  try {
+    let opts = Object.defineProperty({}, 'passive', { get: function () {
+        SUPPORTS_PASSIVE = true;
+      } });
+    window.addEventListener('test', null, opts);
+    window.removeEventListener('test', null, opts);
+  } catch (e) {}
+})();
+
+// Check for touch-only devices
+let IS_TOUCH_ONLY = navigator.userAgent.match(/iP(?:[oa]d|hone)|Android/);
+
+let GestureRecognizer = function () {}; // eslint-disable-line no-unused-vars
+GestureRecognizer.prototype.reset = function () {};
+/** @type {function(MouseEvent) | undefined} */
+GestureRecognizer.prototype.mousedown;
+/** @type {(function(MouseEvent) | undefined)} */
+GestureRecognizer.prototype.mousemove;
+/** @type {(function(MouseEvent) | undefined)} */
+GestureRecognizer.prototype.mouseup;
+/** @type {(function(TouchEvent) | undefined)} */
+GestureRecognizer.prototype.touchstart;
+/** @type {(function(TouchEvent) | undefined)} */
+GestureRecognizer.prototype.touchmove;
+/** @type {(function(TouchEvent) | undefined)} */
+GestureRecognizer.prototype.touchend;
+/** @type {(function(MouseEvent) | undefined)} */
+GestureRecognizer.prototype.click;
+
+// touch will make synthetic mouse events
+// `preventDefault` on touchend will cancel them,
+// but this breaks `<input>` focus and link clicks
+// disable mouse handlers for MOUSE_TIMEOUT ms after
+// a touchend to ignore synthetic mouse events
+let mouseCanceller = function (mouseEvent) {
+  // Check for sourceCapabilities, used to distinguish synthetic events
+  // if mouseEvent did not come from a device that fires touch events,
+  // it was made by a real mouse and should be counted
+  // http://wicg.github.io/InputDeviceCapabilities/#dom-inputdevicecapabilities-firestouchevents
+  let sc = mouseEvent.sourceCapabilities;
+  if (sc && !sc.firesTouchEvents) {
+    return;
+  }
+  // skip synthetic mouse events
+  mouseEvent[HANDLED_OBJ] = { skip: true };
+  // disable "ghost clicks"
+  if (mouseEvent.type === 'click') {
+    let path = mouseEvent.composedPath && mouseEvent.composedPath();
+    if (path) {
+      for (let i = 0; i < path.length; i++) {
+        if (path[i] === POINTERSTATE.mouse.target) {
+          return;
+        }
+      }
+    }
+    mouseEvent.preventDefault();
+    mouseEvent.stopPropagation();
+  }
+};
+
+/**
+ * @param {boolean=} setup True to add, false to remove.
+ */
+function setupTeardownMouseCanceller(setup) {
+  let events = IS_TOUCH_ONLY ? ['click'] : MOUSE_EVENTS;
+  for (let i = 0, en; i < events.length; i++) {
+    en = events[i];
+    if (setup) {
+      document.addEventListener(en, mouseCanceller, true);
+    } else {
+      document.removeEventListener(en, mouseCanceller, true);
+    }
+  }
+}
+
+function ignoreMouse(e) {
+  if (!POINTERSTATE.mouse.mouseIgnoreJob) {
+    setupTeardownMouseCanceller(true);
+  }
+  let unset = function () {
+    setupTeardownMouseCanceller();
+    POINTERSTATE.mouse.target = null;
+    POINTERSTATE.mouse.mouseIgnoreJob = null;
+  };
+  POINTERSTATE.mouse.target = e.composedPath()[0];
+  POINTERSTATE.mouse.mouseIgnoreJob = _debounce.Debouncer.debounce(POINTERSTATE.mouse.mouseIgnoreJob, _async.timeOut.after(MOUSE_TIMEOUT), unset);
+}
+
+/**
+ * @param {MouseEvent} ev event to test for left mouse button down
+ * @return {boolean} has left mouse button down
+ */
+function hasLeftMouseButton(ev) {
+  let type = ev.type;
+  // exit early if the event is not a mouse event
+  if (MOUSE_EVENTS.indexOf(type) === -1) {
+    return false;
+  }
+  // ev.button is not reliable for mousemove (0 is overloaded as both left button and no buttons)
+  // instead we use ev.buttons (bitmask of buttons) or fall back to ev.which (deprecated, 0 for no buttons, 1 for left button)
+  if (type === 'mousemove') {
+    // allow undefined for testing events
+    let buttons = ev.buttons === undefined ? 1 : ev.buttons;
+    if (ev instanceof window.MouseEvent && !MOUSE_HAS_BUTTONS) {
+      buttons = MOUSE_WHICH_TO_BUTTONS[ev.which] || 0;
+    }
+    // buttons is a bitmask, check that the left button bit is set (1)
+    return Boolean(buttons & 1);
+  } else {
+    // allow undefined for testing events
+    let button = ev.button === undefined ? 0 : ev.button;
+    // ev.button is 0 in mousedown/mouseup/click for left button activation
+    return button === 0;
+  }
+}
+
+function isSyntheticClick(ev) {
+  if (ev.type === 'click') {
+    // ev.detail is 0 for HTMLElement.click in most browsers
+    if (ev.detail === 0) {
+      return true;
+    }
+    // in the worst case, check that the x/y position of the click is within
+    // the bounding box of the target of the event
+    // Thanks IE 10 >:(
+    let t = _findOriginalTarget(ev);
+    // make sure the target of the event is an element so we can use getBoundingClientRect,
+    // if not, just assume it is a synthetic click
+    if (!t.nodeType || /** @type {Element} */t.nodeType !== Node.ELEMENT_NODE) {
+      return true;
+    }
+    let bcr = /** @type {Element} */t.getBoundingClientRect();
+    // use page x/y to account for scrolling
+    let x = ev.pageX,
+        y = ev.pageY;
+    // ev is a synthetic click if the position is outside the bounding box of the target
+    return !(x >= bcr.left && x <= bcr.right && y >= bcr.top && y <= bcr.bottom);
+  }
+  return false;
+}
+
+let POINTERSTATE = {
+  mouse: {
+    target: null,
+    mouseIgnoreJob: null
+  },
+  touch: {
+    x: 0,
+    y: 0,
+    id: -1,
+    scrollDecided: false
+  }
+};
+
+function firstTouchAction(ev) {
+  let ta = 'auto';
+  let path = ev.composedPath && ev.composedPath();
+  if (path) {
+    for (let i = 0, n; i < path.length; i++) {
+      n = path[i];
+      if (n[TOUCH_ACTION]) {
+        ta = n[TOUCH_ACTION];
+        break;
+      }
+    }
+  }
+  return ta;
+}
+
+function trackDocument(stateObj, movefn, upfn) {
+  stateObj.movefn = movefn;
+  stateObj.upfn = upfn;
+  document.addEventListener('mousemove', movefn);
+  document.addEventListener('mouseup', upfn);
+}
+
+function untrackDocument(stateObj) {
+  document.removeEventListener('mousemove', stateObj.movefn);
+  document.removeEventListener('mouseup', stateObj.upfn);
+  stateObj.movefn = null;
+  stateObj.upfn = null;
+}
+
+// use a document-wide touchend listener to start the ghost-click prevention mechanism
+// Use passive event listeners, if supported, to not affect scrolling performance
+document.addEventListener('touchend', ignoreMouse, SUPPORTS_PASSIVE ? { passive: true } : false);
+
+const gestures = exports.gestures = {};
+const recognizers = exports.recognizers = [];
+
+function deepTargetFind(x, y) {
+  let node = document.elementFromPoint(x, y);
+  let next = node;
+  // this code path is only taken when native ShadowDOM is used
+  // if there is a shadowroot, it may have a node at x/y
+  // if there is not a shadowroot, exit the loop
+  while (next && next.shadowRoot && !window.ShadyDOM) {
+    // if there is a node at x/y in the shadowroot, look deeper
+    let oldNext = next;
+    next = next.shadowRoot.elementFromPoint(x, y);
+    // on Safari, elementFromPoint may return the shadowRoot host
+    if (oldNext === next) {
+      break;
+    }
+    if (next) {
+      node = next;
+    }
+  }
+  return node;
+}
+
+function _findOriginalTarget(ev) {
+  // shadowdom
+  if (ev.composedPath) {
+    return (/** @type {EventTarget} */ev.composedPath()[0]
+    );
+  }
+  // shadydom
+  return ev.target;
+}
+
+function _handleNative(ev) {
+  let handled;
+  let type = ev.type;
+  let node = ev.currentTarget;
+  let gobj = node[GESTURE_KEY];
+  if (!gobj) {
+    return;
+  }
+  let gs = gobj[type];
+  if (!gs) {
+    return;
+  }
+  if (!ev[HANDLED_OBJ]) {
+    ev[HANDLED_OBJ] = {};
+    if (type.slice(0, 5) === 'touch') {
+      ev = /** @type {TouchEvent} */ev; // eslint-disable-line no-self-assign
+      let t = ev.changedTouches[0];
+      if (type === 'touchstart') {
+        // only handle the first finger
+        if (ev.touches.length === 1) {
+          POINTERSTATE.touch.id = t.identifier;
+        }
+      }
+      if (POINTERSTATE.touch.id !== t.identifier) {
+        return;
+      }
+      if (!HAS_NATIVE_TA) {
+        if (type === 'touchstart' || type === 'touchmove') {
+          _handleTouchAction(ev);
+        }
+      }
+    }
+  }
+  handled = ev[HANDLED_OBJ];
+  // used to ignore synthetic mouse events
+  if (handled.skip) {
+    return;
+  }
+  // reset recognizer state
+  for (let i = 0, r; i < recognizers.length; i++) {
+    r = recognizers[i];
+    if (gs[r.name] && !handled[r.name]) {
+      if (r.flow && r.flow.start.indexOf(ev.type) > -1 && r.reset) {
+        r.reset();
+      }
+    }
+  }
+  // enforce gesture recognizer order
+  for (let i = 0, r; i < recognizers.length; i++) {
+    r = recognizers[i];
+    if (gs[r.name] && !handled[r.name]) {
+      handled[r.name] = true;
+      r[type](ev);
+    }
+  }
+}
+
+function _handleTouchAction(ev) {
+  let t = ev.changedTouches[0];
+  let type = ev.type;
+  if (type === 'touchstart') {
+    POINTERSTATE.touch.x = t.clientX;
+    POINTERSTATE.touch.y = t.clientY;
+    POINTERSTATE.touch.scrollDecided = false;
+  } else if (type === 'touchmove') {
+    if (POINTERSTATE.touch.scrollDecided) {
+      return;
+    }
+    POINTERSTATE.touch.scrollDecided = true;
+    let ta = firstTouchAction(ev);
+    let prevent = false;
+    let dx = Math.abs(POINTERSTATE.touch.x - t.clientX);
+    let dy = Math.abs(POINTERSTATE.touch.y - t.clientY);
+    if (!ev.cancelable) {
+      // scrolling is happening
+    } else if (ta === 'none') {
+      prevent = true;
+    } else if (ta === 'pan-x') {
+      prevent = dy > dx;
+    } else if (ta === 'pan-y') {
+      prevent = dx > dy;
+    }
+    if (prevent) {
+      ev.preventDefault();
+    } else {
+      prevent('track');
+    }
+  }
+}
+
+function addListener(node, evType, handler) {
+  if (gestures[evType]) {
+    _add(node, evType, handler);
+    return true;
+  }
+  return false;
+}
+
+function removeListener(node, evType, handler) {
+  if (gestures[evType]) {
+    _remove(node, evType, handler);
+    return true;
+  }
+  return false;
+}
+
+function _add(node, evType, handler) {
+  let recognizer = gestures[evType];
+  let deps = recognizer.deps;
+  let name = recognizer.name;
+  let gobj = node[GESTURE_KEY];
+  if (!gobj) {
+    node[GESTURE_KEY] = gobj = {};
+  }
+  for (let i = 0, dep, gd; i < deps.length; i++) {
+    dep = deps[i];
+    // don't add mouse handlers on iOS because they cause gray selection overlays
+    if (IS_TOUCH_ONLY && MOUSE_EVENTS.indexOf(dep) > -1 && dep !== 'click') {
+      continue;
+    }
+    gd = gobj[dep];
+    if (!gd) {
+      gobj[dep] = gd = { _count: 0 };
+    }
+    if (gd._count === 0) {
+      node.addEventListener(dep, _handleNative);
+    }
+    gd[name] = (gd[name] || 0) + 1;
+    gd._count = (gd._count || 0) + 1;
+  }
+  node.addEventListener(evType, handler);
+  if (recognizer.touchAction) {
+    setTouchAction(node, recognizer.touchAction);
+  }
+}
+
+function _remove(node, evType, handler) {
+  let recognizer = gestures[evType];
+  let deps = recognizer.deps;
+  let name = recognizer.name;
+  let gobj = node[GESTURE_KEY];
+  if (gobj) {
+    for (let i = 0, dep, gd; i < deps.length; i++) {
+      dep = deps[i];
+      gd = gobj[dep];
+      if (gd && gd[name]) {
+        gd[name] = (gd[name] || 1) - 1;
+        gd._count = (gd._count || 1) - 1;
+        if (gd._count === 0) {
+          node.removeEventListener(dep, _handleNative);
+        }
+      }
+    }
+  }
+  node.removeEventListener(evType, handler);
+}
+
+function register(recog) {
+  recognizers.push(recog);
+  for (let i = 0; i < recog.emits.length; i++) {
+    gestures[recog.emits[i]] = recog;
+  }
+}
+
+function _findRecognizerByEvent(evName) {
+  for (let i = 0, r; i < recognizers.length; i++) {
+    r = recognizers[i];
+    for (let j = 0, n; j < r.emits.length; j++) {
+      n = r.emits[j];
+      if (n === evName) {
+        return r;
+      }
+    }
+  }
+  return null;
+}
+
+function setTouchAction(node, value) {
+  if (HAS_NATIVE_TA) {
+    node.style.touchAction = value;
+  }
+  node[TOUCH_ACTION] = value;
+}
+
+function _fire(target, type, detail) {
+  let ev = new Event(type, { bubbles: true, cancelable: true, composed: true });
+  ev.detail = detail;
+  target.dispatchEvent(ev);
+  // forward `preventDefault` in a clean way
+  if (ev.defaultPrevented) {
+    let preventer = detail.preventer || detail.sourceEvent;
+    if (preventer && preventer.preventDefault) {
+      preventer.preventDefault();
+    }
+  }
+}
+
+function prevent(evName) {
+  let recognizer = _findRecognizerByEvent(evName);
+  if (recognizer.info) {
+    recognizer.info.prevent = true;
+  }
+}
+
+function resetMouseCanceller() {
+  if (POINTERSTATE.mouse.mouseIgnoreJob) {
+    POINTERSTATE.mouse.mouseIgnoreJob.flush();
+  }
+}
+
+/* eslint-disable valid-jsdoc */
+
+register({
+  name: 'downup',
+  deps: ['mousedown', 'touchstart', 'touchend'],
+  flow: {
+    start: ['mousedown', 'touchstart'],
+    end: ['mouseup', 'touchend']
+  },
+  emits: ['down', 'up'],
+
+  info: {
+    movefn: null,
+    upfn: null
+  },
+
+  /** @this {GestureRecognizer} */
+  reset: function () {
+    untrackDocument(this.info);
+  },
+
+  /**
+   * @this {GestureRecognizer}
+   * @param {MouseEvent} e
+   */
+  mousedown: function (e) {
+    if (!hasLeftMouseButton(e)) {
+      return;
+    }
+    let t = _findOriginalTarget(e);
+    let self = this;
+    let movefn = function movefn(e) {
+      if (!hasLeftMouseButton(e)) {
+        self._fire('up', t, e);
+        untrackDocument(self.info);
+      }
+    };
+    let upfn = function upfn(e) {
+      if (hasLeftMouseButton(e)) {
+        self._fire('up', t, e);
+      }
+      untrackDocument(self.info);
+    };
+    trackDocument(this.info, movefn, upfn);
+    this._fire('down', t, e);
+  },
+  /**
+   * @this {GestureRecognizer}
+   * @param {TouchEvent} e
+   */
+  touchstart: function (e) {
+    this._fire('down', _findOriginalTarget(e), e.changedTouches[0], e);
+  },
+  /**
+   * @this {GestureRecognizer}
+   * @param {TouchEvent} e
+   */
+  touchend: function (e) {
+    this._fire('up', _findOriginalTarget(e), e.changedTouches[0], e);
+  },
+  /**
+   * @param {string} type
+   * @param {EventTarget} target
+   * @param {Event} event
+   * @param {Function} preventer
+   */
+  _fire: function (type, target, event, preventer) {
+    _fire(target, type, {
+      x: event.clientX,
+      y: event.clientY,
+      sourceEvent: event,
+      preventer: preventer,
+      prevent: function (e) {
+        return prevent(e);
+      }
+    });
+  }
+});
+
+register({
+  name: 'track',
+  touchAction: 'none',
+  deps: ['mousedown', 'touchstart', 'touchmove', 'touchend'],
+  flow: {
+    start: ['mousedown', 'touchstart'],
+    end: ['mouseup', 'touchend']
+  },
+  emits: ['track'],
+
+  info: {
+    x: 0,
+    y: 0,
+    state: 'start',
+    started: false,
+    moves: [],
+    /** @this {GestureRecognizer} */
+    addMove: function (move) {
+      if (this.moves.length > TRACK_LENGTH) {
+        this.moves.shift();
+      }
+      this.moves.push(move);
+    },
+    movefn: null,
+    upfn: null,
+    prevent: false
+  },
+
+  /** @this {GestureRecognizer} */
+  reset: function () {
+    this.info.state = 'start';
+    this.info.started = false;
+    this.info.moves = [];
+    this.info.x = 0;
+    this.info.y = 0;
+    this.info.prevent = false;
+    untrackDocument(this.info);
+  },
+
+  /**
+   * @this {GestureRecognizer}
+   * @param {number} x
+   * @param {number} y
+   * @return {boolean}
+   */
+  hasMovedEnough: function (x, y) {
+    if (this.info.prevent) {
+      return false;
+    }
+    if (this.info.started) {
+      return true;
+    }
+    let dx = Math.abs(this.info.x - x);
+    let dy = Math.abs(this.info.y - y);
+    return dx >= TRACK_DISTANCE || dy >= TRACK_DISTANCE;
+  },
+  /**
+   * @this {GestureRecognizer}
+   * @param {MouseEvent} e
+   */
+  mousedown: function (e) {
+    if (!hasLeftMouseButton(e)) {
+      return;
+    }
+    let t = _findOriginalTarget(e);
+    let self = this;
+    let movefn = function movefn(e) {
+      let x = e.clientX,
+          y = e.clientY;
+      if (self.hasMovedEnough(x, y)) {
+        // first move is 'start', subsequent moves are 'move', mouseup is 'end'
+        self.info.state = self.info.started ? e.type === 'mouseup' ? 'end' : 'track' : 'start';
+        if (self.info.state === 'start') {
+          // if and only if tracking, always prevent tap
+          prevent('tap');
+        }
+        self.info.addMove({ x: x, y: y });
+        if (!hasLeftMouseButton(e)) {
+          // always _fire "end"
+          self.info.state = 'end';
+          untrackDocument(self.info);
+        }
+        self._fire(t, e);
+        self.info.started = true;
+      }
+    };
+    let upfn = function upfn(e) {
+      if (self.info.started) {
+        movefn(e);
+      }
+
+      // remove the temporary listeners
+      untrackDocument(self.info);
+    };
+    // add temporary document listeners as mouse retargets
+    trackDocument(this.info, movefn, upfn);
+    this.info.x = e.clientX;
+    this.info.y = e.clientY;
+  },
+  /**
+   * @this {GestureRecognizer}
+   * @param {TouchEvent} e
+   */
+  touchstart: function (e) {
+    let ct = e.changedTouches[0];
+    this.info.x = ct.clientX;
+    this.info.y = ct.clientY;
+  },
+  /**
+   * @this {GestureRecognizer}
+   * @param {TouchEvent} e
+   */
+  touchmove: function (e) {
+    let t = _findOriginalTarget(e);
+    let ct = e.changedTouches[0];
+    let x = ct.clientX,
+        y = ct.clientY;
+    if (this.hasMovedEnough(x, y)) {
+      if (this.info.state === 'start') {
+        // if and only if tracking, always prevent tap
+        prevent('tap');
+      }
+      this.info.addMove({ x: x, y: y });
+      this._fire(t, ct);
+      this.info.state = 'track';
+      this.info.started = true;
+    }
+  },
+  /**
+   * @this {GestureRecognizer}
+   * @param {TouchEvent} e
+   */
+  touchend: function (e) {
+    let t = _findOriginalTarget(e);
+    let ct = e.changedTouches[0];
+    // only trackend if track was started and not aborted
+    if (this.info.started) {
+      // reset started state on up
+      this.info.state = 'end';
+      this.info.addMove({ x: ct.clientX, y: ct.clientY });
+      this._fire(t, ct, e);
+    }
+  },
+
+  /**
+   * @this {GestureRecognizer}
+   * @param {EventTarget} target
+   * @param {Touch} touch
+   */
+  _fire: function (target, touch) {
+    let secondlast = this.info.moves[this.info.moves.length - 2];
+    let lastmove = this.info.moves[this.info.moves.length - 1];
+    let dx = lastmove.x - this.info.x;
+    let dy = lastmove.y - this.info.y;
+    let ddx,
+        ddy = 0;
+    if (secondlast) {
+      ddx = lastmove.x - secondlast.x;
+      ddy = lastmove.y - secondlast.y;
+    }
+    _fire(target, 'track', {
+      state: this.info.state,
+      x: touch.clientX,
+      y: touch.clientY,
+      dx: dx,
+      dy: dy,
+      ddx: ddx,
+      ddy: ddy,
+      sourceEvent: touch,
+      hover: function () {
+        return deepTargetFind(touch.clientX, touch.clientY);
+      }
+    });
+  }
+
+});
+
+register({
+  name: 'tap',
+  deps: ['mousedown', 'click', 'touchstart', 'touchend'],
+  flow: {
+    start: ['mousedown', 'touchstart'],
+    end: ['click', 'touchend']
+  },
+  emits: ['tap'],
+  info: {
+    x: NaN,
+    y: NaN,
+    prevent: false
+  },
+  /** @this {GestureRecognizer} */
+  reset: function () {
+    this.info.x = NaN;
+    this.info.y = NaN;
+    this.info.prevent = false;
+  },
+  /** @this {GestureRecognizer} */
+  save: function (e) {
+    this.info.x = e.clientX;
+    this.info.y = e.clientY;
+  },
+  /**
+   * @this {GestureRecognizer}
+   * @param {MouseEvent} e
+   */
+  mousedown: function (e) {
+    if (hasLeftMouseButton(e)) {
+      this.save(e);
+    }
+  },
+  /**
+   * @this {GestureRecognizer}
+   * @param {MouseEvent} e
+   */
+  click: function (e) {
+    if (hasLeftMouseButton(e)) {
+      this.forward(e);
+    }
+  },
+  /**
+   * @this {GestureRecognizer}
+   * @param {TouchEvent} e
+   */
+  touchstart: function (e) {
+    this.save(e.changedTouches[0], e);
+  },
+  /**
+   * @this {GestureRecognizer}
+   * @param {TouchEvent} e
+   */
+  touchend: function (e) {
+    this.forward(e.changedTouches[0], e);
+  },
+  /**
+   * @this {GestureRecognizer}
+   * @param {Event | Touch} e
+   * @param {Event=} preventer
+   */
+  forward: function (e, preventer) {
+    let dx = Math.abs(e.clientX - this.info.x);
+    let dy = Math.abs(e.clientY - this.info.y);
+    // find original target from `preventer` for TouchEvents, or `e` for MouseEvents
+    let t = _findOriginalTarget(preventer || e);
+    // dx,dy can be NaN if `click` has been simulated and there was no `down` for `start`
+    if (isNaN(dx) || isNaN(dy) || dx <= TAP_DISTANCE && dy <= TAP_DISTANCE || isSyntheticClick(e)) {
+      // prevent taps from being generated if an event has canceled them
+      if (!this.info.prevent) {
+        _fire(t, 'tap', {
+          x: e.clientX,
+          y: e.clientY,
+          sourceEvent: e,
+          preventer: preventer
+        });
+      }
+    }
+  }
+});
+
+const findOriginalTarget = exports.findOriginalTarget = _findOriginalTarget;
+const add = exports.add = addListener;
+const remove = exports.remove = removeListener;
+
+/***/ }),
+/* 37 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.calculateSplices = undefined;
+
+__webpack_require__(1);
+
+function newSplice(index, removed, addedCount) {
+  return {
+    index: index,
+    removed: removed,
+    addedCount: addedCount
+  };
+}
+
+const EDIT_LEAVE = 0;
+const EDIT_UPDATE = 1;
+const EDIT_ADD = 2;
+const EDIT_DELETE = 3;
+
+// Note: This function is *based* on the computation of the Levenshtein
+// "edit" distance. The one change is that "updates" are treated as two
+// edits - not one. With Array splices, an update is really a delete
+// followed by an add. By retaining this, we optimize for "keeping" the
+// maximum array items in the original array. For example:
+//
+//   'xxxx123' -> '123yyyy'
+//
+// With 1-edit updates, the shortest path would be just to update all seven
+// characters. With 2-edit updates, we delete 4, leave 3, and add 4. This
+// leaves the substring '123' intact.
+function calcEditDistances(current, currentStart, currentEnd, old, oldStart, oldEnd) {
+  // "Deletion" columns
+  let rowCount = oldEnd - oldStart + 1;
+  let columnCount = currentEnd - currentStart + 1;
+  let distances = new Array(rowCount);
+
+  // "Addition" rows. Initialize null column.
+  for (let i = 0; i < rowCount; i++) {
+    distances[i] = new Array(columnCount);
+    distances[i][0] = i;
+  }
+
+  // Initialize null row
+  for (let j = 0; j < columnCount; j++) distances[0][j] = j;
+
+  for (let i = 1; i < rowCount; i++) {
+    for (let j = 1; j < columnCount; j++) {
+      if (equals(current[currentStart + j - 1], old[oldStart + i - 1])) distances[i][j] = distances[i - 1][j - 1];else {
+        let north = distances[i - 1][j] + 1;
+        let west = distances[i][j - 1] + 1;
+        distances[i][j] = north < west ? north : west;
+      }
+    }
+  }
+
+  return distances;
+}
+
+// This starts at the final weight, and walks "backward" by finding
+// the minimum previous weight recursively until the origin of the weight
+// matrix.
+function spliceOperationsFromEditDistances(distances) {
+  let i = distances.length - 1;
+  let j = distances[0].length - 1;
+  let current = distances[i][j];
+  let edits = [];
+  while (i > 0 || j > 0) {
+    if (i == 0) {
+      edits.push(EDIT_ADD);
+      j--;
+      continue;
+    }
+    if (j == 0) {
+      edits.push(EDIT_DELETE);
+      i--;
+      continue;
+    }
+    let northWest = distances[i - 1][j - 1];
+    let west = distances[i - 1][j];
+    let north = distances[i][j - 1];
+
+    let min;
+    if (west < north) min = west < northWest ? west : northWest;else min = north < northWest ? north : northWest;
+
+    if (min == northWest) {
+      if (northWest == current) {
+        edits.push(EDIT_LEAVE);
+      } else {
+        edits.push(EDIT_UPDATE);
+        current = northWest;
+      }
+      i--;
+      j--;
+    } else if (min == west) {
+      edits.push(EDIT_DELETE);
+      i--;
+      current = west;
+    } else {
+      edits.push(EDIT_ADD);
+      j--;
+      current = north;
+    }
+  }
+
+  edits.reverse();
+  return edits;
+}
+
+/**
+ * Splice Projection functions:
+ *
+ * A splice map is a representation of how a previous array of items
+ * was transformed into a new array of items. Conceptually it is a list of
+ * tuples of
+ *
+ *   <index, removed, addedCount>
+ *
+ * which are kept in ascending index order of. The tuple represents that at
+ * the |index|, |removed| sequence of items were removed, and counting forward
+ * from |index|, |addedCount| items were added.
+ */
+
+/**
+ * Lacking individual splice mutation information, the minimal set of
+ * splices can be synthesized given the previous state and final state of an
+ * array. The basic approach is to calculate the edit distance matrix and
+ * choose the shortest path through it.
+ *
+ * Complexity: O(l * p)
+ *   l: The length of the current array
+ *   p: The length of the old array
+ *
+ * @param {Array} current The current "changed" array for which to
+ * calculate splices.
+ * @param {number} currentStart Starting index in the `current` array for
+ * which splices are calculated.
+ * @param {number} currentEnd Ending index in the `current` array for
+ * which splices are calculated.
+ * @param {Array} old The original "unchanged" array to compare `current`
+ * against to determine splices.
+ * @param {number} oldStart Starting index in the `old` array for
+ * which splices are calculated.
+ * @param {number} oldEnd Ending index in the `old` array for
+ * which splices are calculated.
+ * @return {Array} Returns an array of splice record objects. Each of these
+ * contains: `index` the location where the splice occurred; `removed`
+ * the array of removed items from this location; `addedCount` the number
+ * of items added at this location.
+ */
+function calcSplices(current, currentStart, currentEnd, old, oldStart, oldEnd) {
+  let prefixCount = 0;
+  let suffixCount = 0;
+  let splice;
+
+  let minLength = Math.min(currentEnd - currentStart, oldEnd - oldStart);
+  if (currentStart == 0 && oldStart == 0) prefixCount = sharedPrefix(current, old, minLength);
+
+  if (currentEnd == current.length && oldEnd == old.length) suffixCount = sharedSuffix(current, old, minLength - prefixCount);
+
+  currentStart += prefixCount;
+  oldStart += prefixCount;
+  currentEnd -= suffixCount;
+  oldEnd -= suffixCount;
+
+  if (currentEnd - currentStart == 0 && oldEnd - oldStart == 0) return [];
+
+  if (currentStart == currentEnd) {
+    splice = newSplice(currentStart, [], 0);
+    while (oldStart < oldEnd) splice.removed.push(old[oldStart++]);
+
+    return [splice];
+  } else if (oldStart == oldEnd) return [newSplice(currentStart, [], currentEnd - currentStart)];
+
+  let ops = spliceOperationsFromEditDistances(calcEditDistances(current, currentStart, currentEnd, old, oldStart, oldEnd));
+
+  splice = undefined;
+  let splices = [];
+  let index = currentStart;
+  let oldIndex = oldStart;
+  for (let i = 0; i < ops.length; i++) {
+    switch (ops[i]) {
+      case EDIT_LEAVE:
+        if (splice) {
+          splices.push(splice);
+          splice = undefined;
+        }
+
+        index++;
+        oldIndex++;
+        break;
+      case EDIT_UPDATE:
+        if (!splice) splice = newSplice(index, [], 0);
+
+        splice.addedCount++;
+        index++;
+
+        splice.removed.push(old[oldIndex]);
+        oldIndex++;
+        break;
+      case EDIT_ADD:
+        if (!splice) splice = newSplice(index, [], 0);
+
+        splice.addedCount++;
+        index++;
+        break;
+      case EDIT_DELETE:
+        if (!splice) splice = newSplice(index, [], 0);
+
+        splice.removed.push(old[oldIndex]);
+        oldIndex++;
+        break;
+    }
+  }
+
+  if (splice) {
+    splices.push(splice);
+  }
+  return splices;
+}
+
+function sharedPrefix(current, old, searchLength) {
+  for (let i = 0; i < searchLength; i++) if (!equals(current[i], old[i])) return i;
+  return searchLength;
+}
+
+function sharedSuffix(current, old, searchLength) {
+  let index1 = current.length;
+  let index2 = old.length;
+  let count = 0;
+  while (count < searchLength && equals(current[--index1], old[--index2])) count++;
+
+  return count;
+}
+
+function calculateSplices(current, previous) {
+  return calcSplices(current, 0, current.length, previous, 0, previous.length);
+}
+
+function equals(currentValue, previousValue) {
+  return currentValue === previousValue;
+}
+
+exports.calculateSplices = calculateSplices;
+
+/***/ }),
+/* 38 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.DomRepeat = undefined;
+
+var _polymerElement = __webpack_require__(5);
+
+var _templatize = __webpack_require__(22);
+
+var _debounce = __webpack_require__(8);
+
+var _flush = __webpack_require__(13);
+
+var _mutableData = __webpack_require__(14);
+
+var _path = __webpack_require__(12);
+
+var _async = __webpack_require__(6);
+
+let TemplateInstanceBase = _templatize.TemplateInstanceBase; // eslint-disable-line
+
+/**
+ * @constructor
+ * @implements {Polymer_OptionalMutableData}
+ * @extends {Polymer.Element}
+ */
+const domRepeatBase = (0, _mutableData.OptionalMutableData)(_polymerElement.Element);
+
+/**
+ * The `<dom-repeat>` element will automatically stamp and binds one instance
+ * of template content to each object in a user-provided array.
+ * `dom-repeat` accepts an `items` property, and one instance of the template
+ * is stamped for each item into the DOM at the location of the `dom-repeat`
+ * element.  The `item` property will be set on each instance's binding
+ * scope, thus templates should bind to sub-properties of `item`.
+ *
+ * Example:
+ *
+ * ```html
+ * <dom-module id="employee-list">
+ *
+ *   <template>
+ *
+ *     <div> Employee list: </div>
+ *     <template is="dom-repeat" items="{{employees}}">
+ *         <div>First name: <span>{{item.first}}</span></div>
+ *         <div>Last name: <span>{{item.last}}</span></div>
+ *     </template>
+ *
+ *   </template>
+ *
+ *   <script>
+ *     Polymer({
+ *       is: 'employee-list',
+ *       ready: function() {
+ *         this.employees = [
+ *             {first: 'Bob', last: 'Smith'},
+ *             {first: 'Sally', last: 'Johnson'},
+ *             ...
+ *         ];
+ *       }
+ *     });
+ *   < /script>
+ *
+ * </dom-module>
+ * ```
+ *
+ * Notifications for changes to items sub-properties will be forwarded to template
+ * instances, which will update via the normal structured data notification system.
+ *
+ * Mutations to the `items` array itself should be made using the Array
+ * mutation API's on `Polymer.Base` (`push`, `pop`, `splice`, `shift`,
+ * `unshift`), and template instances will be kept in sync with the data in the
+ * array.
+ *
+ * Events caught by event handlers within the `dom-repeat` template will be
+ * decorated with a `model` property, which represents the binding scope for
+ * each template instance.  The model is an instance of Polymer.Base, and should
+ * be used to manipulate data on the instance, for example
+ * `event.model.set('item.checked', true);`.
+ *
+ * Alternatively, the model for a template instance for an element stamped by
+ * a `dom-repeat` can be obtained using the `modelForElement` API on the
+ * `dom-repeat` that stamped it, for example
+ * `this.$.domRepeat.modelForElement(event.target).set('item.checked', true);`.
+ * This may be useful for manipulating instance data of event targets obtained
+ * by event handlers on parents of the `dom-repeat` (event delegation).
+ *
+ * A view-specific filter/sort may be applied to each `dom-repeat` by supplying a
+ * `filter` and/or `sort` property.  This may be a string that names a function on
+ * the host, or a function may be assigned to the property directly.  The functions
+ * should implemented following the standard `Array` filter/sort API.
+ *
+ * In order to re-run the filter or sort functions based on changes to sub-fields
+ * of `items`, the `observe` property may be set as a space-separated list of
+ * `item` sub-fields that should cause a re-filter/sort when modified.  If
+ * the filter or sort function depends on properties not contained in `items`,
+ * the user should observe changes to those properties and call `render` to update
+ * the view based on the dependency change.
+ *
+ * For example, for an `dom-repeat` with a filter of the following:
+ *
+ * ```js
+ * isEngineer: function(item) {
+ *     return item.type == 'engineer' || item.manager.type == 'engineer';
+ * }
+ * ```
+ *
+ * Then the `observe` property should be configured as follows:
+ *
+ * ```html
+ * <template is="dom-repeat" items="{{employees}}"
+ *           filter="isEngineer" observe="type manager.type">
+ * ```
+ *
+ * @customElement
+ * @polymer
+ * @memberof Polymer
+ * @extends {domRepeatBase}
+ * @appliesMixin Polymer.OptionalMutableData
+ * @summary Custom element for stamping instance of a template bound to
+ *   items in an array.
+ */
+class DomRepeat extends domRepeatBase {
+
+  // Not needed to find template; can be removed once the analyzer
+  // can find the tag name from customElements.define call
+  static get is() {
+    return 'dom-repeat';
+  }
+
+  static get template() {
+    return null;
+  }
+
+  static get properties() {
+
+    /**
+     * Fired whenever DOM is added or removed by this template (by
+     * default, rendering occurs lazily).  To force immediate rendering, call
+     * `render`.
+     *
+     * @event dom-change
+     */
+    return {
+
+      /**
+       * An array containing items determining how many instances of the template
+       * to stamp and that that each template instance should bind to.
+       */
+      items: {
+        type: Array
+      },
+
+      /**
+       * The name of the variable to add to the binding scope for the array
+       * element associated with a given template instance.
+       */
+      as: {
+        type: String,
+        value: 'item'
+      },
+
+      /**
+       * The name of the variable to add to the binding scope with the index
+       * of the instance in the sorted and filtered list of rendered items.
+       * Note, for the index in the `this.items` array, use the value of the
+       * `itemsIndexAs` property.
+       */
+      indexAs: {
+        type: String,
+        value: 'index'
+      },
+
+      /**
+       * The name of the variable to add to the binding scope with the index
+       * of the instance in the `this.items` array. Note, for the index of
+       * this instance in the sorted and filtered list of rendered items,
+       * use the value of the `indexAs` property.
+       */
+      itemsIndexAs: {
+        type: String,
+        value: 'itemsIndex'
+      },
+
+      /**
+       * A function that should determine the sort order of the items.  This
+       * property should either be provided as a string, indicating a method
+       * name on the element's host, or else be an actual function.  The
+       * function should match the sort function passed to `Array.sort`.
+       * Using a sort function has no effect on the underlying `items` array.
+       */
+      sort: {
+        type: Function,
+        observer: '__sortChanged'
+      },
+
+      /**
+       * A function that can be used to filter items out of the view.  This
+       * property should either be provided as a string, indicating a method
+       * name on the element's host, or else be an actual function.  The
+       * function should match the sort function passed to `Array.filter`.
+       * Using a filter function has no effect on the underlying `items` array.
+       */
+      filter: {
+        type: Function,
+        observer: '__filterChanged'
+      },
+
+      /**
+       * When using a `filter` or `sort` function, the `observe` property
+       * should be set to a space-separated list of the names of item
+       * sub-fields that should trigger a re-sort or re-filter when changed.
+       * These should generally be fields of `item` that the sort or filter
+       * function depends on.
+       */
+      observe: {
+        type: String,
+        observer: '__observeChanged'
+      },
+
+      /**
+       * When using a `filter` or `sort` function, the `delay` property
+       * determines a debounce time after a change to observed item
+       * properties that must pass before the filter or sort is re-run.
+       * This is useful in rate-limiting shuffing of the view when
+       * item changes may be frequent.
+       */
+      delay: Number,
+
+      /**
+       * Count of currently rendered items after `filter` (if any) has been applied.
+       * If "chunking mode" is enabled, `renderedItemCount` is updated each time a
+       * set of template instances is rendered.
+       *
+       */
+      renderedItemCount: {
+        type: Number,
+        notify: true,
+        readOnly: true
+      },
+
+      /**
+       * Defines an initial count of template instances to render after setting
+       * the `items` array, before the next paint, and puts the `dom-repeat`
+       * into "chunking mode".  The remaining items will be created and rendered
+       * incrementally at each animation frame therof until all instances have
+       * been rendered.
+       */
+      initialCount: {
+        type: Number,
+        observer: '__initializeChunking'
+      },
+
+      /**
+       * When `initialCount` is used, this property defines a frame rate to
+       * target by throttling the number of instances rendered each frame to
+       * not exceed the budget for the target frame rate.  Setting this to a
+       * higher number will allow lower latency and higher throughput for
+       * things like event handlers, but will result in a longer time for the
+       * remaining items to complete rendering.
+       */
+      targetFramerate: {
+        type: Number,
+        value: 20
+      },
+
+      _targetFrameTime: {
+        type: Number,
+        computed: '__computeFrameTime(targetFramerate)'
+      }
+
+    };
+  }
+
+  static get observers() {
+    return ['__itemsChanged(items.*)'];
+  }
+
+  constructor() {
+    super();
+    this.__instances = [];
+    this.__limit = Infinity;
+    this.__pool = [];
+    this.__renderDebouncer = null;
+    this.__itemsIdxToInstIdx = {};
+    this.__chunkCount = null;
+    this.__lastChunkTime = null;
+    this.__sortFn = null;
+    this.__filterFn = null;
+    this.__observePaths = null;
+    this.__ctor = null;
+    this.__isDetached = true;
+    this.template = null;
+  }
+
+  disconnectedCallback() {
+    super.disconnectedCallback();
+    this.__isDetached = true;
+    for (let i = 0; i < this.__instances.length; i++) {
+      this.__detachInstance(i);
+    }
+  }
+
+  connectedCallback() {
+    super.connectedCallback();
+    // only perform attachment if the element was previously detached.
+    if (this.__isDetached) {
+      this.__isDetached = false;
+      let parent = this.parentNode;
+      for (let i = 0; i < this.__instances.length; i++) {
+        this.__attachInstance(i, parent);
+      }
+    }
+  }
+
+  __ensureTemplatized() {
+    // Templatizing (generating the instance constructor) needs to wait
+    // until ready, since won't have its template content handed back to
+    // it until then
+    if (!this.__ctor) {
+      let template = this.template = this.querySelector('template');
+      if (!template) {
+        // // Wait until childList changes and template should be there by then
+        let observer = new MutationObserver(() => {
+          if (this.querySelector('template')) {
+            observer.disconnect();
+            this.__render();
+          } else {
+            throw new Error('dom-repeat requires a <template> child');
+          }
+        });
+        observer.observe(this, { childList: true });
+        return false;
+      }
+      // Template instance props that should be excluded from forwarding
+      let instanceProps = {};
+      instanceProps[this.as] = true;
+      instanceProps[this.indexAs] = true;
+      instanceProps[this.itemsIndexAs] = true;
+      this.__ctor = _templatize.Templatize.templatize(template, this, {
+        mutableData: this.mutableData,
+        parentModel: true,
+        instanceProps: instanceProps,
+        /**
+         * @this {this}
+         * @param {string} prop Property to set
+         * @param {*} value Value to set property to
+         */
+        forwardHostProp: function (prop, value) {
+          let i$ = this.__instances;
+          for (let i = 0, inst; i < i$.length && (inst = i$[i]); i++) {
+            inst.forwardHostProp(prop, value);
+          }
+        },
+        /**
+         * @this {this}
+         * @param {Object} inst Instance to notify
+         * @param {string} prop Property to notify
+         * @param {*} value Value to notify
+         */
+        notifyInstanceProp: function (inst, prop, value) {
+          if ((0, _path.matches)(this.as, prop)) {
+            let idx = inst[this.itemsIndexAs];
+            if (prop == this.as) {
+              this.items[idx] = value;
+            }
+            let path = (0, _path.translate)(this.as, 'items.' + idx, prop);
+            this.notifyPath(path, value);
+          }
+        }
+      });
+    }
+    return true;
+  }
+
+  __getMethodHost() {
+    // Technically this should be the owner of the outermost template.
+    // In shadow dom, this is always getRootNode().host, but we can
+    // approximate this via cooperation with our dataHost always setting
+    // `_methodHost` as long as there were bindings (or id's) on this
+    // instance causing it to get a dataHost.
+    return this.__dataHost._methodHost || this.__dataHost;
+  }
+
+  __sortChanged(sort) {
+    let methodHost = this.__getMethodHost();
+    this.__sortFn = sort && (typeof sort == 'function' ? sort : function () {
+      return methodHost[sort].apply(methodHost, arguments);
+    });
+    if (this.items) {
+      this.__debounceRender(this.__render);
+    }
+  }
+
+  __filterChanged(filter) {
+    let methodHost = this.__getMethodHost();
+    this.__filterFn = filter && (typeof filter == 'function' ? filter : function () {
+      return methodHost[filter].apply(methodHost, arguments);
+    });
+    if (this.items) {
+      this.__debounceRender(this.__render);
+    }
+  }
+
+  __computeFrameTime(rate) {
+    return Math.ceil(1000 / rate);
+  }
+
+  __initializeChunking() {
+    if (this.initialCount) {
+      this.__limit = this.initialCount;
+      this.__chunkCount = this.initialCount;
+      this.__lastChunkTime = performance.now();
+    }
+  }
+
+  __tryRenderChunk() {
+    // Debounced so that multiple calls through `_render` between animation
+    // frames only queue one new rAF (e.g. array mutation & chunked render)
+    if (this.items && this.__limit < this.items.length) {
+      this.__debounceRender(this.__requestRenderChunk);
+    }
+  }
+
+  __requestRenderChunk() {
+    requestAnimationFrame(() => this.__renderChunk());
+  }
+
+  __renderChunk() {
+    // Simple auto chunkSize throttling algorithm based on feedback loop:
+    // measure actual time between frames and scale chunk count by ratio
+    // of target/actual frame time
+    let currChunkTime = performance.now();
+    let ratio = this._targetFrameTime / (currChunkTime - this.__lastChunkTime);
+    this.__chunkCount = Math.round(this.__chunkCount * ratio) || 1;
+    this.__limit += this.__chunkCount;
+    this.__lastChunkTime = currChunkTime;
+    this.__debounceRender(this.__render);
+  }
+
+  __observeChanged() {
+    this.__observePaths = this.observe && this.observe.replace('.*', '.').split(' ');
+  }
+
+  __itemsChanged(change) {
+    if (this.items && !Array.isArray(this.items)) {
+      console.warn('dom-repeat expected array for `items`, found', this.items);
+    }
+    // If path was to an item (e.g. 'items.3' or 'items.3.foo'), forward the
+    // path to that instance synchronously (retuns false for non-item paths)
+    if (!this.__handleItemPath(change.path, change.value)) {
+      // Otherwise, the array was reset ('items') or spliced ('items.splices'),
+      // so queue a full refresh
+      this.__initializeChunking();
+      this.__debounceRender(this.__render);
+    }
+  }
+
+  __handleObservedPaths(path) {
+    if (this.__observePaths) {
+      path = path.substring(path.indexOf('.') + 1);
+      let paths = this.__observePaths;
+      for (let i = 0; i < paths.length; i++) {
+        if (path.indexOf(paths[i]) === 0) {
+          this.__debounceRender(this.__render, this.delay);
+          return true;
+        }
+      }
+    }
+  }
+
+  /**
+   * @param {function(this:DomRepeat)} fn Function to debounce.
+   * @param {number=} delay Delay in ms to debounce by.
+   */
+  __debounceRender(fn, delay = 0) {
+    this.__renderDebouncer = _debounce.Debouncer.debounce(this.__renderDebouncer, delay > 0 ? _async.timeOut.after(delay) : _async.microTask, fn.bind(this));
+    (0, _flush.enqueueDebouncer)(this.__renderDebouncer);
+  }
+
+  /**
+   * Forces the element to render its content. Normally rendering is
+   * asynchronous to a provoking change. This is done for efficiency so
+   * that multiple changes trigger only a single render. The render method
+   * should be called if, for example, template rendering is required to
+   * validate application state.
+   */
+  render() {
+    // Queue this repeater, then flush all in order
+    this.__debounceRender(this.__render);
+    (0, _flush.flush)();
+  }
+
+  __render() {
+    if (!this.__ensureTemplatized()) {
+      // No template found yet
+      return;
+    }
+    this.__applyFullRefresh();
+    // Reset the pool
+    // TODO(kschaaf): Reuse pool across turns and nested templates
+    // Now that objects/arrays are re-evaluated when set, we can safely
+    // reuse pooled instances across turns, however we still need to decide
+    // semantics regarding how long to hold, how many to hold, etc.
+    this.__pool.length = 0;
+    // Set rendered item count
+    this._setRenderedItemCount(this.__instances.length);
+    // Notify users
+    this.dispatchEvent(new CustomEvent('dom-change', {
+      bubbles: true,
+      composed: true
+    }));
+    // Check to see if we need to render more items
+    this.__tryRenderChunk();
+  }
+
+  __applyFullRefresh() {
+    let items = this.items || [];
+    let isntIdxToItemsIdx = new Array(items.length);
+    for (let i = 0; i < items.length; i++) {
+      isntIdxToItemsIdx[i] = i;
+    }
+    // Apply user filter
+    if (this.__filterFn) {
+      isntIdxToItemsIdx = isntIdxToItemsIdx.filter((i, idx, array) => this.__filterFn(items[i], idx, array));
+    }
+    // Apply user sort
+    if (this.__sortFn) {
+      isntIdxToItemsIdx.sort((a, b) => this.__sortFn(items[a], items[b]));
+    }
+    // items->inst map kept for item path forwarding
+    const itemsIdxToInstIdx = this.__itemsIdxToInstIdx = {};
+    let instIdx = 0;
+    // Generate instances and assign items
+    const limit = Math.min(isntIdxToItemsIdx.length, this.__limit);
+    for (; instIdx < limit; instIdx++) {
+      let inst = this.__instances[instIdx];
+      let itemIdx = isntIdxToItemsIdx[instIdx];
+      let item = items[itemIdx];
+      itemsIdxToInstIdx[itemIdx] = instIdx;
+      if (inst && instIdx < this.__limit) {
+        inst._setPendingProperty(this.as, item);
+        inst._setPendingProperty(this.indexAs, instIdx);
+        inst._setPendingProperty(this.itemsIndexAs, itemIdx);
+        inst._flushProperties();
+      } else {
+        this.__insertInstance(item, instIdx, itemIdx);
+      }
+    }
+    // Remove any extra instances from previous state
+    for (let i = this.__instances.length - 1; i >= instIdx; i--) {
+      this.__detachAndRemoveInstance(i);
+    }
+  }
+
+  __detachInstance(idx) {
+    let inst = this.__instances[idx];
+    for (let i = 0; i < inst.children.length; i++) {
+      let el = inst.children[i];
+      inst.root.appendChild(el);
+    }
+    return inst;
+  }
+
+  __attachInstance(idx, parent) {
+    let inst = this.__instances[idx];
+    parent.insertBefore(inst.root, this);
+  }
+
+  __detachAndRemoveInstance(idx) {
+    let inst = this.__detachInstance(idx);
+    if (inst) {
+      this.__pool.push(inst);
+    }
+    this.__instances.splice(idx, 1);
+  }
+
+  __stampInstance(item, instIdx, itemIdx) {
+    let model = {};
+    model[this.as] = item;
+    model[this.indexAs] = instIdx;
+    model[this.itemsIndexAs] = itemIdx;
+    return new this.__ctor(model);
+  }
+
+  __insertInstance(item, instIdx, itemIdx) {
+    let inst = this.__pool.pop();
+    if (inst) {
+      // TODO(kschaaf): If the pool is shared across turns, hostProps
+      // need to be re-set to reused instances in addition to item
+      inst._setPendingProperty(this.as, item);
+      inst._setPendingProperty(this.indexAs, instIdx);
+      inst._setPendingProperty(this.itemsIndexAs, itemIdx);
+      inst._flushProperties();
+    } else {
+      inst = this.__stampInstance(item, instIdx, itemIdx);
+    }
+    let beforeRow = this.__instances[instIdx + 1];
+    let beforeNode = beforeRow ? beforeRow.children[0] : this;
+    this.parentNode.insertBefore(inst.root, beforeNode);
+    this.__instances[instIdx] = inst;
+    return inst;
+  }
+
+  // Implements extension point from Templatize mixin
+  _showHideChildren(hidden) {
+    for (let i = 0; i < this.__instances.length; i++) {
+      this.__instances[i]._showHideChildren(hidden);
+    }
+  }
+
+  // Called as a side effect of a host items.<key>.<path> path change,
+  // responsible for notifying item.<path> changes to inst for key
+  __handleItemPath(path, value) {
+    let itemsPath = path.slice(6); // 'items.'.length == 6
+    let dot = itemsPath.indexOf('.');
+    let itemsIdx = dot < 0 ? itemsPath : itemsPath.substring(0, dot);
+    // If path was index into array...
+    if (itemsIdx == parseInt(itemsIdx, 10)) {
+      let itemSubPath = dot < 0 ? '' : itemsPath.substring(dot + 1);
+      // If the path is observed, it will trigger a full refresh
+      this.__handleObservedPaths(itemSubPath);
+      // Note, even if a rull refresh is triggered, always do the path
+      // notification because unless mutableData is used for dom-repeat
+      // and all elements in the instance subtree, a full refresh may
+      // not trigger the proper update.
+      let instIdx = this.__itemsIdxToInstIdx[itemsIdx];
+      let inst = this.__instances[instIdx];
+      if (inst) {
+        let itemPath = this.as + (itemSubPath ? '.' + itemSubPath : '');
+        // This is effectively `notifyPath`, but avoids some of the overhead
+        // of the public API
+        inst._setPendingPropertyOrPath(itemPath, value, false, true);
+        inst._flushProperties();
+      }
+      return true;
+    }
+  }
+
+  /**
+   * Returns the item associated with a given element stamped by
+   * this `dom-repeat`.
+   *
+   * Note, to modify sub-properties of the item,
+   * `modelForElement(el).set('item.<sub-prop>', value)`
+   * should be used.
+   *
+   * @param {HTMLElement} el Element for which to return the item.
+   * @return {*} Item associated with the element.
+   */
+  itemForElement(el) {
+    let instance = this.modelForElement(el);
+    return instance && instance[this.as];
+  }
+
+  /**
+   * Returns the inst index for a given element stamped by this `dom-repeat`.
+   * If `sort` is provided, the index will reflect the sorted order (rather
+   * than the original array order).
+   *
+   * @param {HTMLElement} el Element for which to return the index.
+   * @return {*} Row index associated with the element (note this may
+   *   not correspond to the array index if a user `sort` is applied).
+   */
+  indexForElement(el) {
+    let instance = this.modelForElement(el);
+    return instance && instance[this.indexAs];
+  }
+
+  /**
+   * Returns the template "model" associated with a given element, which
+   * serves as the binding scope for the template instance the element is
+   * contained in. A template model is an instance of `Polymer.Base`, and
+   * should be used to manipulate data associated with this template instance.
+   *
+   * Example:
+   *
+   *   let model = modelForElement(el);
+   *   if (model.index < 10) {
+   *     model.set('item.checked', true);
+   *   }
+   *
+   * @param {HTMLElement} el Element for which to return a template model.
+   * @return {TemplateInstanceBase} Model representing the binding scope for
+   *   the element.
+   */
+  modelForElement(el) {
+    return _templatize.Templatize.modelForElement(this.template, el);
+  }
+
+}
+
+customElements.define(DomRepeat.is, DomRepeat);
+
+exports.DomRepeat = DomRepeat;
+
+/***/ }),
+/* 39 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.AppLayoutBehavior = undefined;
+
+__webpack_require__(0);
+
+var _ironResizableBehavior = __webpack_require__(67);
+
+var _polymerDom = __webpack_require__(2);
+
+var _async = __webpack_require__(6);
+
+var async = _interopRequireWildcard(_async);
+
+var _debounce = __webpack_require__(8);
+
+var _flush = __webpack_require__(13);
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+const AppLayoutBehavior = exports.AppLayoutBehavior = [_ironResizableBehavior.IronResizableBehavior, {
+
+  listeners: {
+    'app-reset-layout': '_appResetLayoutHandler',
+    'iron-resize': 'resetLayout'
+  },
+
+  attached: function () {
+    this.fire('app-reset-layout');
+  },
+
+  _appResetLayoutHandler: function (e) {
+    if ((0, _polymerDom.dom)(e).path[0] === this) {
+      return;
+    }
+    this.resetLayout();
+    e.stopPropagation();
+  },
+
+  _updateLayoutStates: function () {
+    console.error('unimplemented');
+  },
+
+  /**
+   * Resets the layout. If you changed the size of this element via CSS
+   * you can notify the changes by either firing the `iron-resize` event
+   * or calling `resetLayout` directly.
+   *
+   * @method resetLayout
+   */
+  resetLayout: function () {
+    // Polymer v2.x
+    var self = this;
+    var cb = this._updateLayoutStates.bind(this);
+    if (async && _async.animationFrame) {
+      this._layoutDebouncer = _debounce.Debouncer.debounce(this._layoutDebouncer, _async.animationFrame, cb);
+      (0, _flush.enqueueDebouncer)(this._layoutDebouncer);
+    }
+    // Polymer v1.x
+    else {
+        this.debounce('resetLayout', cb);
+      }
+    this._notifyDescendantResize();
+  },
+
+  _notifyLayoutChanged: function () {
+    var self = this;
+    // TODO: the event `app-reset-layout` can be fired synchronously
+    // as long as `_updateLayoutStates` waits for all the microtasks after rAF.
+    // E.g. requestAnimationFrame(setTimeOut())
+    requestAnimationFrame(function () {
+      self.fire('app-reset-layout');
+    });
+  },
+
+  _notifyDescendantResize: function () {
+    if (!this.isAttached) {
+      return;
+    }
+    this._interestedResizables.forEach(function (resizable) {
+      if (this.resizerShouldNotify(resizable)) {
+        this._notifyDescendant(resizable);
+      }
+    }, this);
+  }
+}];
+
+/***/ }),
+/* 40 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.IronMeta = undefined;
+
+__webpack_require__(0);
+
+var _polymerFn = __webpack_require__(3);
+
+/**
+ * @constructor
+ * @param {{type: (string|null), key: (string|null), value: *}} options
+ */
+function IronMeta(options) {
+  this.type = options && options.type || 'default';
+  this.key = options && options.key;
+  if ('value' in options) {
+    this.value = options.value;
+  }
+}
+
+IronMeta.types = {};
+
+IronMeta.prototype = {
+  get value() {
+    var type = this.type;
+    var key = this.key;
+
+    if (type && key) {
+      return IronMeta.types[type] && IronMeta.types[type][key];
+    }
+  },
+
+  set value(value) {
+    var type = this.type;
+    var key = this.key;
+
+    if (type && key) {
+      type = IronMeta.types[type] = IronMeta.types[type] || {};
+      if (value == null) {
+        delete type[key];
+      } else {
+        type[key] = value;
+      }
+    }
+  },
+
+  get list() {
+    var type = this.type;
+
+    if (type) {
+      return Object.keys(IronMeta.types[this.type]).map(function (key) {
+        return metaDatas[this.type][key];
+      }, this);
+    }
+  },
+
+  byKey: function (key) {
+    this.key = key;
+    return this.value;
+  }
+};
+
+exports.IronMeta = IronMeta;
+
+
+var metaDatas = IronMeta.types;
+
+(0, _polymerFn.Polymer)({
+
+  is: 'iron-meta',
+
+  properties: {
+
+    /**
+     * The type of meta-data.  All meta-data of the same type is stored
+     * together.
+     * @type {string}
+     */
+    type: {
+      type: String,
+      value: 'default'
+    },
+
+    /**
+     * The key used to store `value` under the `type` namespace.
+     * @type {?string}
+     */
+    key: {
+      type: String
+    },
+
+    /**
+     * The meta-data to store or retrieve.
+     * @type {*}
+     */
+    value: {
+      type: String,
+      notify: true
+    },
+
+    /**
+     * If true, `value` is set to the iron-meta instance itself.
+     */
+    self: {
+      type: Boolean,
+      observer: '_selfChanged'
+    },
+
+    __meta: {
+      type: Boolean,
+      computed: '__computeMeta(type, key, value)'
+    }
+  },
+
+  hostAttributes: {
+    hidden: true
+  },
+
+  __computeMeta: function (type, key, value) {
+    var meta = new IronMeta({
+      type: type,
+      key: key
+    });
+
+    if (value !== undefined && value !== meta.value) {
+      meta.value = value;
+    } else if (this.value !== meta.value) {
+      this.value = meta.value;
+    }
+
+    return meta;
+  },
+
+  get list() {
+    return this.__meta && this.__meta.list;
+  },
+
+  _selfChanged: function (self) {
+    if (self) {
+      this.value = this;
+    }
+  },
+
+  /**
+   * Retrieves meta data value by key.
+   *
+   * @method byKey
+   * @param {string} key The key of the meta-data to be returned.
+   * @return {*}
+   */
+  byKey: function (key) {
+    return new IronMeta({
+      type: this.type,
+      key: key
+    }).value;
+  }
+});
+
+/***/ }),
+/* 41 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+__webpack_require__(0);
+
+const $_documentContainer = document.createElement('div');
+$_documentContainer.setAttribute('style', 'display: none;');
+
+$_documentContainer.innerHTML = `<custom-style>
   <style is="custom-style">
     html {
 
@@ -959,7 +11269,454 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     }
 
   </style>
-</custom-style>`,document.head.appendChild(a)},function(e,t,n){'use strict';Object.defineProperty(t,'__esModule',{value:!0}),t.IronSelectableBehavior=void 0,n(0);var a=n(81),o=n(2),r=n(11);t.IronSelectableBehavior={properties:{attrForSelected:{type:String,value:null},selected:{type:String,notify:!0},selectedItem:{type:Object,readOnly:!0,notify:!0},activateEvent:{type:String,value:'tap',observer:'_activateEventChanged'},selectable:String,selectedClass:{type:String,value:'iron-selected'},selectedAttribute:{type:String,value:null},fallbackSelection:{type:String,value:null},items:{type:Array,readOnly:!0,notify:!0,value:function(){return[]}},_excludedLocalNames:{type:Object,value:function(){return{template:1,"dom-bind":1,"dom-if":1,"dom-repeat":1}}}},observers:['_updateAttrForSelected(attrForSelected)','_updateSelected(selected)','_checkFallback(fallbackSelection)'],created:function(){this._bindFilterItem=this._filterItem.bind(this),this._selection=new a.IronSelection(this._applySelection.bind(this))},attached:function(){this._observer=this._observeItems(this),this._addListener(this.activateEvent)},detached:function(){this._observer&&(0,o.dom)(this).unobserveNodes(this._observer),this._removeListener(this.activateEvent)},indexOf:function(e){return this.items.indexOf(e)},select:function(e){this.selected=e},selectPrevious:function(){var e=this.items.length,t=(+this._valueToIndex(this.selected)-1+e)%e;this.selected=this._indexToValue(t)},selectNext:function(){var e=(+this._valueToIndex(this.selected)+1)%this.items.length;this.selected=this._indexToValue(e)},selectIndex:function(e){this.select(this._indexToValue(e))},forceSynchronousItemUpdate:function(){this._observer&&'function'==typeof this._observer.flush?this._observer.flush():this._updateItems()},get _shouldUpdateSelection(){return null!=this.selected},_checkFallback:function(){this._updateSelected()},_addListener:function(e){this.listen(this,e,'_activateHandler')},_removeListener:function(e){this.unlisten(this,e,'_activateHandler')},_activateEventChanged:function(e,t){this._removeListener(t),this._addListener(e)},_updateItems:function(){var e=(0,o.dom)(this).queryDistributedElements(this.selectable||'*');e=Array.prototype.filter.call(e,this._bindFilterItem),this._setItems(e)},_updateAttrForSelected:function(){this.selectedItem&&(this.selected=this._valueForItem(this.selectedItem))},_updateSelected:function(){this._selectSelected(this.selected)},_selectSelected:function(){if(this.items){var e=this._valueToItem(this.selected);e?this._selection.select(e):this._selection.clear(),this.fallbackSelection&&this.items.length&&void 0===this._selection.get()&&(this.selected=this.fallbackSelection)}},_filterItem:function(e){return!this._excludedLocalNames[e.localName]},_valueToItem:function(e){return null==e?null:this.items[this._valueToIndex(e)]},_valueToIndex:function(e){if(this.attrForSelected){for(var t=0,n;n=this.items[t];t++)if(this._valueForItem(n)==e)return t;}else return+e},_indexToValue:function(e){if(this.attrForSelected){var t=this.items[e];if(t)return this._valueForItem(t)}else return e},_valueForItem:function(e){if(!e)return null;var t=e[(0,r.dashToCamelCase)(this.attrForSelected)];return t==void 0?e.getAttribute(this.attrForSelected):t},_applySelection:function(e,t){this.selectedClass&&this.toggleClass(this.selectedClass,t,e),this.selectedAttribute&&this.toggleAttribute(this.selectedAttribute,t,e),this._selectionChange(),this.fire('iron-'+(t?'select':'deselect'),{item:e})},_selectionChange:function(){this._setSelectedItem(this._selection.get())},_observeItems:function(e){return(0,o.dom)(e).observeNodes(function(e){this._updateItems(),this._updateSelected(),this.fire('iron-items-changed',e,{bubbles:!1,cancelable:!1})})},_activateHandler:function(n){for(var e=n.target,t=this.items;e&&e!=this;){var a=t.indexOf(e);if(0<=a){var o=this._indexToValue(a);return void this._itemActivate(o,e)}e=e.parentNode}},_itemActivate:function(e,t){this.fire('iron-activate',{selected:e,item:t},{cancelable:!0}).defaultPrevented||this.select(e)}}},function(e,t,n){'use strict';n(44)},function(e,t,n){'use strict';var a=n(5);n(47),n(68),n(69),n(70),n(72),n(76),n(77);class o extends a.Element{static get is(){return'coin-app'}static get template(){return`
+</custom-style>`;
+
+document.head.appendChild($_documentContainer);
+
+/***/ }),
+/* 42 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.IronSelectableBehavior = undefined;
+
+__webpack_require__(0);
+
+var _ironSelection = __webpack_require__(81);
+
+var _polymerDom = __webpack_require__(2);
+
+var _caseMap = __webpack_require__(11);
+
+const IronSelectableBehavior = exports.IronSelectableBehavior = {
+
+  /**
+   * Fired when iron-selector is activated (selected or deselected).
+   * It is fired before the selected items are changed.
+   * Cancel the event to abort selection.
+   *
+   * @event iron-activate
+   */
+
+  /**
+   * Fired when an item is selected
+   *
+   * @event iron-select
+   */
+
+  /**
+   * Fired when an item is deselected
+   *
+   * @event iron-deselect
+   */
+
+  /**
+   * Fired when the list of selectable items changes (e.g., items are
+   * added or removed). The detail of the event is a mutation record that
+   * describes what changed.
+   *
+   * @event iron-items-changed
+   */
+
+  properties: {
+
+    /**
+     * If you want to use an attribute value or property of an element for
+     * `selected` instead of the index, set this to the name of the attribute
+     * or property. Hyphenated values are converted to camel case when used to
+     * look up the property of a selectable element. Camel cased values are
+     * *not* converted to hyphenated values for attribute lookup. It's
+     * recommended that you provide the hyphenated form of the name so that
+     * selection works in both cases. (Use `attr-or-property-name` instead of
+     * `attrOrPropertyName`.)
+     */
+    attrForSelected: {
+      type: String,
+      value: null
+    },
+
+    /**
+     * Gets or sets the selected element. The default is to use the index of the item.
+     * @type {string|number}
+     */
+    selected: {
+      type: String,
+      notify: true
+    },
+
+    /**
+     * Returns the currently selected item.
+     *
+     * @type {?Object}
+     */
+    selectedItem: {
+      type: Object,
+      readOnly: true,
+      notify: true
+    },
+
+    /**
+     * The event that fires from items when they are selected. Selectable
+     * will listen for this event from items and update the selection state.
+     * Set to empty string to listen to no events.
+     */
+    activateEvent: {
+      type: String,
+      value: 'tap',
+      observer: '_activateEventChanged'
+    },
+
+    /**
+     * This is a CSS selector string.  If this is set, only items that match the CSS selector
+     * are selectable.
+     */
+    selectable: String,
+
+    /**
+     * The class to set on elements when selected.
+     */
+    selectedClass: {
+      type: String,
+      value: 'iron-selected'
+    },
+
+    /**
+     * The attribute to set on elements when selected.
+     */
+    selectedAttribute: {
+      type: String,
+      value: null
+    },
+
+    /**
+     * Default fallback if the selection based on selected with `attrForSelected`
+     * is not found.
+     */
+    fallbackSelection: {
+      type: String,
+      value: null
+    },
+
+    /**
+     * The list of items from which a selection can be made.
+     */
+    items: {
+      type: Array,
+      readOnly: true,
+      notify: true,
+      value: function () {
+        return [];
+      }
+    },
+
+    /**
+     * The set of excluded elements where the key is the `localName`
+     * of the element that will be ignored from the item list.
+     *
+     * @default {template: 1}
+     */
+    _excludedLocalNames: {
+      type: Object,
+      value: function () {
+        return {
+          'template': 1,
+          'dom-bind': 1,
+          'dom-if': 1,
+          'dom-repeat': 1
+        };
+      }
+    }
+  },
+
+  observers: ['_updateAttrForSelected(attrForSelected)', '_updateSelected(selected)', '_checkFallback(fallbackSelection)'],
+
+  created: function () {
+    this._bindFilterItem = this._filterItem.bind(this);
+    this._selection = new _ironSelection.IronSelection(this._applySelection.bind(this));
+  },
+
+  attached: function () {
+    this._observer = this._observeItems(this);
+    this._addListener(this.activateEvent);
+  },
+
+  detached: function () {
+    if (this._observer) {
+      (0, _polymerDom.dom)(this).unobserveNodes(this._observer);
+    }
+    this._removeListener(this.activateEvent);
+  },
+
+  /**
+   * Returns the index of the given item.
+   *
+   * @method indexOf
+   * @param {Object} item
+   * @returns Returns the index of the item
+   */
+  indexOf: function (item) {
+    return this.items.indexOf(item);
+  },
+
+  /**
+   * Selects the given value.
+   *
+   * @method select
+   * @param {string|number} value the value to select.
+   */
+  select: function (value) {
+    this.selected = value;
+  },
+
+  /**
+   * Selects the previous item.
+   *
+   * @method selectPrevious
+   */
+  selectPrevious: function () {
+    var length = this.items.length;
+    var index = (Number(this._valueToIndex(this.selected)) - 1 + length) % length;
+    this.selected = this._indexToValue(index);
+  },
+
+  /**
+   * Selects the next item.
+   *
+   * @method selectNext
+   */
+  selectNext: function () {
+    var index = (Number(this._valueToIndex(this.selected)) + 1) % this.items.length;
+    this.selected = this._indexToValue(index);
+  },
+
+  /**
+   * Selects the item at the given index.
+   *
+   * @method selectIndex
+   */
+  selectIndex: function (index) {
+    this.select(this._indexToValue(index));
+  },
+
+  /**
+   * Force a synchronous update of the `items` property.
+   *
+   * NOTE: Consider listening for the `iron-items-changed` event to respond to
+   * updates to the set of selectable items after updates to the DOM list and
+   * selection state have been made.
+   *
+   * WARNING: If you are using this method, you should probably consider an
+   * alternate approach. Synchronously querying for items is potentially
+   * slow for many use cases. The `items` property will update asynchronously
+   * on its own to reflect selectable items in the DOM.
+   */
+  forceSynchronousItemUpdate: function () {
+    if (this._observer && typeof this._observer.flush === "function") {
+      // NOTE(bicknellr): `Polymer.dom.flush` above is no longer sufficient to
+      // trigger `observeNodes` callbacks. Polymer 2.x returns an object from
+      // `observeNodes` with a `flush` that synchronously gives the callback
+      // any pending MutationRecords (retrieved with `takeRecords`). Any case
+      // where ShadyDOM flushes were expected to synchronously trigger item
+      // updates will now require calling `forceSynchronousItemUpdate`.
+      this._observer.flush();
+    } else {
+      this._updateItems();
+    }
+  },
+
+  // UNUSED, FOR API COMPATIBILITY
+  get _shouldUpdateSelection() {
+    return this.selected != null;
+  },
+
+  _checkFallback: function () {
+    this._updateSelected();
+  },
+
+  _addListener: function (eventName) {
+    this.listen(this, eventName, '_activateHandler');
+  },
+
+  _removeListener: function (eventName) {
+    this.unlisten(this, eventName, '_activateHandler');
+  },
+
+  _activateEventChanged: function (eventName, old) {
+    this._removeListener(old);
+    this._addListener(eventName);
+  },
+
+  _updateItems: function () {
+    var nodes = (0, _polymerDom.dom)(this).queryDistributedElements(this.selectable || '*');
+    nodes = Array.prototype.filter.call(nodes, this._bindFilterItem);
+    this._setItems(nodes);
+  },
+
+  _updateAttrForSelected: function () {
+    if (this.selectedItem) {
+      this.selected = this._valueForItem(this.selectedItem);
+    }
+  },
+
+  _updateSelected: function () {
+    this._selectSelected(this.selected);
+  },
+
+  _selectSelected: function (selected) {
+    if (!this.items) {
+      return;
+    }
+
+    var item = this._valueToItem(this.selected);
+    if (item) {
+      this._selection.select(item);
+    } else {
+      this._selection.clear();
+    }
+    // Check for items, since this array is populated only when attached
+    // Since Number(0) is falsy, explicitly check for undefined
+    if (this.fallbackSelection && this.items.length && this._selection.get() === undefined) {
+      this.selected = this.fallbackSelection;
+    }
+  },
+
+  _filterItem: function (node) {
+    return !this._excludedLocalNames[node.localName];
+  },
+
+  _valueToItem: function (value) {
+    return value == null ? null : this.items[this._valueToIndex(value)];
+  },
+
+  _valueToIndex: function (value) {
+    if (this.attrForSelected) {
+      for (var i = 0, item; item = this.items[i]; i++) {
+        if (this._valueForItem(item) == value) {
+          return i;
+        }
+      }
+    } else {
+      return Number(value);
+    }
+  },
+
+  _indexToValue: function (index) {
+    if (this.attrForSelected) {
+      var item = this.items[index];
+      if (item) {
+        return this._valueForItem(item);
+      }
+    } else {
+      return index;
+    }
+  },
+
+  _valueForItem: function (item) {
+    if (!item) {
+      return null;
+    }
+
+    var propValue = item[(0, _caseMap.dashToCamelCase)(this.attrForSelected)];
+    return propValue != undefined ? propValue : item.getAttribute(this.attrForSelected);
+  },
+
+  _applySelection: function (item, isSelected) {
+    if (this.selectedClass) {
+      this.toggleClass(this.selectedClass, isSelected, item);
+    }
+    if (this.selectedAttribute) {
+      this.toggleAttribute(this.selectedAttribute, isSelected, item);
+    }
+    this._selectionChange();
+    this.fire('iron-' + (isSelected ? 'select' : 'deselect'), { item: item });
+  },
+
+  _selectionChange: function () {
+    this._setSelectedItem(this._selection.get());
+  },
+
+  // observe items change under the given node.
+  _observeItems: function (node) {
+    return (0, _polymerDom.dom)(node).observeNodes(function (mutation) {
+      this._updateItems();
+      this._updateSelected();
+
+      // Let other interested parties know about the change so that
+      // we don't have to recreate mutation observers everywhere.
+      this.fire('iron-items-changed', mutation, {
+        bubbles: false,
+        cancelable: false
+      });
+    });
+  },
+
+  _activateHandler: function (e) {
+    var t = e.target;
+    var items = this.items;
+    while (t && t != this) {
+      var i = items.indexOf(t);
+      if (i >= 0) {
+        var value = this._indexToValue(i);
+        this._itemActivate(value, t);
+        return;
+      }
+      t = t.parentNode;
+    }
+  },
+
+  _itemActivate: function (value, item) {
+    if (!this.fire('iron-activate', { selected: value, item: item }, { cancelable: true }).defaultPrevented) {
+      this.select(value);
+    }
+  }
+
+};
+
+/***/ }),
+/* 43 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+__webpack_require__(44);
+
+/***/ }),
+/* 44 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var _polymerElement = __webpack_require__(5);
+
+__webpack_require__(47);
+
+__webpack_require__(68);
+
+__webpack_require__(69);
+
+__webpack_require__(70);
+
+__webpack_require__(72);
+
+__webpack_require__(76);
+
+__webpack_require__(77);
+
+// Libs
+class CoinApp extends _polymerElement.Element {
+    static get is() {
+        return 'coin-app';
+    }
+
+    static get template() {
+        return `
             <style>
                 :host {
                     --shadow-elevation-2dp_-_box-shadow:
@@ -985,7 +11742,1112 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
                 <currencies-list currencies="[[currencies]]"></currencies-list>
             </app-header-layout>
-        `}static get properties(){return{currencies:{type:Array,value:[],notify:!0}}}constructor(){super()}}customElements.define(o.is,o)},function(e,t,n){'use strict';function a(e,t){if(!_[t]){let n=e[t];n!==void 0&&(e.__data?e._setPendingProperty(t,n):(e.__dataProto?!e.hasOwnProperty(JSCompiler_renameProperty('__dataProto',e))&&(e.__dataProto=Object.create(e.__dataProto)):e.__dataProto={},e.__dataProto[t]=n))}}Object.defineProperty(t,'__esModule',{value:!0}),t.PropertyAccessors=void 0,n(1);var o=n(4),r=n(11),s=function(e){if(e&&e.__esModule)return e;var t={};if(null!=e)for(var n in e)Object.prototype.hasOwnProperty.call(e,n)&&(t[n]=e[n]);return t.default=e,t}(r),d=n(6);let l=s,p=d.microTask;const _={};for(let a=HTMLElement.prototype;a;){let e=Object.getOwnPropertyNames(a);for(let t=0;t<e.length;t++)_[e[t]]=!0;a=Object.getPrototypeOf(a)}t.PropertyAccessors=(0,o.dedupingMixin)((e)=>{return class extends e{static createPropertiesForAttributes(){let e=this.observedAttributes;for(let t=0;t<e.length;t++)this.prototype._createPropertyAccessor(l.dashToCamelCase(e[t]))}constructor(){super(),this.__serializing,this.__dataCounter,this.__dataEnabled,this.__dataReady,this.__dataInvalid,this.__data,this.__dataPending,this.__dataOld,this.__dataProto,this.__dataHasAccessor,this.__dataInstanceProps,this._initializeProperties()}attributeChangedCallback(e,t,n){t!==n&&this._attributeToProperty(e,n)}_initializeProperties(){for(let e in this.__serializing=!1,this.__dataCounter=0,this.__dataEnabled=!1,this.__dataReady=!1,this.__dataInvalid=!1,this.__data={},this.__dataPending=null,this.__dataOld=null,this.__dataProto&&(this._initializeProtoProperties(this.__dataProto),this.__dataProto=null),this.__dataHasAccessor)this.hasOwnProperty(e)&&(this.__dataInstanceProps=this.__dataInstanceProps||{},this.__dataInstanceProps[e]=this[e],delete this[e])}_initializeProtoProperties(e){for(let t in e)this._setProperty(t,e[t])}_initializeInstanceProperties(e){Object.assign(this,e)}_ensureAttribute(e,t){this.hasAttribute(e)||this._valueToNodeAttribute(this,t,e)}_attributeToProperty(e,t,n){if(!this.__serializing){let a=l.dashToCamelCase(e);this[a]=this._deserializeValue(t,n)}}_propertyToAttribute(e,t,n){this.__serializing=!0,n=3>arguments.length?this[e]:n,this._valueToNodeAttribute(this,n,t||l.camelToDashCase(e)),this.__serializing=!1}_valueToNodeAttribute(e,t,n){let a=this._serializeValue(t);a===void 0?e.removeAttribute(n):e.setAttribute(n,a)}_serializeValue(e){switch(typeof e){case'boolean':return e?'':void 0;case'object':if(e instanceof Date)return e.toString();if(e)try{return JSON.stringify(e)}catch(e){return''}default:return null==e?void 0:e.toString();}}_deserializeValue(e,t){let n;switch(t){case Number:n=+e;break;case Boolean:n=null!==e;break;case Object:try{n=JSON.parse(e)}catch(e){}break;case Array:try{n=JSON.parse(e)}catch(t){n=null,console.warn(`Polymer::Attributes: couldn't decode Array as JSON: ${e}`)}break;case Date:n=new Date(e);break;case String:default:n=e;}return n}_createPropertyAccessor(e,t){this.hasOwnProperty('__dataHasAccessor')||(this.__dataHasAccessor=Object.assign({},this.__dataHasAccessor)),this.__dataHasAccessor[e]||(this.__dataHasAccessor[e]=!0,a(this,e),Object.defineProperty(this,e,{get:function(){return this.__data[e]},set:t?function(){}:function(t){this._setProperty(e,t)}}))}_hasAccessor(e){return this.__dataHasAccessor&&this.__dataHasAccessor[e]}_setProperty(e,t){this._setPendingProperty(e,t)&&this._invalidateProperties()}_setPendingProperty(e,t){let n=this.__data[e],a=this._shouldPropertyChange(e,t,n);return a&&(!this.__dataPending&&(this.__dataPending={},this.__dataOld={}),this.__dataOld&&!(e in this.__dataOld)&&(this.__dataOld[e]=n),this.__data[e]=t,this.__dataPending[e]=t),a}_isPropertyPending(e){return!!(this.__dataPending&&e in this.__dataPending)}_invalidateProperties(){!this.__dataInvalid&&this.__dataReady&&(this.__dataInvalid=!0,p.run(()=>{this.__dataInvalid&&(this.__dataInvalid=!1,this._flushProperties())}))}_enableProperties(){this.__dataEnabled||(this.__dataEnabled=!0,this.__dataInstanceProps&&(this._initializeInstanceProperties(this.__dataInstanceProps),this.__dataInstanceProps=null),this.ready())}_flushProperties(){if(this.__dataPending&&this.__dataOld){let e=this.__dataPending;this.__dataPending=null,this.__dataCounter++,this._propertiesChanged(this.__data,e,this.__dataOld),this.__dataCounter--}}ready(){this.__dataReady=!0,this._flushProperties()}_propertiesChanged(){}_shouldPropertyChange(e,t,n){return n!==t&&(n===n||t===t)}}})},function(e,t,n){'use strict';function a(e){let n=e.getAttribute('is');if(n&&_[n]){let a=e;for(a.removeAttribute('is'),e=a.ownerDocument.createElement(n),a.parentNode.replaceChild(e,a),e.appendChild(a);a.attributes.length;)e.setAttribute(a.attributes[0].name,a.attributes[0].value),a.removeAttribute(a.attributes[0].name)}return e}function o(e,t){let a=t.parentInfo&&o(e,t.parentInfo);if(a){for(let e=a.firstChild,n=0;e;e=e.nextSibling)if(t.parentIndex===n++)return e;}else return e}function r(e,t,n,a){a.id&&(t[a.id]=n)}function s(t,n,a){if(a.events&&a.events.length)for(let o=0,r=a.events,s;o<r.length&&(s=r[o]);o++)t._addMethodEventListenerToNode(n,s.name,s.value,t)}function d(e,t,n){n.templateInfo&&(t._templateInfo=n.templateInfo)}function l(t,e,n){t=t._methodHost||t;return function(a){t[n]?t[n](a,a.detail):console.warn('listener method `'+n+'` not defined')}}Object.defineProperty(t,'__esModule',{value:!0}),t.TemplateStamp=void 0,n(1);var p=n(4);const _={"dom-if":!0,"dom-repeat":!0},c=t.TemplateStamp=(0,p.dedupingMixin)((e)=>{return class extends e{static _parseTemplate(e,t){if(!e._templateInfo){let n=e._templateInfo={};n.nodeInfoList=[],n.stripWhiteSpace=t&&t.stripWhiteSpace||e.hasAttribute('strip-whitespace'),this._parseTemplateContent(e,n,{parent:null})}return e._templateInfo}static _parseTemplateContent(e,t,n){return this._parseTemplateNode(e.content,t,n)}static _parseTemplateNode(e,t,n){let a=e,o;return'template'!=a.localName||a.hasAttribute('preserve-content')?'slot'===a.localName&&(t.hasInsertionPoint=!0):o=this._parseTemplateNestedTemplate(a,t,n)||o,a.firstChild&&(o=this._parseTemplateChildNodes(a,t,n)||o),a.hasAttributes&&a.hasAttributes()&&(o=this._parseTemplateNodeAttributes(a,t,n)||o),o}static _parseTemplateChildNodes(e,t,n){for(let o=e.firstChild,r=0,s;o;o=s){if('template'==o.localName&&(o=a(o)),s=o.nextSibling,o.nodeType===Node.TEXT_NODE){for(let t=s;t&&t.nodeType===Node.TEXT_NODE;)o.textContent+=t.textContent,s=t.nextSibling,e.removeChild(t),t=s;if(t.stripWhiteSpace&&!o.textContent.trim()){e.removeChild(o);continue}}let d={parentIndex:r,parentInfo:n};this._parseTemplateNode(o,t,d)&&(d.infoIndex=t.nodeInfoList.push(d)-1),o.parentNode&&r++}}static _parseTemplateNestedTemplate(e,t,n){let a=this._parseTemplate(e,t),o=a.content=e.content.ownerDocument.createDocumentFragment();return o.appendChild(e.content),n.templateInfo=a,!0}static _parseTemplateNodeAttributes(e,t,n){let o=!1,r=Array.from(e.attributes);for(let s=r.length-1,d;d=r[s];s--)o=this._parseTemplateNodeAttribute(e,t,n,d.name,d.value)||o;return o}static _parseTemplateNodeAttribute(e,t,n,a,o){return'on-'===a.slice(0,3)?(e.removeAttribute(a),n.events=n.events||[],n.events.push({name:a.slice(3),value:o}),!0):!('id'!==a)&&(n.id=o,!0)}static _contentForTemplate(e){let t=e._templateInfo;return t&&t.content||e.content}_stampTemplate(e){e&&!e.content&&window.HTMLTemplateElement&&HTMLTemplateElement.decorate&&HTMLTemplateElement.decorate(e);let t=this.constructor._parseTemplate(e),n=t.nodeInfoList,a=t.content||e.content,p=document.importNode(a,!0);p.__noInsertionPoint=!t.hasInsertionPoint;let _=p.nodeList=Array(n.length);p.$={};for(let t=0,a=n.length,l,c;t<a&&(l=n[t]);t++)c=_[t]=o(p,l),r(this,p.$,c,l),d(this,c,l),s(this,c,l);return p}_addMethodEventListenerToNode(e,t,n,a){a=a||e;let o=l(a,t,n);return this._addEventListenerToNode(e,t,o),o}_addEventListenerToNode(e,t,n){e.addEventListener(t,n)}_removeEventListenerFromNode(e,t,n){e.removeEventListener(t,n)}}})},function(e,t,n){'use strict';var a=Math.max,o=Math.min,r=Math.abs;n(0),n(7);var s=n(64),d=n(39),l=n(3),p=n(2);(0,l.Polymer)({_template:`
+        `;
+    }
+
+    static get properties() {
+        return {
+            currencies: {
+                type: Array,
+                value: [],
+                notify: true
+            }
+        };
+    }
+
+    constructor() {
+        super();
+    }
+}
+// Components
+
+
+customElements.define(CoinApp.is, CoinApp);
+
+/***/ }),
+/* 45 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.PropertyAccessors = undefined;
+
+__webpack_require__(1);
+
+var _mixin = __webpack_require__(4);
+
+var _caseMap = __webpack_require__(11);
+
+var caseMap$0 = _interopRequireWildcard(_caseMap);
+
+var _async = __webpack_require__(6);
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+let caseMap = caseMap$0;
+
+let microtask = _async.microTask;
+
+// Save map of native properties; this forms a blacklist or properties
+// that won't have their values "saved" by `saveAccessorValue`, since
+// reading from an HTMLElement accessor from the context of a prototype throws
+const nativeProperties = {};
+let proto = HTMLElement.prototype;
+while (proto) {
+  let props = Object.getOwnPropertyNames(proto);
+  for (let i = 0; i < props.length; i++) {
+    nativeProperties[props[i]] = true;
+  }
+  proto = Object.getPrototypeOf(proto);
+}
+
+/**
+ * Used to save the value of a property that will be overridden with
+ * an accessor. If the `model` is a prototype, the values will be saved
+ * in `__dataProto`, and it's up to the user (or downstream mixin) to
+ * decide how/when to set these values back into the accessors.
+ * If `model` is already an instance (it has a `__data` property), then
+ * the value will be set as a pending property, meaning the user should
+ * call `_invalidateProperties` or `_flushProperties` to take effect
+ *
+ * @param {Object} model Prototype or instance
+ * @param {string} property Name of property
+ * @private
+ */
+function saveAccessorValue(model, property) {
+  // Don't read/store value for any native properties since they could throw
+  if (!nativeProperties[property]) {
+    let value = model[property];
+    if (value !== undefined) {
+      if (model.__data) {
+        // Adding accessor to instance; update the property
+        // It is the user's responsibility to call _flushProperties
+        model._setPendingProperty(property, value);
+      } else {
+        // Adding accessor to proto; save proto's value for instance-time use
+        if (!model.__dataProto) {
+          model.__dataProto = {};
+        } else if (!model.hasOwnProperty(JSCompiler_renameProperty('__dataProto', model))) {
+          model.__dataProto = Object.create(model.__dataProto);
+        }
+        model.__dataProto[property] = value;
+      }
+    }
+  }
+}
+
+const PropertyAccessors = exports.PropertyAccessors = (0, _mixin.dedupingMixin)(superClass => {
+
+  /**
+   * @polymer
+   * @mixinClass
+   * @implements {Polymer_PropertyAccessors}
+   * @extends HTMLElement
+   * @unrestricted
+   */
+  class PropertyAccessors extends superClass {
+
+    /**
+     * Generates property accessors for all attributes in the standard
+     * static `observedAttributes` array.
+     *
+     * Attribute names are mapped to property names using the `dash-case` to
+     * `camelCase` convention
+     *
+     */
+    static createPropertiesForAttributes() {
+      let a$ = this.observedAttributes;
+      for (let i = 0; i < a$.length; i++) {
+        this.prototype._createPropertyAccessor(caseMap.dashToCamelCase(a$[i]));
+      }
+    }
+
+    constructor() {
+      super();
+      /** @type {boolean} */
+      this.__serializing;
+      /** @type {number} */
+      this.__dataCounter;
+      /** @type {boolean} */
+      this.__dataEnabled;
+      /** @type {boolean} */
+      this.__dataReady;
+      /** @type {boolean} */
+      this.__dataInvalid;
+      /** @type {!Object} */
+      this.__data;
+      /** @type {Object} */
+      this.__dataPending;
+      /** @type {Object} */
+      this.__dataOld;
+      /** @type {Object} */
+      this.__dataProto;
+      /** @type {Object} */
+      this.__dataHasAccessor;
+      /** @type {Object} */
+      this.__dataInstanceProps;
+      this._initializeProperties();
+    }
+
+    /**
+     * Implements native Custom Elements `attributeChangedCallback` to
+     * set an attribute value to a property via `_attributeToProperty`.
+     *
+     * @param {string} name Name of attribute that changed
+     * @param {?string} old Old attribute value
+     * @param {?string} value New attribute value
+     */
+    attributeChangedCallback(name, old, value) {
+      if (old !== value) {
+        this._attributeToProperty(name, value);
+      }
+    }
+
+    /**
+     * Initializes the local storage for property accessors.
+     *
+     * Provided as an override point for performing any setup work prior
+     * to initializing the property accessor system.
+     *
+     * @protected
+     */
+    _initializeProperties() {
+      this.__serializing = false;
+      this.__dataCounter = 0;
+      this.__dataEnabled = false;
+      this.__dataReady = false;
+      this.__dataInvalid = false;
+      this.__data = {};
+      this.__dataPending = null;
+      this.__dataOld = null;
+      if (this.__dataProto) {
+        this._initializeProtoProperties(this.__dataProto);
+        this.__dataProto = null;
+      }
+      // Capture instance properties; these will be set into accessors
+      // during first flush. Don't set them here, since we want
+      // these to overwrite defaults/constructor assignments
+      for (let p in this.__dataHasAccessor) {
+        if (this.hasOwnProperty(p)) {
+          this.__dataInstanceProps = this.__dataInstanceProps || {};
+          this.__dataInstanceProps[p] = this[p];
+          delete this[p];
+        }
+      }
+    }
+
+    /**
+     * Called at instance time with bag of properties that were overwritten
+     * by accessors on the prototype when accessors were created.
+     *
+     * The default implementation sets these properties back into the
+     * setter at instance time.  This method is provided as an override
+     * point for customizing or providing more efficient initialization.
+     *
+     * @param {Object} props Bag of property values that were overwritten
+     *   when creating property accessors.
+     * @protected
+     */
+    _initializeProtoProperties(props) {
+      for (let p in props) {
+        this._setProperty(p, props[p]);
+      }
+    }
+
+    /**
+     * Called at ready time with bag of instance properties that overwrote
+     * accessors when the element upgraded.
+     *
+     * The default implementation sets these properties back into the
+     * setter at ready time.  This method is provided as an override
+     * point for customizing or providing more efficient initialization.
+     *
+     * @param {Object} props Bag of property values that were overwritten
+     *   when creating property accessors.
+     * @protected
+     */
+    _initializeInstanceProperties(props) {
+      Object.assign(this, props);
+    }
+
+    /**
+     * Ensures the element has the given attribute. If it does not,
+     * assigns the given value to the attribute.
+     *
+     *
+     * @param {string} attribute Name of attribute to ensure is set.
+     * @param {string} value of the attribute.
+     */
+    _ensureAttribute(attribute, value) {
+      if (!this.hasAttribute(attribute)) {
+        this._valueToNodeAttribute(this, value, attribute);
+      }
+    }
+
+    /**
+     * Deserializes an attribute to its associated property.
+     *
+     * This method calls the `_deserializeValue` method to convert the string to
+     * a typed value.
+     *
+     * @param {string} attribute Name of attribute to deserialize.
+     * @param {?string} value of the attribute.
+     * @param {*=} type type to deserialize to.
+     */
+    _attributeToProperty(attribute, value, type) {
+      // Don't deserialize back to property if currently reflecting
+      if (!this.__serializing) {
+        let property = caseMap.dashToCamelCase(attribute);
+        this[property] = this._deserializeValue(value, type);
+      }
+    }
+
+    /**
+     * Serializes a property to its associated attribute.
+     *
+     * @param {string} property Property name to reflect.
+     * @param {string=} attribute Attribute name to reflect.
+     * @param {*=} value Property value to refect.
+     */
+    _propertyToAttribute(property, attribute, value) {
+      this.__serializing = true;
+      value = arguments.length < 3 ? this[property] : value;
+      this._valueToNodeAttribute(this, value, attribute || caseMap.camelToDashCase(property));
+      this.__serializing = false;
+    }
+
+    /**
+     * Sets a typed value to an HTML attribute on a node.
+     *
+     * This method calls the `_serializeValue` method to convert the typed
+     * value to a string.  If the `_serializeValue` method returns `undefined`,
+     * the attribute will be removed (this is the default for boolean
+     * type `false`).
+     *
+     * @param {Element} node Element to set attribute to.
+     * @param {*} value Value to serialize.
+     * @param {string} attribute Attribute name to serialize to.
+     */
+    _valueToNodeAttribute(node, value, attribute) {
+      let str = this._serializeValue(value);
+      if (str === undefined) {
+        node.removeAttribute(attribute);
+      } else {
+        node.setAttribute(attribute, str);
+      }
+    }
+
+    /**
+     * Converts a typed JavaScript value to a string.
+     *
+     * This method is called by Polymer when setting JS property values to
+     * HTML attributes.  Users may override this method on Polymer element
+     * prototypes to provide serialization for custom types.
+     *
+     * @param {*} value Property value to serialize.
+     * @return {string | undefined} String serialized from the provided property value.
+     */
+    _serializeValue(value) {
+      /* eslint-disable no-fallthrough */
+      switch (typeof value) {
+        case 'boolean':
+          return value ? '' : undefined;
+
+        case 'object':
+          if (value instanceof Date) {
+            return value.toString();
+          } else if (value) {
+            try {
+              return JSON.stringify(value);
+            } catch (x) {
+              return '';
+            }
+          }
+
+        default:
+          return value != null ? value.toString() : undefined;
+      }
+    }
+
+    /**
+     * Converts a string to a typed JavaScript value.
+     *
+     * This method is called by Polymer when reading HTML attribute values to
+     * JS properties.  Users may override this method on Polymer element
+     * prototypes to provide deserialization for custom `type`s.  Note,
+     * the `type` argument is the value of the `type` field provided in the
+     * `properties` configuration object for a given property, and is
+     * by convention the constructor for the type to deserialize.
+     *
+     * Note: The return value of `undefined` is used as a sentinel value to
+     * indicate the attribute should be removed.
+     *
+     * @param {?string} value Attribute value to deserialize.
+     * @param {*=} type Type to deserialize the string to.
+     * @return {*} Typed value deserialized from the provided string.
+     */
+    _deserializeValue(value, type) {
+      /**
+       * @type {*}
+       */
+      let outValue;
+      switch (type) {
+        case Number:
+          outValue = Number(value);
+          break;
+
+        case Boolean:
+          outValue = value !== null;
+          break;
+
+        case Object:
+          try {
+            outValue = JSON.parse( /** @type string */value);
+          } catch (x) {
+            // allow non-JSON literals like Strings and Numbers
+          }
+          break;
+
+        case Array:
+          try {
+            outValue = JSON.parse( /** @type string */value);
+          } catch (x) {
+            outValue = null;
+            console.warn(`Polymer::Attributes: couldn't decode Array as JSON: ${value}`);
+          }
+          break;
+
+        case Date:
+          outValue = new Date(value);
+          break;
+
+        case String:
+        default:
+          outValue = value;
+          break;
+      }
+
+      return outValue;
+    }
+    /* eslint-enable no-fallthrough */
+
+    /**
+     * Creates a setter/getter pair for the named property with its own
+     * local storage.  The getter returns the value in the local storage,
+     * and the setter calls `_setProperty`, which updates the local storage
+     * for the property and enqueues a `_propertiesChanged` callback.
+     *
+     * This method may be called on a prototype or an instance.  Calling
+     * this method may overwrite a property value that already exists on
+     * the prototype/instance by creating the accessor.  When calling on
+     * a prototype, any overwritten values are saved in `__dataProto`,
+     * and it is up to the subclasser to decide how/when to set those
+     * properties back into the accessor.  When calling on an instance,
+     * the overwritten value is set via `_setPendingProperty`, and the
+     * user should call `_invalidateProperties` or `_flushProperties`
+     * for the values to take effect.
+     *
+     * @param {string} property Name of the property
+     * @param {boolean=} readOnly When true, no setter is created; the
+     *   protected `_setProperty` function must be used to set the property
+     * @protected
+     */
+    _createPropertyAccessor(property, readOnly) {
+      if (!this.hasOwnProperty('__dataHasAccessor')) {
+        this.__dataHasAccessor = Object.assign({}, this.__dataHasAccessor);
+      }
+      if (!this.__dataHasAccessor[property]) {
+        this.__dataHasAccessor[property] = true;
+        saveAccessorValue(this, property);
+        Object.defineProperty(this, property, {
+          /* eslint-disable valid-jsdoc */
+          /** @this {PropertyAccessors} */
+          get: function () {
+            return this.__data[property];
+          },
+          /** @this {PropertyAccessors} */
+          set: readOnly ? function () {} : function (value) {
+            this._setProperty(property, value);
+          }
+          /* eslint-enable */
+        });
+      }
+    }
+
+    /**
+     * Returns true if this library created an accessor for the given property.
+     *
+     * @param {string} property Property name
+     * @return {boolean} True if an accessor was created
+     */
+    _hasAccessor(property) {
+      return this.__dataHasAccessor && this.__dataHasAccessor[property];
+    }
+
+    /**
+     * Updates the local storage for a property (via `_setPendingProperty`)
+     * and enqueues a `_proeprtiesChanged` callback.
+     *
+     * @param {string} property Name of the property
+     * @param {*} value Value to set
+     * @protected
+     */
+    _setProperty(property, value) {
+      if (this._setPendingProperty(property, value)) {
+        this._invalidateProperties();
+      }
+    }
+
+    /**
+     * Updates the local storage for a property, records the previous value,
+     * and adds it to the set of "pending changes" that will be passed to the
+     * `_propertiesChanged` callback.  This method does not enqueue the
+     * `_propertiesChanged` callback.
+     *
+     * @param {string} property Name of the property
+     * @param {*} value Value to set
+     * @return {boolean} Returns true if the property changed
+     * @protected
+     */
+    _setPendingProperty(property, value) {
+      let old = this.__data[property];
+      let changed = this._shouldPropertyChange(property, value, old);
+      if (changed) {
+        if (!this.__dataPending) {
+          this.__dataPending = {};
+          this.__dataOld = {};
+        }
+        // Ensure old is captured from the last turn
+        if (this.__dataOld && !(property in this.__dataOld)) {
+          this.__dataOld[property] = old;
+        }
+        this.__data[property] = value;
+        this.__dataPending[property] = value;
+      }
+      return changed;
+    }
+
+    /**
+     * Returns true if the specified property has a pending change.
+     *
+     * @param {string} prop Property name
+     * @return {boolean} True if property has a pending change
+     * @protected
+     */
+    _isPropertyPending(prop) {
+      return Boolean(this.__dataPending && prop in this.__dataPending);
+    }
+
+    /**
+     * Marks the properties as invalid, and enqueues an async
+     * `_propertiesChanged` callback.
+     *
+     * @protected
+     */
+    _invalidateProperties() {
+      if (!this.__dataInvalid && this.__dataReady) {
+        this.__dataInvalid = true;
+        microtask.run(() => {
+          if (this.__dataInvalid) {
+            this.__dataInvalid = false;
+            this._flushProperties();
+          }
+        });
+      }
+    }
+
+    /**
+     * Call to enable property accessor processing. Before this method is
+     * called accessor values will be set but side effects are
+     * queued. When called, any pending side effects occur immediately.
+     * For elements, generally `connectedCallback` is a normal spot to do so.
+     * It is safe to call this method multiple times as it only turns on
+     * property accessors once.
+     */
+    _enableProperties() {
+      if (!this.__dataEnabled) {
+        this.__dataEnabled = true;
+        if (this.__dataInstanceProps) {
+          this._initializeInstanceProperties(this.__dataInstanceProps);
+          this.__dataInstanceProps = null;
+        }
+        this.ready();
+      }
+    }
+
+    /**
+     * Calls the `_propertiesChanged` callback with the current set of
+     * pending changes (and old values recorded when pending changes were
+     * set), and resets the pending set of changes. Generally, this method
+     * should not be called in user code.
+     *
+     *
+     * @protected
+     */
+    _flushProperties() {
+      if (this.__dataPending && this.__dataOld) {
+        let changedProps = this.__dataPending;
+        this.__dataPending = null;
+        this.__dataCounter++;
+        this._propertiesChanged(this.__data, changedProps, this.__dataOld);
+        this.__dataCounter--;
+      }
+    }
+
+    /**
+     * Lifecycle callback called the first time properties are being flushed.
+     * Prior to `ready`, all property sets through accessors are queued and
+     * their effects are flushed after this method returns.
+     *
+     * Users may override this function to implement behavior that is
+     * dependent on the element having its properties initialized, e.g.
+     * from defaults (initialized from `constructor`, `_initializeProperties`),
+     * `attributeChangedCallback`, or values propagated from host e.g. via
+     * bindings.  `super.ready()` must be called to ensure the data system
+     * becomes enabled.
+     *
+     * @public
+     */
+    ready() {
+      this.__dataReady = true;
+      // Run normal flush
+      this._flushProperties();
+    }
+
+    /**
+     * Callback called when any properties with accessors created via
+     * `_createPropertyAccessor` have been set.
+     *
+     * @param {!Object} currentProps Bag of all current accessor values
+     * @param {!Object} changedProps Bag of properties changed since the last
+     *   call to `_propertiesChanged`
+     * @param {!Object} oldProps Bag of previous values for each property
+     *   in `changedProps`
+     * @protected
+     */
+    _propertiesChanged(currentProps, changedProps, oldProps) {} // eslint-disable-line no-unused-vars
+
+
+    /**
+     * Method called to determine whether a property value should be
+     * considered as a change and cause the `_propertiesChanged` callback
+     * to be enqueued.
+     *
+     * The default implementation returns `true` for primitive types if a
+     * strict equality check fails, and returns `true` for all Object/Arrays.
+     * The method always returns false for `NaN`.
+     *
+     * Override this method to e.g. provide stricter checking for
+     * Objects/Arrays when using immutable patterns.
+     *
+     * @param {string} property Property name
+     * @param {*} value New property value
+     * @param {*} old Previous property value
+     * @return {boolean} Whether the property should be considered a change
+     *   and enqueue a `_proeprtiesChanged` callback
+     * @protected
+     */
+    _shouldPropertyChange(property, value, old) {
+      return (
+        // Strict equality check
+        old !== value && (
+        // This ensures (old==NaN, value==NaN) always returns false
+        old === old || value === value)
+      );
+    }
+
+  }
+
+  return PropertyAccessors;
+});
+
+/***/ }),
+/* 46 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.TemplateStamp = undefined;
+
+__webpack_require__(1);
+
+var _mixin = __webpack_require__(4);
+
+// 1.x backwards-compatible auto-wrapper for template type extensions
+// This is a clear layering violation and gives favored-nation status to
+// dom-if and dom-repeat templates.  This is a conceit we're choosing to keep
+// a.) to ease 1.x backwards-compatibility due to loss of `is`, and
+// b.) to maintain if/repeat capability in parser-constrained elements
+//     (e.g. table, select) in lieu of native CE type extensions without
+//     massive new invention in this space (e.g. directive system)
+const templateExtensions = {
+  'dom-if': true,
+  'dom-repeat': true
+};
+function wrapTemplateExtension(node) {
+  let is = node.getAttribute('is');
+  if (is && templateExtensions[is]) {
+    let t = node;
+    t.removeAttribute('is');
+    node = t.ownerDocument.createElement(is);
+    t.parentNode.replaceChild(node, t);
+    node.appendChild(t);
+    while (t.attributes.length) {
+      node.setAttribute(t.attributes[0].name, t.attributes[0].value);
+      t.removeAttribute(t.attributes[0].name);
+    }
+  }
+  return node;
+}
+
+function findTemplateNode(root, nodeInfo) {
+  // recursively ascend tree until we hit root
+  let parent = nodeInfo.parentInfo && findTemplateNode(root, nodeInfo.parentInfo);
+  // unwind the stack, returning the indexed node at each level
+  if (parent) {
+    // note: marginally faster than indexing via childNodes
+    // (http://jsperf.com/childnodes-lookup)
+    for (let n = parent.firstChild, i = 0; n; n = n.nextSibling) {
+      if (nodeInfo.parentIndex === i++) {
+        return n;
+      }
+    }
+  } else {
+    return root;
+  }
+}
+
+// construct `$` map (from id annotations)
+function applyIdToMap(inst, map, node, nodeInfo) {
+  if (nodeInfo.id) {
+    map[nodeInfo.id] = node;
+  }
+}
+
+// install event listeners (from event annotations)
+function applyEventListener(inst, node, nodeInfo) {
+  if (nodeInfo.events && nodeInfo.events.length) {
+    for (let j = 0, e$ = nodeInfo.events, e; j < e$.length && (e = e$[j]); j++) {
+      inst._addMethodEventListenerToNode(node, e.name, e.value, inst);
+    }
+  }
+}
+
+// push configuration references at configure time
+function applyTemplateContent(inst, node, nodeInfo) {
+  if (nodeInfo.templateInfo) {
+    node._templateInfo = nodeInfo.templateInfo;
+  }
+}
+
+function createNodeEventHandler(context, eventName, methodName) {
+  // Instances can optionally have a _methodHost which allows redirecting where
+  // to find methods. Currently used by `templatize`.
+  context = context._methodHost || context;
+  let handler = function (e) {
+    if (context[methodName]) {
+      context[methodName](e, e.detail);
+    } else {
+      console.warn('listener method `' + methodName + '` not defined');
+    }
+  };
+  return handler;
+}
+
+const TemplateStamp = exports.TemplateStamp = (0, _mixin.dedupingMixin)(superClass => {
+
+  /**
+   * @polymer
+   * @mixinClass
+   * @implements {Polymer_TemplateStamp}
+   */
+  class TemplateStamp extends superClass {
+
+    /**
+     * Scans a template to produce template metadata.
+     *
+     * Template-specific metadata are stored in the object returned, and node-
+     * specific metadata are stored in objects in its flattened `nodeInfoList`
+     * array.  Only nodes in the template that were parsed as nodes of
+     * interest contain an object in `nodeInfoList`.  Each `nodeInfo` object
+     * contains an `index` (`childNodes` index in parent) and optionally
+     * `parent`, which points to node info of its parent (including its index).
+     *
+     * The template metadata object returned from this method has the following
+     * structure (many fields optional):
+     *
+     * ```js
+     *   {
+     *     // Flattened list of node metadata (for nodes that generated metadata)
+     *     nodeInfoList: [
+     *       {
+     *         // `id` attribute for any nodes with id's for generating `$` map
+     *         id: {string},
+     *         // `on-event="handler"` metadata
+     *         events: [
+     *           {
+     *             name: {string},   // event name
+     *             value: {string},  // handler method name
+     *           }, ...
+     *         ],
+     *         // Notes when the template contained a `<slot>` for shady DOM
+     *         // optimization purposes
+     *         hasInsertionPoint: {boolean},
+     *         // For nested `<template>`` nodes, nested template metadata
+     *         templateInfo: {object}, // nested template metadata
+     *         // Metadata to allow efficient retrieval of instanced node
+     *         // corresponding to this metadata
+     *         parentInfo: {number},   // reference to parent nodeInfo>
+     *         parentIndex: {number},  // index in parent's `childNodes` collection
+     *         infoIndex: {number},    // index of this `nodeInfo` in `templateInfo.nodeInfoList`
+     *       },
+     *       ...
+     *     ],
+     *     // When true, the template had the `strip-whitespace` attribute
+     *     // or was nested in a template with that setting
+     *     stripWhitespace: {boolean},
+     *     // For nested templates, nested template content is moved into
+     *     // a document fragment stored here; this is an optimization to
+     *     // avoid the cost of nested template cloning
+     *     content: {DocumentFragment}
+     *   }
+     * ```
+     *
+     * This method kicks off a recursive treewalk as follows:
+     *
+     * ```
+     *    _parseTemplate <---------------------+
+     *      _parseTemplateContent              |
+     *        _parseTemplateNode  <------------|--+
+     *          _parseTemplateNestedTemplate --+  |
+     *          _parseTemplateChildNodes ---------+
+     *          _parseTemplateNodeAttributes
+     *            _parseTemplateNodeAttribute
+     *
+     * ```
+     *
+     * These methods may be overridden to add custom metadata about templates
+     * to either `templateInfo` or `nodeInfo`.
+     *
+     * Note that this method may be destructive to the template, in that
+     * e.g. event annotations may be removed after being noted in the
+     * template metadata.
+     *
+     * @param {!HTMLTemplateElement} template Template to parse
+     * @param {TemplateInfo=} outerTemplateInfo Template metadata from the outer
+     *   template, for parsing nested templates
+     * @return {!TemplateInfo} Parsed template metadata
+     */
+    static _parseTemplate(template, outerTemplateInfo) {
+      // since a template may be re-used, memo-ize metadata
+      if (!template._templateInfo) {
+        let templateInfo = template._templateInfo = {};
+        templateInfo.nodeInfoList = [];
+        templateInfo.stripWhiteSpace = outerTemplateInfo && outerTemplateInfo.stripWhiteSpace || template.hasAttribute('strip-whitespace');
+        this._parseTemplateContent(template, templateInfo, { parent: null });
+      }
+      return template._templateInfo;
+    }
+
+    static _parseTemplateContent(template, templateInfo, nodeInfo) {
+      return this._parseTemplateNode(template.content, templateInfo, nodeInfo);
+    }
+
+    /**
+     * Parses template node and adds template and node metadata based on
+     * the current node, and its `childNodes` and `attributes`.
+     *
+     * This method may be overridden to add custom node or template specific
+     * metadata based on this node.
+     *
+     * @param {Node} node Node to parse
+     * @param {!TemplateInfo} templateInfo Template metadata for current template
+     * @param {!NodeInfo} nodeInfo Node metadata for current template.
+     * @return {boolean} `true` if the visited node added node-specific
+     *   metadata to `nodeInfo`
+     */
+    static _parseTemplateNode(node, templateInfo, nodeInfo) {
+      let noted;
+      let element = /** @type Element */node;
+      if (element.localName == 'template' && !element.hasAttribute('preserve-content')) {
+        noted = this._parseTemplateNestedTemplate(element, templateInfo, nodeInfo) || noted;
+      } else if (element.localName === 'slot') {
+        // For ShadyDom optimization, indicating there is an insertion point
+        templateInfo.hasInsertionPoint = true;
+      }
+      if (element.firstChild) {
+        noted = this._parseTemplateChildNodes(element, templateInfo, nodeInfo) || noted;
+      }
+      if (element.hasAttributes && element.hasAttributes()) {
+        noted = this._parseTemplateNodeAttributes(element, templateInfo, nodeInfo) || noted;
+      }
+      return noted;
+    }
+
+    /**
+     * Parses template child nodes for the given root node.
+     *
+     * This method also wraps whitelisted legacy template extensions
+     * (`is="dom-if"` and `is="dom-repeat"`) with their equivalent element
+     * wrappers, collapses text nodes, and strips whitespace from the template
+     * if the `templateInfo.stripWhitespace` setting was provided.
+     *
+     * @param {Node} root Root node whose `childNodes` will be parsed
+     * @param {!TemplateInfo} templateInfo Template metadata for current template
+     * @param {!NodeInfo} nodeInfo Node metadata for current template.
+     */
+    static _parseTemplateChildNodes(root, templateInfo, nodeInfo) {
+      for (let node = root.firstChild, parentIndex = 0, next; node; node = next) {
+        // Wrap templates
+        if (node.localName == 'template') {
+          node = wrapTemplateExtension(node);
+        }
+        // collapse adjacent textNodes: fixes an IE issue that can cause
+        // text nodes to be inexplicably split =(
+        // note that root.normalize() should work but does not so we do this
+        // manually.
+        next = node.nextSibling;
+        if (node.nodeType === Node.TEXT_NODE) {
+          let /** Node */n = next;
+          while (n && n.nodeType === Node.TEXT_NODE) {
+            node.textContent += n.textContent;
+            next = n.nextSibling;
+            root.removeChild(n);
+            n = next;
+          }
+          // optionally strip whitespace
+          if (templateInfo.stripWhiteSpace && !node.textContent.trim()) {
+            root.removeChild(node);
+            continue;
+          }
+        }
+        let childInfo = { parentIndex, parentInfo: nodeInfo };
+        if (this._parseTemplateNode(node, templateInfo, childInfo)) {
+          childInfo.infoIndex = templateInfo.nodeInfoList.push( /** @type {!NodeInfo} */childInfo) - 1;
+        }
+        // Increment if not removed
+        if (node.parentNode) {
+          parentIndex++;
+        }
+      }
+    }
+
+    /**
+     * Parses template content for the given nested `<template>`.
+     *
+     * Nested template info is stored as `templateInfo` in the current node's
+     * `nodeInfo`. `template.content` is removed and stored in `templateInfo`.
+     * It will then be the responsibility of the host to set it back to the
+     * template and for users stamping nested templates to use the
+     * `_contentForTemplate` method to retrieve the content for this template
+     * (an optimization to avoid the cost of cloning nested template content).
+     *
+     * @param {HTMLTemplateElement} node Node to parse (a <template>)
+     * @param {TemplateInfo} outerTemplateInfo Template metadata for current template
+     *   that includes the template `node`
+     * @param {!NodeInfo} nodeInfo Node metadata for current template.
+     * @return {boolean} `true` if the visited node added node-specific
+     *   metadata to `nodeInfo`
+     */
+    static _parseTemplateNestedTemplate(node, outerTemplateInfo, nodeInfo) {
+      let templateInfo = this._parseTemplate(node, outerTemplateInfo);
+      let content = templateInfo.content = node.content.ownerDocument.createDocumentFragment();
+      content.appendChild(node.content);
+      nodeInfo.templateInfo = templateInfo;
+      return true;
+    }
+
+    /**
+     * Parses template node attributes and adds node metadata to `nodeInfo`
+     * for nodes of interest.
+     *
+     * @param {Element} node Node to parse
+     * @param {TemplateInfo} templateInfo Template metadata for current template
+     * @param {NodeInfo} nodeInfo Node metadata for current template.
+     * @return {boolean} `true` if the visited node added node-specific
+     *   metadata to `nodeInfo`
+     */
+    static _parseTemplateNodeAttributes(node, templateInfo, nodeInfo) {
+      // Make copy of original attribute list, since the order may change
+      // as attributes are added and removed
+      let noted = false;
+      let attrs = Array.from(node.attributes);
+      for (let i = attrs.length - 1, a; a = attrs[i]; i--) {
+        noted = this._parseTemplateNodeAttribute(node, templateInfo, nodeInfo, a.name, a.value) || noted;
+      }
+      return noted;
+    }
+
+    /**
+     * Parses a single template node attribute and adds node metadata to
+     * `nodeInfo` for attributes of interest.
+     *
+     * This implementation adds metadata for `on-event="handler"` attributes
+     * and `id` attributes.
+     *
+     * @param {Element} node Node to parse
+     * @param {!TemplateInfo} templateInfo Template metadata for current template
+     * @param {!NodeInfo} nodeInfo Node metadata for current template.
+     * @param {string} name Attribute name
+     * @param {string} value Attribute value
+     * @return {boolean} `true` if the visited node added node-specific
+     *   metadata to `nodeInfo`
+     */
+    static _parseTemplateNodeAttribute(node, templateInfo, nodeInfo, name, value) {
+      // events (on-*)
+      if (name.slice(0, 3) === 'on-') {
+        node.removeAttribute(name);
+        nodeInfo.events = nodeInfo.events || [];
+        nodeInfo.events.push({
+          name: name.slice(3),
+          value
+        });
+        return true;
+      }
+      // static id
+      else if (name === 'id') {
+          nodeInfo.id = value;
+          return true;
+        }
+      return false;
+    }
+
+    /**
+     * Returns the `content` document fragment for a given template.
+     *
+     * For nested templates, Polymer performs an optimization to cache nested
+     * template content to avoid the cost of cloning deeply nested templates.
+     * This method retrieves the cached content for a given template.
+     *
+     * @param {HTMLTemplateElement} template Template to retrieve `content` for
+     * @return {DocumentFragment} Content fragment
+     */
+    static _contentForTemplate(template) {
+      let templateInfo = /** @type {HTMLTemplateElementWithInfo} */template._templateInfo;
+      return templateInfo && templateInfo.content || template.content;
+    }
+
+    /**
+     * Clones the provided template content and returns a document fragment
+     * containing the cloned dom.
+     *
+     * The template is parsed (once and memoized) using this library's
+     * template parsing features, and provides the following value-added
+     * features:
+     * * Adds declarative event listeners for `on-event="handler"` attributes
+     * * Generates an "id map" for all nodes with id's under `$` on returned
+     *   document fragment
+     * * Passes template info including `content` back to templates as
+     *   `_templateInfo` (a performance optimization to avoid deep template
+     *   cloning)
+     *
+     * Note that the memoized template parsing process is destructive to the
+     * template: attributes for bindings and declarative event listeners are
+     * removed after being noted in notes, and any nested `<template>.content`
+     * is removed and stored in notes as well.
+     *
+     * @param {!HTMLTemplateElement} template Template to stamp
+     * @return {!StampedTemplate} Cloned template content
+     */
+    _stampTemplate(template) {
+      // Polyfill support: bootstrap the template if it has not already been
+      if (template && !template.content && window.HTMLTemplateElement && HTMLTemplateElement.decorate) {
+        HTMLTemplateElement.decorate(template);
+      }
+      let templateInfo = this.constructor._parseTemplate(template);
+      let nodeInfo = templateInfo.nodeInfoList;
+      let content = templateInfo.content || template.content;
+      let dom = /** @type DocumentFragment */document.importNode(content, true);
+      // NOTE: ShadyDom optimization indicating there is an insertion point
+      dom.__noInsertionPoint = !templateInfo.hasInsertionPoint;
+      let nodes = dom.nodeList = new Array(nodeInfo.length);
+      dom.$ = {};
+      for (let i = 0, l = nodeInfo.length, info; i < l && (info = nodeInfo[i]); i++) {
+        let node = nodes[i] = findTemplateNode(dom, info);
+        applyIdToMap(this, dom.$, node, info);
+        applyTemplateContent(this, node, info);
+        applyEventListener(this, node, info);
+      }
+      return (/** @type {!StampedTemplate} */dom
+      );
+    }
+
+    /**
+     * Adds an event listener by method name for the event provided.
+     *
+     * This method generates a handler function that looks up the method
+     * name at handling time.
+     *
+     * @param {Node} node Node to add listener on
+     * @param {string} eventName Name of event
+     * @param {string} methodName Name of method
+     * @param {*=} context Context the method will be called on (defaults
+     *   to `node`)
+     * @return {Function} Generated handler function
+     */
+    _addMethodEventListenerToNode(node, eventName, methodName, context) {
+      context = context || node;
+      let handler = createNodeEventHandler(context, eventName, methodName);
+      this._addEventListenerToNode(node, eventName, handler);
+      return handler;
+    }
+
+    /**
+     * Override point for adding custom or simulated event handling.
+     *
+     * @param {Node} node Node to add event listener to
+     * @param {string} eventName Name of event
+     * @param {Function} handler Listener function to add
+     */
+    _addEventListenerToNode(node, eventName, handler) {
+      node.addEventListener(eventName, handler);
+    }
+
+    /**
+     * Override point for adding custom or simulated event handling.
+     *
+     * @param {Node} node Node to remove event listener from
+     * @param {string} eventName Name of event
+     * @param {Function} handler Listener function to remove
+     */
+    _removeEventListenerFromNode(node, eventName, handler) {
+      node.removeEventListener(eventName, handler);
+    }
+
+  }
+
+  return TemplateStamp;
+});
+
+/***/ }),
+/* 47 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+__webpack_require__(0);
+
+__webpack_require__(7);
+
+var _appScrollEffectsBehavior = __webpack_require__(64);
+
+var _appLayoutBehavior = __webpack_require__(39);
+
+var _polymerFn = __webpack_require__(3);
+
+var _polymerDom = __webpack_require__(2);
+
+(0, _polymerFn.Polymer)({
+  _template: `
     <style>
       :host {
         position: relative;
@@ -1067,7 +12929,365 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     <div id="contentContainer">
       <slot id="slot"></slot>
     </div>
-`,is:'app-header',behaviors:[s.AppScrollEffectsBehavior,d.AppLayoutBehavior],properties:{condenses:{type:Boolean,value:!1},fixed:{type:Boolean,value:!1},reveals:{type:Boolean,value:!1},shadow:{type:Boolean,reflectToAttribute:!0,value:!1}},observers:['_configChanged(isAttached, condenses, fixed)'],_height:0,_dHeight:0,_stickyElTop:0,_stickyElRef:null,_top:0,_progress:0,_wasScrollingDown:!1,_initScrollTop:0,_initTimestamp:0,_lastTimestamp:0,_lastScrollTop:0,get _maxHeaderTop(){return this.fixed?this._dHeight:this._height+5},get _stickyEl(){if(this._stickyElRef)return this._stickyElRef;for(var e=(0,p.dom)(this.$.slot).getDistributedNodes(),t=0,n;n=e[t];t++)if(n.nodeType===Node.ELEMENT_NODE)if(n.hasAttribute('sticky')){this._stickyElRef=n;break}else this._stickyElRef||(this._stickyElRef=n);return this._stickyElRef},_configChanged:function(){this.resetLayout(),this._notifyLayoutChanged()},_updateLayoutStates:function(){if(0!==this.offsetWidth||0!==this.offsetHeight){var e=this._clampedScrollTop,t=0===this._height||0===e,n=this.disabled;this._height=this.offsetHeight,this._stickyElRef=null,this.disabled=!0,t||this._updateScrollState(0,!0),this._dHeight=this._mayMove()?this._stickyEl?this._height-this._stickyEl.offsetHeight:0:0,this._stickyElTop=this._stickyEl?this._stickyEl.offsetTop:0,this._setUpEffect(),t?this._updateScrollState(e,!0):(this._updateScrollState(this._lastScrollTop,!0),this._layoutIfDirty()),this.disabled=n}},_updateScrollState:function(e,t){if(0!==this._height){var n=0,o=0,s=this._top,d=this._lastScrollTop,l=this._maxHeaderTop,p=e-this._lastScrollTop,_=r(p),c=e>this._lastScrollTop,u=performance.now();if(this._mayMove()&&(o=this._clamp(this.reveals?s+p:e,0,l)),e>=this._dHeight&&(o=this.condenses&&!this.fixed?a(this._dHeight,o):o,this.style.transitionDuration='0ms'),this.reveals&&!this.disabled&&100>_&&((300<u-this._initTimestamp||this._wasScrollingDown!==c)&&(this._initScrollTop=e,this._initTimestamp=u),e>=l))if(30<r(this._initScrollTop-e)||10<_){c&&e>=l?o=l:!c&&e>=this._dHeight&&(o=this.condenses&&!this.fixed?this._dHeight:0);var m=p/(u-this._lastTimestamp);this.style.transitionDuration=this._clamp((o-s)/m,0,300)+'ms'}else o=this._top;n=0===this._dHeight?0<e?1:0:o/this._dHeight,t||(this._lastScrollTop=e,this._top=o,this._wasScrollingDown=c,this._lastTimestamp=u),(t||n!==this._progress||s!==o||0===e)&&(this._progress=n,this._runEffects(n,o),this._transformHeader(o))}},_mayMove:function(){return this.condenses||!this.fixed},willCondense:function(){return 0<this._dHeight&&this.condenses},isOnScreen:function(){return 0!==this._height&&this._top<this._height},isContentBelow:function(){return 0===this._top?0<this._clampedScrollTop:0<=this._clampedScrollTop-this._maxHeaderTop},_transformHeader:function(e){this.translate3d(0,-e+'px',0),this._stickyEl&&this.translate3d(0,this.condenses&&e>=this._stickyElTop?o(e,this._dHeight)-this._stickyElTop+'px':0,0,this._stickyEl)},_clamp:function(e,t,n){return o(n,a(t,e))},_ensureBgContainers:function(){this._bgContainer||(this._bgContainer=document.createElement('div'),this._bgContainer.id='background',this._bgRear=document.createElement('div'),this._bgRear.id='backgroundRearLayer',this._bgContainer.appendChild(this._bgRear),this._bgFront=document.createElement('div'),this._bgFront.id='backgroundFrontLayer',this._bgContainer.appendChild(this._bgFront),(0,p.dom)(this.root).insertBefore(this._bgContainer,this.$.contentContainer))},_getDOMRef:function(e){return'backgroundFrontLayer'===e?(this._ensureBgContainers(),this._bgFront):'backgroundRearLayer'===e?(this._ensureBgContainers(),this._bgRear):'background'===e?(this._ensureBgContainers(),this._bgContainer):'mainTitle'===e?(0,p.dom)(this).querySelector('[main-title]'):'condensedTitle'===e?(0,p.dom)(this).querySelector('[condensed-title]'):null},getScrollState:function(){return{progress:this._progress,top:this._top}}})},function(e,t,n){'use strict';/**
+`,
+
+  is: 'app-header',
+
+  behaviors: [_appScrollEffectsBehavior.AppScrollEffectsBehavior, _appLayoutBehavior.AppLayoutBehavior],
+
+  properties: {
+    /**
+     * If true, the header will automatically collapse when scrolling down.
+     * That is, the `sticky` element remains visible when the header is fully condensed
+     * whereas the rest of the elements will collapse below `sticky` element.
+     *
+     * By default, the `sticky` element is the first toolbar in the light DOM:
+     *
+     *```html
+     * <app-header condenses>
+     *   <app-toolbar>This toolbar remains on top</app-toolbar>
+     *   <app-toolbar></app-toolbar>
+     *   <app-toolbar></app-toolbar>
+     * </app-header>
+     * ```
+     *
+     * Additionally, you can specify which toolbar or element remains visible in condensed mode
+     * by adding the `sticky` attribute to that element. For example: if we want the last
+     * toolbar to remain visible, we can add the `sticky` attribute to it.
+     *
+     *```html
+     * <app-header condenses>
+     *   <app-toolbar></app-toolbar>
+     *   <app-toolbar></app-toolbar>
+     *   <app-toolbar sticky>This toolbar remains on top</app-toolbar>
+     * </app-header>
+     * ```
+     *
+     * Note the `sticky` element must be a direct child of `app-header`.
+     */
+    condenses: {
+      type: Boolean,
+      value: false
+    },
+
+    /**
+     * Mantains the header fixed at the top so it never moves away.
+     */
+    fixed: {
+      type: Boolean,
+      value: false
+    },
+
+    /**
+     * Slides back the header when scrolling back up.
+     */
+    reveals: {
+      type: Boolean,
+      value: false
+    },
+
+    /**
+     * Displays a shadow below the header.
+     */
+    shadow: {
+      type: Boolean,
+      reflectToAttribute: true,
+      value: false
+    }
+  },
+
+  observers: ['_configChanged(isAttached, condenses, fixed)'],
+
+  /**
+   * A cached offsetHeight of the current element.
+   *
+   * @type {number}
+   */
+  _height: 0,
+
+  /**
+   * The distance in pixels the header will be translated to when scrolling.
+   *
+   * @type {number}
+   */
+  _dHeight: 0,
+
+  /**
+   * The offsetTop of `_stickyEl`
+   *
+   * @type {number}
+   */
+  _stickyElTop: 0,
+
+  /**
+   * A reference to the element that remains visible when the header condenses.
+   *
+   * @type {HTMLElement}
+   */
+  _stickyElRef: null,
+
+  /**
+   * The header's top value used for the `transformY`
+   *
+   * @type {number}
+   */
+  _top: 0,
+
+  /**
+   * The current scroll progress.
+   *
+   * @type {number}
+   */
+  _progress: 0,
+
+  _wasScrollingDown: false,
+  _initScrollTop: 0,
+  _initTimestamp: 0,
+  _lastTimestamp: 0,
+  _lastScrollTop: 0,
+
+  /**
+   * The distance the header is allowed to move away.
+   *
+   * @type {number}
+   */
+  get _maxHeaderTop() {
+    return this.fixed ? this._dHeight : this._height + 5;
+  },
+
+  /**
+   * Returns a reference to the sticky element.
+   *
+   * @return {HTMLElement}?
+   */
+  get _stickyEl() {
+    if (this._stickyElRef) {
+      return this._stickyElRef;
+    }
+    var nodes = (0, _polymerDom.dom)(this.$.slot).getDistributedNodes();
+    // Get the element with the sticky attribute on it or the first element in the light DOM.
+    for (var i = 0, node; node = nodes[i]; i++) {
+      if (node.nodeType === Node.ELEMENT_NODE) {
+        if (node.hasAttribute('sticky')) {
+          this._stickyElRef = node;
+          break;
+        } else if (!this._stickyElRef) {
+          this._stickyElRef = node;
+        }
+      }
+    }
+    return this._stickyElRef;
+  },
+
+  _configChanged: function () {
+    this.resetLayout();
+    this._notifyLayoutChanged();
+  },
+
+  _updateLayoutStates: function () {
+    if (this.offsetWidth === 0 && this.offsetHeight === 0) {
+      return;
+    }
+    var scrollTop = this._clampedScrollTop;
+    var firstSetup = this._height === 0 || scrollTop === 0;
+    var currentDisabled = this.disabled;
+    this._height = this.offsetHeight;
+    this._stickyElRef = null;
+    this.disabled = true;
+    // prepare for measurement
+    if (!firstSetup) {
+      this._updateScrollState(0, true);
+    }
+    if (this._mayMove()) {
+      this._dHeight = this._stickyEl ? this._height - this._stickyEl.offsetHeight : 0;
+    } else {
+      this._dHeight = 0;
+    }
+    this._stickyElTop = this._stickyEl ? this._stickyEl.offsetTop : 0;
+    this._setUpEffect();
+    if (firstSetup) {
+      this._updateScrollState(scrollTop, true);
+    } else {
+      this._updateScrollState(this._lastScrollTop, true);
+      this._layoutIfDirty();
+    }
+    // restore no transition
+    this.disabled = currentDisabled;
+  },
+
+  /**
+   * Updates the scroll state.
+   *
+   * @param {number} scrollTop
+   * @param {boolean=} forceUpdate (default: false)
+   */
+  _updateScrollState: function (scrollTop, forceUpdate) {
+    if (this._height === 0) {
+      return;
+    }
+    var progress = 0;
+    var top = 0;
+    var lastTop = this._top;
+    var lastScrollTop = this._lastScrollTop;
+    var maxHeaderTop = this._maxHeaderTop;
+    var dScrollTop = scrollTop - this._lastScrollTop;
+    var absDScrollTop = Math.abs(dScrollTop);
+    var isScrollingDown = scrollTop > this._lastScrollTop;
+    var now = performance.now();
+
+    if (this._mayMove()) {
+      top = this._clamp(this.reveals ? lastTop + dScrollTop : scrollTop, 0, maxHeaderTop);
+    }
+    if (scrollTop >= this._dHeight) {
+      top = this.condenses && !this.fixed ? Math.max(this._dHeight, top) : top;
+      this.style.transitionDuration = '0ms';
+    }
+    if (this.reveals && !this.disabled && absDScrollTop < 100) {
+      // set the initial scroll position
+      if (now - this._initTimestamp > 300 || this._wasScrollingDown !== isScrollingDown) {
+        this._initScrollTop = scrollTop;
+        this._initTimestamp = now;
+      }
+      if (scrollTop >= maxHeaderTop) {
+        // check if the header is allowed to snap
+        if (Math.abs(this._initScrollTop - scrollTop) > 30 || absDScrollTop > 10) {
+          if (isScrollingDown && scrollTop >= maxHeaderTop) {
+            top = maxHeaderTop;
+          } else if (!isScrollingDown && scrollTop >= this._dHeight) {
+            top = this.condenses && !this.fixed ? this._dHeight : 0;
+          }
+          var scrollVelocity = dScrollTop / (now - this._lastTimestamp);
+          this.style.transitionDuration = this._clamp((top - lastTop) / scrollVelocity, 0, 300) + 'ms';
+        } else {
+          top = this._top;
+        }
+      }
+    }
+    if (this._dHeight === 0) {
+      progress = scrollTop > 0 ? 1 : 0;
+    } else {
+      progress = top / this._dHeight;
+    }
+    if (!forceUpdate) {
+      this._lastScrollTop = scrollTop;
+      this._top = top;
+      this._wasScrollingDown = isScrollingDown;
+      this._lastTimestamp = now;
+    }
+    if (forceUpdate || progress !== this._progress || lastTop !== top || scrollTop === 0) {
+      this._progress = progress;
+      this._runEffects(progress, top);
+      this._transformHeader(top);
+    }
+  },
+
+  /**
+   * Returns true if the current header is allowed to move as the user scrolls.
+   *
+   * @return {boolean}
+   */
+  _mayMove: function () {
+    return this.condenses || !this.fixed;
+  },
+
+  /**
+   * Returns true if the current header will condense based on the size of the header
+   * and the `consenses` property.
+   *
+   * @return {boolean}
+   */
+  willCondense: function () {
+    return this._dHeight > 0 && this.condenses;
+  },
+
+  /**
+   * Returns true if the current element is on the screen.
+   * That is, visible in the current viewport.
+   *
+   * @method isOnScreen
+   * @return {boolean}
+   */
+  isOnScreen: function () {
+    return this._height !== 0 && this._top < this._height;
+  },
+
+  /**
+   * Returns true if there's content below the current element.
+   *
+   * @method isContentBelow
+   * @return {boolean}
+   */
+  isContentBelow: function () {
+    return this._top === 0 ? this._clampedScrollTop > 0 : this._clampedScrollTop - this._maxHeaderTop >= 0;
+  },
+
+  /**
+   * Transforms the header.
+   *
+   * @param {number} y
+   */
+  _transformHeader: function (y) {
+    this.translate3d(0, -y + 'px', 0);
+    if (this._stickyEl) {
+      this.translate3d(0, this.condenses && y >= this._stickyElTop ? Math.min(y, this._dHeight) - this._stickyElTop + 'px' : 0, 0, this._stickyEl);
+    }
+  },
+
+  _clamp: function (v, min, max) {
+    return Math.min(max, Math.max(min, v));
+  },
+
+  _ensureBgContainers: function () {
+    if (!this._bgContainer) {
+      this._bgContainer = document.createElement('div');
+      this._bgContainer.id = 'background';
+      this._bgRear = document.createElement('div');
+      this._bgRear.id = 'backgroundRearLayer';
+      this._bgContainer.appendChild(this._bgRear);
+      this._bgFront = document.createElement('div');
+      this._bgFront.id = 'backgroundFrontLayer';
+      this._bgContainer.appendChild(this._bgFront);
+      (0, _polymerDom.dom)(this.root).insertBefore(this._bgContainer, this.$.contentContainer);
+    }
+  },
+
+  _getDOMRef: function (id) {
+    switch (id) {
+      case 'backgroundFrontLayer':
+        this._ensureBgContainers();
+        return this._bgFront;
+      case 'backgroundRearLayer':
+        this._ensureBgContainers();
+        return this._bgRear;
+      case 'background':
+        this._ensureBgContainers();
+        return this._bgContainer;
+      case 'mainTitle':
+        return (0, _polymerDom.dom)(this).querySelector('[main-title]');
+      case 'condensedTitle':
+        return (0, _polymerDom.dom)(this).querySelector('[condensed-title]');
+    }
+    return null;
+  },
+
+  /**
+   * Returns an object containing the progress value of the scroll effects
+   * and the top position of the header.
+   *
+   * @method getScrollState
+   * @return {Object}
+   */
+  getScrollState: function () {
+    return { progress: this._progress, top: this._top };
+  }
+});
+
+/***/ }),
+/* 48 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+/**
 @license
 Copyright (c) 2017 The Polymer Project Authors. All rights reserved.
 This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
@@ -1075,7 +13295,220 @@ The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
 The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
 Code distributed by Google as part of the polymer project is also
 subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
-*/function a(e){return e&&e.__esModule?e:{default:e}}var o=n(49),r=a(o),s=n(32),d=a(s),l=n(31),p=n(51),_=function(e){if(e&&e.__esModule)return e;var t={};if(null!=e)for(var n in e)Object.prototype.hasOwnProperty.call(e,n)&&(t[n]=e[n]);return t.default=e,t}(p),c=n(33),u=a(c),m=n(21),h=n(34),y=n(18);const f=new r.default;class g{constructor(){this.customStyleInterface=null,(0,u.default)(()=>{this.ensure()}),f.invalidCallback=_.invalidate}ensure(){this.customStyleInterface||(this.customStyleInterface=window.ShadyCSS.CustomStyleInterface,this.customStyleInterface&&(this.customStyleInterface.transformCallback=(e)=>{f.transformCustomStyle(e)},this.customStyleInterface.validateCallback=()=>{requestAnimationFrame(()=>{this.customStyleInterface.enqueued&&this.flushCustomStyles()})}))}prepareTemplate(e,t){this.ensure(),d.default[t]=e;let n=f.transformTemplate(e,t);e._styleAst=n}flushCustomStyles(){if(this.ensure(),!!this.customStyleInterface){let e=this.customStyleInterface.processStyles();if(this.customStyleInterface.enqueued){for(let t=0;t<e.length;t++){let n=e[t],a=this.customStyleInterface.getStyleForCustomStyle(n);a&&f.transformCustomStyle(a)}this.customStyleInterface.enqueued=!1}}}styleSubtree(e,t){if(this.ensure(),t&&(0,m.updateNativeProperties)(e,t),e.shadowRoot){this.styleElement(e);let t=e.shadowRoot.children||e.shadowRoot.childNodes;for(let e=0;e<t.length;e++)this.styleSubtree(t[e])}else{let t=e.children||e.childNodes;for(let e=0;e<t.length;e++)this.styleSubtree(t[e])}}styleElement(e){this.ensure();let{is:t}=(0,l.getIsExtends)(e),n=d.default[t];if(n&&!_.templateIsValid(n)){_.templateIsValidating(n)||(this.prepareTemplate(n,t),_.startValidatingTemplate(n));let a=e.shadowRoot;if(a){let e=a.querySelector('style');e&&(e.__cssRules=n._styleAst,e.textContent=(0,l.toCssText)(n._styleAst))}}}styleDocument(e){this.ensure(),this.styleSubtree(document.body,e)}}if(!window.ShadyCSS||!window.ShadyCSS.ScopingShim){const e=new g;let t=window.ShadyCSS&&window.ShadyCSS.CustomStyleInterface;window.ShadyCSS={prepareTemplate(t,n){e.flushCustomStyles(),e.prepareTemplate(t,n)},styleSubtree(t,n){e.flushCustomStyles(),e.styleSubtree(t,n)},styleElement(t){e.flushCustomStyles(),e.styleElement(t)},styleDocument(t){e.flushCustomStyles(),e.styleDocument(t)},getComputedStyleValue(e,t){return(0,m.getComputedStyleValue)(e,t)},nativeCss:y.nativeCssVariables,nativeShadow:y.nativeShadow},t&&(window.ShadyCSS.CustomStyleInterface=t)}window.ShadyCSS.ApplyShim=f},function(e,t,n){'use strict';/**
+*/
+
+
+
+var _applyShim = __webpack_require__(49);
+
+var _applyShim2 = _interopRequireDefault(_applyShim);
+
+var _templateMap = __webpack_require__(32);
+
+var _templateMap2 = _interopRequireDefault(_templateMap);
+
+var _styleUtil = __webpack_require__(31);
+
+var _applyShimUtils = __webpack_require__(51);
+
+var ApplyShimUtils = _interopRequireWildcard(_applyShimUtils);
+
+var _documentWait = __webpack_require__(33);
+
+var _documentWait2 = _interopRequireDefault(_documentWait);
+
+var _commonUtils = __webpack_require__(21);
+
+var _customStyleInterface = __webpack_require__(34);
+
+var _styleSettings = __webpack_require__(18);
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+/** @const {ApplyShim} */
+const applyShim = new _applyShim2.default(); // eslint-disable-line no-unused-vars
+
+
+class ApplyShimInterface {
+  constructor() {
+    /** @type {?CustomStyleInterfaceInterface} */
+    this.customStyleInterface = null;
+    (0, _documentWait2.default)(() => {
+      this.ensure();
+    });
+    applyShim['invalidCallback'] = ApplyShimUtils.invalidate;
+  }
+  ensure() {
+    if (this.customStyleInterface) {
+      return;
+    }
+    this.customStyleInterface = window.ShadyCSS.CustomStyleInterface;
+    if (this.customStyleInterface) {
+      this.customStyleInterface['transformCallback'] = style => {
+        applyShim.transformCustomStyle(style);
+      };
+      this.customStyleInterface['validateCallback'] = () => {
+        requestAnimationFrame(() => {
+          if (this.customStyleInterface['enqueued']) {
+            this.flushCustomStyles();
+          }
+        });
+      };
+    }
+  }
+  /**
+   * @param {!HTMLTemplateElement} template
+   * @param {string} elementName
+   */
+  prepareTemplate(template, elementName) {
+    this.ensure();
+    _templateMap2.default[elementName] = template;
+    let ast = applyShim.transformTemplate(template, elementName);
+    // save original style ast to use for revalidating instances
+    template['_styleAst'] = ast;
+  }
+  flushCustomStyles() {
+    this.ensure();
+    if (!this.customStyleInterface) {
+      return;
+    }
+    let styles = this.customStyleInterface['processStyles']();
+    if (!this.customStyleInterface['enqueued']) {
+      return;
+    }
+    for (let i = 0; i < styles.length; i++) {
+      let cs = styles[i];
+      let style = this.customStyleInterface['getStyleForCustomStyle'](cs);
+      if (style) {
+        applyShim.transformCustomStyle(style);
+      }
+    }
+    this.customStyleInterface['enqueued'] = false;
+  }
+  /**
+   * @param {HTMLElement} element
+   * @param {Object=} properties
+   */
+  styleSubtree(element, properties) {
+    this.ensure();
+    if (properties) {
+      (0, _commonUtils.updateNativeProperties)(element, properties);
+    }
+    if (element.shadowRoot) {
+      this.styleElement(element);
+      let shadowChildren = element.shadowRoot.children || element.shadowRoot.childNodes;
+      for (let i = 0; i < shadowChildren.length; i++) {
+        this.styleSubtree( /** @type {HTMLElement} */shadowChildren[i]);
+      }
+    } else {
+      let children = element.children || element.childNodes;
+      for (let i = 0; i < children.length; i++) {
+        this.styleSubtree( /** @type {HTMLElement} */children[i]);
+      }
+    }
+  }
+  /**
+   * @param {HTMLElement} element
+   */
+  styleElement(element) {
+    this.ensure();
+    let { is } = (0, _styleUtil.getIsExtends)(element);
+    let template = _templateMap2.default[is];
+    if (template && !ApplyShimUtils.templateIsValid(template)) {
+      // only revalidate template once
+      if (!ApplyShimUtils.templateIsValidating(template)) {
+        this.prepareTemplate(template, is);
+        ApplyShimUtils.startValidatingTemplate(template);
+      }
+      // update this element instance
+      let root = element.shadowRoot;
+      if (root) {
+        let style = /** @type {HTMLStyleElement} */root.querySelector('style');
+        if (style) {
+          // reuse the template's style ast, it has all the original css text
+          style['__cssRules'] = template['_styleAst'];
+          style.textContent = (0, _styleUtil.toCssText)(template['_styleAst']);
+        }
+      }
+    }
+  }
+  /**
+   * @param {Object=} properties
+   */
+  styleDocument(properties) {
+    this.ensure();
+    this.styleSubtree(document.body, properties);
+  }
+}
+
+if (!window.ShadyCSS || !window.ShadyCSS.ScopingShim) {
+  const applyShimInterface = new ApplyShimInterface();
+  let CustomStyleInterface = window.ShadyCSS && window.ShadyCSS.CustomStyleInterface;
+
+  window.ShadyCSS = {
+    /**
+     * @param {!HTMLTemplateElement} template
+     * @param {string} elementName
+     * @param {string=} elementExtends
+     */
+    prepareTemplate(template, elementName, elementExtends) {
+      // eslint-disable-line no-unused-vars
+      applyShimInterface.flushCustomStyles();
+      applyShimInterface.prepareTemplate(template, elementName);
+    },
+
+    /**
+     * @param {!HTMLElement} element
+     * @param {Object=} properties
+     */
+    styleSubtree(element, properties) {
+      applyShimInterface.flushCustomStyles();
+      applyShimInterface.styleSubtree(element, properties);
+    },
+
+    /**
+     * @param {!HTMLElement} element
+     */
+    styleElement(element) {
+      applyShimInterface.flushCustomStyles();
+      applyShimInterface.styleElement(element);
+    },
+
+    /**
+     * @param {Object=} properties
+     */
+    styleDocument(properties) {
+      applyShimInterface.flushCustomStyles();
+      applyShimInterface.styleDocument(properties);
+    },
+
+    /**
+     * @param {Element} element
+     * @param {string} property
+     * @return {string}
+     */
+    getComputedStyleValue(element, property) {
+      return (0, _commonUtils.getComputedStyleValue)(element, property);
+    },
+    nativeCss: _styleSettings.nativeCssVariables,
+    nativeShadow: _styleSettings.nativeShadow
+  };
+
+  if (CustomStyleInterface) {
+    window.ShadyCSS.CustomStyleInterface = CustomStyleInterface;
+  }
+}
+
+window.ShadyCSS.ApplyShim = applyShim;
+
+/***/ }),
+/* 49 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+/**
 @license
 Copyright (c) 2017 The Polymer Project Authors. All rights reserved.
 This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
@@ -1083,7 +13516,490 @@ The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
 The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
 Code distributed by Google as part of the polymer project is also
 subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
-*/Object.defineProperty(t,'__esModule',{value:!0});var a=n(31),o=n(20),r=n(21),s=n(19);const d=/;\s*/m,l=/^\s*(initial)|(inherit)\s*$/,_='_-_';class p{constructor(){this._map={}}set(e,t){e=e.trim(),this._map[e]={properties:t,dependants:{}}}get(e){return e=e.trim(),this._map[e]||null}}let c=null;class u{constructor(){this._currentElement=null,this._measureElement=null,this._map=new p}detectMixin(e){return(0,r.detectMixin)(e)}gatherStyles(e){const t=(0,a.gatherStyleText)(e.content);if(t){const n=document.createElement('style');return n.textContent=t,e.content.insertBefore(n,e.content.firstChild),n}return null}transformTemplate(e,t){e._gatheredStyle===void 0&&(e._gatheredStyle=this.gatherStyles(e));const n=e._gatheredStyle;return n?this.transformStyle(n,t):null}transformStyle(e,t=''){let n=(0,a.rulesForStyle)(e);return this.transformRules(n,t),e.textContent=(0,a.toCssText)(n),n}transformCustomStyle(e){let t=(0,a.rulesForStyle)(e);return(0,a.forEachRule)(t,(e)=>{':root'===e.selector&&(e.selector='html'),this.transformRule(e)}),e.textContent=(0,a.toCssText)(t),t}transformRules(e,t){this._currentElement=t,(0,a.forEachRule)(e,(e)=>{this.transformRule(e)}),this._currentElement=null}transformRule(e){e.cssText=this.transformCssText(e.parsedCssText),':root'===e.selector&&(e.selector=':host > *')}transformCssText(e){return e=e.replace(o.VAR_ASSIGN,(e,t,n,a)=>this._produceCssProperties(e,t,n,a)),this._consumeCssProperties(e)}_getInitialValueForProperty(e){return this._measureElement||(this._measureElement=document.createElement('meta'),this._measureElement.setAttribute('apply-shim-measure',''),this._measureElement.style.all='initial',document.head.appendChild(this._measureElement)),window.getComputedStyle(this._measureElement).getPropertyValue(e)}_consumeCssProperties(e){for(let t=null;t=o.MIXIN_MATCH.exec(e);){let n=t[0],a=t[1],r=t.index,s=r+n.indexOf('@apply'),d=r+n.length,l=e.slice(0,s),p=e.slice(d),_=this._cssTextToMap(l),c=this._atApplyToCssProperties(a,_);e=`${l}${c}${p}`,o.MIXIN_MATCH.lastIndex=r+c.length}return e}_atApplyToCssProperties(e,t){e=e.replace(d,'');let n=[],a=this._map.get(e);if(a||(this._map.set(e,{}),a=this._map.get(e)),a){this._currentElement&&(a.dependants[this._currentElement]=!0);let o,r,s;for(o in a.properties)s=t&&t[o],r=[o,': var(',e,_,o],s&&r.push(',',s),r.push(')'),n.push(r.join(''))}return n.join('; ')}_replaceInitialOrInherit(e,t){let n=l.exec(t);return n&&(n[1]?t=this._getInitialValueForProperty(e):t='apply-shim-inherit'),t}_cssTextToMap(e){let t=e.split(';'),n={},a,o;for(let r=0,s,d;r<t.length;r++)s=t[r],s&&(d=s.split(':'),1<d.length&&(a=d[0].trim(),o=this._replaceInitialOrInherit(a,d.slice(1).join(':')),n[a]=o));return n}_invalidateMixinEntry(e){if(c)for(let t in e.dependants)t!==this._currentElement&&c(t)}_produceCssProperties(e,t,n,o){if(n&&(0,a.processVariableAndFallback)(n,(e,t)=>{t&&this._map.get(t)&&(o=`@apply ${t};`)}),!o)return e;let r=this._consumeCssProperties(o),s=e.slice(0,e.indexOf('--')),d=this._cssTextToMap(r),l=d,c=this._map.get(t),u=c&&c.properties;u?l=Object.assign(Object.create(u),d):this._map.set(t,l);let m=[],h=!1,y,p;for(y in l)p=d[y],void 0===p&&(p='initial'),u&&!(y in u)&&(h=!0),m.push(`${t}${_}${y}: ${p}`);return h&&this._invalidateMixinEntry(c),c&&(c.properties=l),n&&(s=`${e};${s}`),`${s}${m.join('; ')};`}}u.prototype.detectMixin=u.prototype.detectMixin,u.prototype.transformStyle=u.prototype.transformStyle,u.prototype.transformCustomStyle=u.prototype.transformCustomStyle,u.prototype.transformRules=u.prototype.transformRules,u.prototype.transformRule=u.prototype.transformRule,u.prototype.transformTemplate=u.prototype.transformTemplate,u.prototype._separator=_,Object.defineProperty(u.prototype,'invalidCallback',{get(){return c},set(e){c=e}}),t.default=u},function(e,t){'use strict';/**
+*/
+/*
+ * The apply shim simulates the behavior of `@apply` proposed at
+ * https://tabatkins.github.io/specs/css-apply-rule/.
+ * The approach is to convert a property like this:
+ *
+ *    --foo: {color: red; background: blue;}
+ *
+ * to this:
+ *
+ *    --foo_-_color: red;
+ *    --foo_-_background: blue;
+ *
+ * Then where `@apply --foo` is used, that is converted to:
+ *
+ *    color: var(--foo_-_color);
+ *    background: var(--foo_-_background);
+ *
+ * This approach generally works but there are some issues and limitations.
+ * Consider, for example, that somewhere *between* where `--foo` is set and used,
+ * another element sets it to:
+ *
+ *    --foo: { border: 2px solid red; }
+ *
+ * We must now ensure that the color and background from the previous setting
+ * do not apply. This is accomplished by changing the property set to this:
+ *
+ *    --foo_-_border: 2px solid red;
+ *    --foo_-_color: initial;
+ *    --foo_-_background: initial;
+ *
+ * This works but introduces one new issue.
+ * Consider this setup at the point where the `@apply` is used:
+ *
+ *    background: orange;
+ *    `@apply` --foo;
+ *
+ * In this case the background will be unset (initial) rather than the desired
+ * `orange`. We address this by altering the property set to use a fallback
+ * value like this:
+ *
+ *    color: var(--foo_-_color);
+ *    background: var(--foo_-_background, orange);
+ *    border: var(--foo_-_border);
+ *
+ * Note that the default is retained in the property set and the `background` is
+ * the desired `orange`. This leads us to a limitation.
+ *
+ * Limitation 1:
+
+ * Only properties in the rule where the `@apply`
+ * is used are considered as default values.
+ * If another rule matches the element and sets `background` with
+ * less specificity than the rule in which `@apply` appears,
+ * the `background` will not be set.
+ *
+ * Limitation 2:
+ *
+ * When using Polymer's `updateStyles` api, new properties may not be set for
+ * `@apply` properties.
+
+*/
+
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _styleUtil = __webpack_require__(31);
+
+var _commonRegex = __webpack_require__(20);
+
+var _commonUtils = __webpack_require__(21);
+
+var _cssParse = __webpack_require__(19);
+
+// eslint-disable-line no-unused-vars
+
+const APPLY_NAME_CLEAN = /;\s*/m;
+const INITIAL_INHERIT = /^\s*(initial)|(inherit)\s*$/;
+
+// separator used between mixin-name and mixin-property-name when producing properties
+// NOTE: plain '-' may cause collisions in user styles
+const MIXIN_VAR_SEP = '_-_';
+
+/**
+ * @typedef {!Object<string, string>}
+ */
+let PropertyEntry; // eslint-disable-line no-unused-vars
+
+/**
+ * @typedef {!Object<string, boolean>}
+ */
+let DependantsEntry; // eslint-disable-line no-unused-vars
+
+/** @typedef {{
+ *    properties: PropertyEntry,
+ *    dependants: DependantsEntry
+ * }}
+ */
+let MixinMapEntry; // eslint-disable-line no-unused-vars
+
+// map of mixin to property names
+// --foo: {border: 2px} -> {properties: {(--foo, ['border'])}, dependants: {'element-name': proto}}
+class MixinMap {
+  constructor() {
+    /** @type {!Object<string, !MixinMapEntry>} */
+    this._map = {};
+  }
+  /**
+   * @param {string} name
+   * @param {!PropertyEntry} props
+   */
+  set(name, props) {
+    name = name.trim();
+    this._map[name] = {
+      properties: props,
+      dependants: {}
+    };
+  }
+  /**
+   * @param {string} name
+   * @return {MixinMapEntry}
+   */
+  get(name) {
+    name = name.trim();
+    return this._map[name] || null;
+  }
+}
+
+/**
+ * Callback for when an element is marked invalid
+ * @type {?function(string)}
+ */
+let invalidCallback = null;
+
+/** @unrestricted */
+class ApplyShim {
+  constructor() {
+    /** @type {?string} */
+    this._currentElement = null;
+    /** @type {HTMLMetaElement} */
+    this._measureElement = null;
+    this._map = new MixinMap();
+  }
+  /**
+   * return true if `cssText` contains a mixin definition or consumption
+   * @param {string} cssText
+   * @return {boolean}
+   */
+  detectMixin(cssText) {
+    return (0, _commonUtils.detectMixin)(cssText);
+  }
+
+  /**
+   * Gather styles into one style for easier processing
+   * @param {!HTMLTemplateElement} template
+   * @return {HTMLStyleElement}
+   */
+  gatherStyles(template) {
+    const styleText = (0, _styleUtil.gatherStyleText)(template.content);
+    if (styleText) {
+      const style = /** @type {!HTMLStyleElement} */document.createElement('style');
+      style.textContent = styleText;
+      template.content.insertBefore(style, template.content.firstChild);
+      return style;
+    }
+    return null;
+  }
+  /**
+   * @param {!HTMLTemplateElement} template
+   * @param {string} elementName
+   * @return {StyleNode}
+   */
+  transformTemplate(template, elementName) {
+    if (template._gatheredStyle === undefined) {
+      template._gatheredStyle = this.gatherStyles(template);
+    }
+    /** @type {HTMLStyleElement} */
+    const style = template._gatheredStyle;
+    return style ? this.transformStyle(style, elementName) : null;
+  }
+  /**
+   * @param {!HTMLStyleElement} style
+   * @param {string} elementName
+   * @return {StyleNode}
+   */
+  transformStyle(style, elementName = '') {
+    let ast = (0, _styleUtil.rulesForStyle)(style);
+    this.transformRules(ast, elementName);
+    style.textContent = (0, _styleUtil.toCssText)(ast);
+    return ast;
+  }
+  /**
+   * @param {!HTMLStyleElement} style
+   * @return {StyleNode}
+   */
+  transformCustomStyle(style) {
+    let ast = (0, _styleUtil.rulesForStyle)(style);
+    (0, _styleUtil.forEachRule)(ast, rule => {
+      if (rule['selector'] === ':root') {
+        rule['selector'] = 'html';
+      }
+      this.transformRule(rule);
+    });
+    style.textContent = (0, _styleUtil.toCssText)(ast);
+    return ast;
+  }
+  /**
+   * @param {StyleNode} rules
+   * @param {string} elementName
+   */
+  transformRules(rules, elementName) {
+    this._currentElement = elementName;
+    (0, _styleUtil.forEachRule)(rules, r => {
+      this.transformRule(r);
+    });
+    this._currentElement = null;
+  }
+  /**
+   * @param {!StyleNode} rule
+   */
+  transformRule(rule) {
+    rule['cssText'] = this.transformCssText(rule['parsedCssText']);
+    // :root was only used for variable assignment in property shim,
+    // but generates invalid selectors with real properties.
+    // replace with `:host > *`, which serves the same effect
+    if (rule['selector'] === ':root') {
+      rule['selector'] = ':host > *';
+    }
+  }
+  /**
+   * @param {string} cssText
+   * @return {string}
+   */
+  transformCssText(cssText) {
+    // produce variables
+    cssText = cssText.replace(_commonRegex.VAR_ASSIGN, (matchText, propertyName, valueProperty, valueMixin) => this._produceCssProperties(matchText, propertyName, valueProperty, valueMixin));
+    // consume mixins
+    return this._consumeCssProperties(cssText);
+  }
+  /**
+   * @param {string} property
+   * @return {string}
+   */
+  _getInitialValueForProperty(property) {
+    if (!this._measureElement) {
+      this._measureElement = /** @type {HTMLMetaElement} */document.createElement('meta');
+      this._measureElement.setAttribute('apply-shim-measure', '');
+      this._measureElement.style.all = 'initial';
+      document.head.appendChild(this._measureElement);
+    }
+    return window.getComputedStyle(this._measureElement).getPropertyValue(property);
+  }
+  /**
+   * replace mixin consumption with variable consumption
+   * @param {string} text
+   * @return {string}
+   */
+  _consumeCssProperties(text) {
+    /** @type {Array} */
+    let m = null;
+    // loop over text until all mixins with defintions have been applied
+    while (m = _commonRegex.MIXIN_MATCH.exec(text)) {
+      let matchText = m[0];
+      let mixinName = m[1];
+      let idx = m.index;
+      // collect properties before apply to be "defaults" if mixin might override them
+      // match includes a "prefix", so find the start and end positions of @apply
+      let applyPos = idx + matchText.indexOf('@apply');
+      let afterApplyPos = idx + matchText.length;
+      // find props defined before this @apply
+      let textBeforeApply = text.slice(0, applyPos);
+      let textAfterApply = text.slice(afterApplyPos);
+      let defaults = this._cssTextToMap(textBeforeApply);
+      let replacement = this._atApplyToCssProperties(mixinName, defaults);
+      // use regex match position to replace mixin, keep linear processing time
+      text = `${textBeforeApply}${replacement}${textAfterApply}`;
+      // move regex search to _after_ replacement
+      _commonRegex.MIXIN_MATCH.lastIndex = idx + replacement.length;
+    }
+    return text;
+  }
+  /**
+   * produce variable consumption at the site of mixin consumption
+   * `@apply` --foo; -> for all props (${propname}: var(--foo_-_${propname}, ${fallback[propname]}}))
+   * Example:
+   *  border: var(--foo_-_border); padding: var(--foo_-_padding, 2px)
+   *
+   * @param {string} mixinName
+   * @param {Object} fallbacks
+   * @return {string}
+   */
+  _atApplyToCssProperties(mixinName, fallbacks) {
+    mixinName = mixinName.replace(APPLY_NAME_CLEAN, '');
+    let vars = [];
+    let mixinEntry = this._map.get(mixinName);
+    // if we depend on a mixin before it is created
+    // make a sentinel entry in the map to add this element as a dependency for when it is defined.
+    if (!mixinEntry) {
+      this._map.set(mixinName, {});
+      mixinEntry = this._map.get(mixinName);
+    }
+    if (mixinEntry) {
+      if (this._currentElement) {
+        mixinEntry.dependants[this._currentElement] = true;
+      }
+      let p, parts, f;
+      for (p in mixinEntry.properties) {
+        f = fallbacks && fallbacks[p];
+        parts = [p, ': var(', mixinName, MIXIN_VAR_SEP, p];
+        if (f) {
+          parts.push(',', f);
+        }
+        parts.push(')');
+        vars.push(parts.join(''));
+      }
+    }
+    return vars.join('; ');
+  }
+
+  /**
+   * @param {string} property
+   * @param {string} value
+   * @return {string}
+   */
+  _replaceInitialOrInherit(property, value) {
+    let match = INITIAL_INHERIT.exec(value);
+    if (match) {
+      if (match[1]) {
+        // initial
+        // replace `initial` with the concrete initial value for this property
+        value = this._getInitialValueForProperty(property);
+      } else {
+        // inherit
+        // with this purposfully illegal value, the variable will be invalid at
+        // compute time (https://www.w3.org/TR/css-variables/#invalid-at-computed-value-time)
+        // and for inheriting values, will behave similarly
+        // we cannot support the same behavior for non inheriting values like 'border'
+        value = 'apply-shim-inherit';
+      }
+    }
+    return value;
+  }
+
+  /**
+   * "parse" a mixin definition into a map of properties and values
+   * cssTextToMap('border: 2px solid black') -> ('border', '2px solid black')
+   * @param {string} text
+   * @return {!Object<string, string>}
+   */
+  _cssTextToMap(text) {
+    let props = text.split(';');
+    let property, value;
+    let out = {};
+    for (let i = 0, p, sp; i < props.length; i++) {
+      p = props[i];
+      if (p) {
+        sp = p.split(':');
+        // ignore lines that aren't definitions like @media
+        if (sp.length > 1) {
+          property = sp[0].trim();
+          // some properties may have ':' in the value, like data urls
+          value = this._replaceInitialOrInherit(property, sp.slice(1).join(':'));
+          out[property] = value;
+        }
+      }
+    }
+    return out;
+  }
+
+  /**
+   * @param {MixinMapEntry} mixinEntry
+   */
+  _invalidateMixinEntry(mixinEntry) {
+    if (!invalidCallback) {
+      return;
+    }
+    for (let elementName in mixinEntry.dependants) {
+      if (elementName !== this._currentElement) {
+        invalidCallback(elementName);
+      }
+    }
+  }
+
+  /**
+   * @param {string} matchText
+   * @param {string} propertyName
+   * @param {?string} valueProperty
+   * @param {?string} valueMixin
+   * @return {string}
+   */
+  _produceCssProperties(matchText, propertyName, valueProperty, valueMixin) {
+    // handle case where property value is a mixin
+    if (valueProperty) {
+      // form: --mixin2: var(--mixin1), where --mixin1 is in the map
+      (0, _styleUtil.processVariableAndFallback)(valueProperty, (prefix, value) => {
+        if (value && this._map.get(value)) {
+          valueMixin = `@apply ${value};`;
+        }
+      });
+    }
+    if (!valueMixin) {
+      return matchText;
+    }
+    let mixinAsProperties = this._consumeCssProperties(valueMixin);
+    let prefix = matchText.slice(0, matchText.indexOf('--'));
+    let mixinValues = this._cssTextToMap(mixinAsProperties);
+    let combinedProps = mixinValues;
+    let mixinEntry = this._map.get(propertyName);
+    let oldProps = mixinEntry && mixinEntry.properties;
+    if (oldProps) {
+      // NOTE: since we use mixin, the map of properties is updated here
+      // and this is what we want.
+      combinedProps = Object.assign(Object.create(oldProps), mixinValues);
+    } else {
+      this._map.set(propertyName, combinedProps);
+    }
+    let out = [];
+    let p, v;
+    // set variables defined by current mixin
+    let needToInvalidate = false;
+    for (p in combinedProps) {
+      v = mixinValues[p];
+      // if property not defined by current mixin, set initial
+      if (v === undefined) {
+        v = 'initial';
+      }
+      if (oldProps && !(p in oldProps)) {
+        needToInvalidate = true;
+      }
+      out.push(`${propertyName}${MIXIN_VAR_SEP}${p}: ${v}`);
+    }
+    if (needToInvalidate) {
+      this._invalidateMixinEntry(mixinEntry);
+    }
+    if (mixinEntry) {
+      mixinEntry.properties = combinedProps;
+    }
+    // because the mixinMap is global, the mixin might conflict with
+    // a different scope's simple variable definition:
+    // Example:
+    // some style somewhere:
+    // --mixin1:{ ... }
+    // --mixin2: var(--mixin1);
+    // some other element:
+    // --mixin1: 10px solid red;
+    // --foo: var(--mixin1);
+    // In this case, we leave the original variable definition in place.
+    if (valueProperty) {
+      prefix = `${matchText};${prefix}`;
+    }
+    return `${prefix}${out.join('; ')};`;
+  }
+}
+
+/* exports */
+ApplyShim.prototype['detectMixin'] = ApplyShim.prototype.detectMixin;
+ApplyShim.prototype['transformStyle'] = ApplyShim.prototype.transformStyle;
+ApplyShim.prototype['transformCustomStyle'] = ApplyShim.prototype.transformCustomStyle;
+ApplyShim.prototype['transformRules'] = ApplyShim.prototype.transformRules;
+ApplyShim.prototype['transformRule'] = ApplyShim.prototype.transformRule;
+ApplyShim.prototype['transformTemplate'] = ApplyShim.prototype.transformTemplate;
+ApplyShim.prototype['_separator'] = MIXIN_VAR_SEP;
+Object.defineProperty(ApplyShim.prototype, 'invalidCallback', {
+  /** @return {?function(string)} */
+  get() {
+    return invalidCallback;
+  },
+  /** @param {?function(string)} cb */
+  set(cb) {
+    invalidCallback = cb;
+  }
+});
+
+exports.default = ApplyShim;
+
+/***/ }),
+/* 50 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+/**
 @license
 Copyright (c) 2017 The Polymer Project Authors. All rights reserved.
 This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
@@ -1091,7 +14007,51 @@ The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
 The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
 Code distributed by Google as part of the polymer project is also
 subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
-*/Object.defineProperty(t,'__esModule',{value:!0}),t.processUnscopedStyle=function(e){const t=e.textContent;if(!n.has(t)){n.add(t);const a=e.cloneNode(!0);document.head.appendChild(a)}},t.isUnscopedStyle=function(e){return e.hasAttribute(a)};const n=new Set,a=t.scopingAttribute='shady-unscoped'},function(e,t,n){'use strict';/**
+*/
+
+
+
+/** @type {!Set<string>} */
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.processUnscopedStyle = processUnscopedStyle;
+exports.isUnscopedStyle = isUnscopedStyle;
+const styleTextSet = new Set();
+
+const scopingAttribute = exports.scopingAttribute = 'shady-unscoped';
+
+/**
+ * Add a specifically-marked style to the document directly, and only one copy of that style.
+ *
+ * @param {!HTMLStyleElement} style
+ * @return {undefined}
+ */
+function processUnscopedStyle(style) {
+  const text = style.textContent;
+  if (!styleTextSet.has(text)) {
+    styleTextSet.add(text);
+    const newStyle = style.cloneNode(true);
+    document.head.appendChild(newStyle);
+  }
+}
+
+/**
+ * Check if a style is supposed to be unscoped
+ * @param {!HTMLStyleElement} style
+ * @return {boolean} true if the style has the unscoping attribute
+ */
+function isUnscopedStyle(style) {
+  return style.hasAttribute(scopingAttribute);
+}
+
+/***/ }),
+/* 51 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+/**
 @license
 Copyright (c) 2017 The Polymer Project Authors. All rights reserved.
 This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
@@ -1099,7 +14059,1957 @@ The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
 The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
 Code distributed by Google as part of the polymer project is also
 subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
-*/function a(e){e[_]=e[_]||0,e[u]=e[u]||0,e[c]=(e[c]||0)+1}function o(e){return e[_]===e[c]}function r(e){return!o(e)&&e[u]===e[c]}function s(e){e[u]=e[c],e._validating||(e._validating=!0,m.then(function(){e[_]=e[c],e._validating=!1}))}Object.defineProperty(t,'__esModule',{value:!0}),t.invalidate=function(e){let t=l.default[e];t&&a(t)},t.invalidateTemplate=a,t.isValid=function(e){let t=l.default[e];return!t||o(t)},t.templateIsValid=o,t.isValidating=function(e){let t=l.default[e];return!!t&&r(t)},t.templateIsValidating=r,t.startValidating=function(e){let t=l.default[e];s(t)},t.startValidatingTemplate=s,t.elementsAreInvalid=function(){for(let e in l.default){let t=l.default[e];if(!o(t))return!0}return!1};var d=n(32),l=function(e){return e&&e.__esModule?e:{default:e}}(d),p=n(19);const _='_applyShimCurrentVersion',c='_applyShimNextVersion',u='_applyShimValidatingVersion',m=Promise.resolve()},function(e,t,n){'use strict';function a(e){window.HTMLImports?HTMLImports.whenReady(e):e()}Object.defineProperty(t,'__esModule',{value:!0}),t.importHref=void 0,n(1);t.importHref=function(e,t,n,o){let r=document.head.querySelector('link[href="'+e+'"][import-href]');r||(r=document.createElement('link'),r.rel='import',r.href=e,r.setAttribute('import-href','')),o&&r.setAttribute('async','');let s=function(){r.removeEventListener('load',d),r.removeEventListener('error',l)},d=function(e){s(),r.__dynamicImportLoaded=!0,t&&a(()=>{t(e)})},l=function(e){s(),r.parentNode&&r.parentNode.removeChild(r),n&&a(()=>{n(e)})};return r.addEventListener('load',d),r.addEventListener('error',l),null==r.parentNode?document.head.appendChild(r):r.__dynamicImportLoaded&&r.dispatchEvent(new Event('load')),r}},function(e,t,n){'use strict';function a(){d=!0,requestAnimationFrame(function(){d=!1,o(l),setTimeout(function(){r(p)})})}function o(e){for(;e.length;)s(e.shift())}function r(e){for(let t=0,n=e.length;t<n;t++)s(e.shift())}function s(e){const t=e[0],n=e[1],a=e[2];try{n.apply(t,a)}catch(t){setTimeout(()=>{throw t})}}Object.defineProperty(t,'__esModule',{value:!0}),t.flush=void 0,t.beforeNextRender=function(e,t,n){d||a(),l.push([e,t,n])},t.afterNextRender=function(e,t,n){d||a(),p.push([e,t,n])},n(1);let d=!1,l=[],p=[];t.flush=function(){for(;l.length||p.length;)o(l),o(p);d=!1}},function(){'use strict';function e(){document.body.removeAttribute('unresolved')}'interactive'===document.readyState||'complete'===document.readyState?e():window.addEventListener('DOMContentLoaded',e)},function(e,t,n){'use strict';function a(e){return'slot'===e.localName}Object.defineProperty(t,'__esModule',{value:!0}),t.FlattenedNodesObserver=void 0,n(1);var o=n(37),r=n(6);t.FlattenedNodesObserver=class{static getFlattenedNodes(e){return a(e)?e.assignedNodes({flatten:!0}):Array.from(e.childNodes).map((e)=>a(e)?e.assignedNodes({flatten:!0}):[e]).reduce((e,t)=>e.concat(t),[])}constructor(e,t){this._shadyChildrenObserver=null,this._nativeChildrenObserver=null,this._connected=!1,this._target=e,this.callback=t,this._effectiveNodes=[],this._observer=null,this._scheduled=!1,this._boundSchedule=()=>{this._schedule()},this.connect(),this._schedule()}connect(){a(this._target)?this._listenSlots([this._target]):(this._listenSlots(this._target.children),window.ShadyDOM?this._shadyChildrenObserver=ShadyDOM.observeChildren(this._target,(e)=>{this._processMutations(e)}):(this._nativeChildrenObserver=new MutationObserver((e)=>{this._processMutations(e)}),this._nativeChildrenObserver.observe(this._target,{childList:!0}))),this._connected=!0}disconnect(){a(this._target)?this._unlistenSlots([this._target]):(this._unlistenSlots(this._target.children),window.ShadyDOM&&this._shadyChildrenObserver?(ShadyDOM.unobserveChildren(this._shadyChildrenObserver),this._shadyChildrenObserver=null):this._nativeChildrenObserver&&(this._nativeChildrenObserver.disconnect(),this._nativeChildrenObserver=null)),this._connected=!1}_schedule(){this._scheduled||(this._scheduled=!0,r.microTask.run(()=>this.flush()))}_processMutations(e){this._processSlotMutations(e),this.flush()}_processSlotMutations(e){if(e)for(let t=0,n;t<e.length;t++)n=e[t],n.addedNodes&&this._listenSlots(n.addedNodes),n.removedNodes&&this._unlistenSlots(n.removedNodes)}flush(){if(!this._connected)return!1;window.ShadyDOM&&ShadyDOM.flush(),this._nativeChildrenObserver?this._processSlotMutations(this._nativeChildrenObserver.takeRecords()):this._shadyChildrenObserver&&this._processSlotMutations(this._shadyChildrenObserver.takeRecords()),this._scheduled=!1;let e={target:this._target,addedNodes:[],removedNodes:[]},t=this.constructor.getFlattenedNodes(this._target),n=(0,o.calculateSplices)(t,this._effectiveNodes);for(let t=0,a;t<n.length&&(a=n[t]);t++)for(let t=0,o;t<a.removed.length&&(o=a.removed[t]);t++)e.removedNodes.push(o);for(let a=0,o;a<n.length&&(o=n[a]);a++)for(let n=o.index;n<o.index+o.addedCount;n++)e.addedNodes.push(t[n]);this._effectiveNodes=t;let a=!1;return(e.addedNodes.length||e.removedNodes.length)&&(a=!0,this.callback.call(this._target,e)),a}_listenSlots(e){for(let t=0,o;t<e.length;t++)o=e[t],a(o)&&o.addEventListener('slotchange',this._boundSchedule)}_unlistenSlots(e){for(let t=0,o;t<e.length;t++)o=e[t],a(o)&&o.removeEventListener('slotchange',this._boundSchedule)}}},function(e,t,n){'use strict';function a(e,t){if(!e)return t;t=(0,d.LegacyElementMixin)(t),Array.isArray(e)||(e=[e]);let n=t.prototype.behaviors;return e=r(e,null,n),t=o(e,t),n&&(e=n.concat(e)),t.prototype.behaviors=e,t}function o(e,t){for(let n=0,a;n<e.length;n++)a=e[n],a&&(t=Array.isArray(a)?o(a,t):s(a,t));return t}function r(e,t,n){t=t||[];for(let a=e.length-1,o;0<=a;a--)o=e[a],o?Array.isArray(o)?r(o,t):0>t.indexOf(o)&&(!n||0>n.indexOf(o))&&t.unshift(o):console.warn('behavior is null, check for missing or 404 import');return t}function s(e,t){class n extends t{static get properties(){return e.properties}static get observers(){return e.observers}static get template(){return e._template||l.DomModule&&l.DomModule.import(this.is,'template')||t.template||this.prototype._template||null}created(){super.created(),e.created&&e.created.call(this)}_registered(){super._registered(),e.beforeRegister&&e.beforeRegister.call(Object.getPrototypeOf(this)),e.registered&&e.registered.call(Object.getPrototypeOf(this))}_applyListeners(){if(super._applyListeners(),e.listeners)for(let t in e.listeners)this._addMethodEventListenerToNode(this,t,e.listeners[t])}_ensureAttributes(){if(e.hostAttributes)for(let t in e.hostAttributes)this._ensureAttribute(t,e.hostAttributes[t]);super._ensureAttributes()}ready(){super.ready(),e.ready&&e.ready.call(this)}attached(){super.attached(),e.attached&&e.attached.call(this)}detached(){super.detached(),e.detached&&e.detached.call(this)}attributeChanged(t,n,a){super.attributeChanged(t,n,a),e.attributeChanged&&e.attributeChanged.call(this,t,n,a)}}for(let a in n.generatedFrom=e,e)if(!(a in _)){let t=Object.getOwnPropertyDescriptor(e,a);t&&Object.defineProperty(n.prototype,a,t)}return n}Object.defineProperty(t,'__esModule',{value:!0}),t.mixinBehaviors=t.Class=void 0;var d=n(30),l=n(29);let _={attached:!0,detached:!0,ready:!0,created:!0,beforeRegister:!0,registered:!0,attributeChanged:!0,behaviors:!0};t.Class=function(e){e||console.warn('Polymer.Class requires `info` argument');let t=s(e,e.behaviors?a(e.behaviors,HTMLElement):(0,d.LegacyElementMixin)(HTMLElement));return t.is=e.is,t};t.mixinBehaviors=a},function(e,t,n){'use strict';Object.defineProperty(t,'__esModule',{value:!0}),t.Templatizer=void 0;var a=n(22);let o=a.TemplateInstanceBase,r={templatize(e,t){this._templatizerTemplate=e,this.ctor=a.Templatize.templatize(e,this,{mutableData:!!t,parentModel:this._parentModel,instanceProps:this._instanceProps,forwardHostProp:this._forwardHostPropV2,notifyInstanceProp:this._notifyInstancePropV2})},stamp(e){return new this.ctor(e)},modelForElement(e){return a.Templatize.modelForElement(this._templatizerTemplate,e)}};t.Templatizer=r},function(e,t,n){'use strict';Object.defineProperty(t,'__esModule',{value:!0}),t.DomBind=void 0,n(1);var a=n(17),o=n(14),r=n(35);const s=(0,r.GestureEventListeners)((0,o.OptionalMutableData)((0,a.PropertyEffects)(HTMLElement)));class d extends s{static get observedAttributes(){return['mutable-data']}constructor(){super(),this.root=null,this.$=null,this.__children=null}attributeChangedCallback(){this.mutableData=!0}connectedCallback(){this.render()}disconnectedCallback(){this.__removeChildren()}__insertChildren(){this.parentNode.insertBefore(this.root,this)}__removeChildren(){if(this.__children)for(let e=0;e<this.__children.length;e++)this.root.appendChild(this.__children[e])}render(){let e;if(!this.__children){if(e=e||this.querySelector('template'),!e){let t=new MutationObserver(()=>{if(e=this.querySelector('template'),e)t.disconnect(),this.render();else throw new Error('dom-bind requires a <template> child')});return void t.observe(this,{childList:!0})}this.root=this._stampTemplate(e),this.$=this.root.$,this.__children=[];for(let e=this.root.firstChild;e;e=e.nextSibling)this.__children[this.__children.length]=e;this._enableProperties()}this.__insertChildren(),this.dispatchEvent(new CustomEvent('dom-change',{bubbles:!0,composed:!0}))}}customElements.define('dom-bind',d),t.DomBind=d},function(e,t,n){'use strict';Object.defineProperty(t,'__esModule',{value:!0}),t.DomIf=void 0;var a=n(5),o=n(22),r=n(8),s=n(13),d=n(6),l=n(12);class p extends a.Element{static get is(){return'dom-if'}static get template(){return null}static get properties(){return{if:{type:Boolean,observer:'__debounceRender'},restamp:{type:Boolean,observer:'__debounceRender'}}}constructor(){super(),this.__renderDebouncer=null,this.__invalidProps=null,this.__instance=null,this._lastIf=!1,this.__ctor=null}__debounceRender(){this.__renderDebouncer=r.Debouncer.debounce(this.__renderDebouncer,d.microTask,()=>this.__render()),(0,s.enqueueDebouncer)(this.__renderDebouncer)}disconnectedCallback(){super.disconnectedCallback(),this.parentNode&&(this.parentNode.nodeType!=Node.DOCUMENT_FRAGMENT_NODE||this.parentNode.host)||this.__teardownInstance()}connectedCallback(){super.connectedCallback(),this.if&&this.__debounceRender()}render(){(0,s.flush)()}__render(){if(this.if){if(!this.__ensureInstance())return;this._showHideChildren()}else this.restamp&&this.__teardownInstance();!this.restamp&&this.__instance&&this._showHideChildren(),this.if!=this._lastIf&&(this.dispatchEvent(new CustomEvent('dom-change',{bubbles:!0,composed:!0})),this._lastIf=this.if)}__ensureInstance(){let e=this.parentNode;if(e){if(!this.__ctor){let e=this.querySelector('template');if(!e){let e=new MutationObserver(()=>{if(this.querySelector('template'))e.disconnect(),this.__render();else throw new Error('dom-if requires a <template> child')});return e.observe(this,{childList:!0}),!1}this.__ctor=o.Templatize.templatize(e,this,{mutableData:!0,forwardHostProp:function(e,t){this.__instance&&(this.if?this.__instance.forwardHostProp(e,t):(this.__invalidProps=this.__invalidProps||Object.create(null),this.__invalidProps[(0,l.root)(e)]=!0))}})}if(!this.__instance)this.__instance=new this.__ctor,e.insertBefore(this.__instance.root,this);else{this.__syncHostProperties();let t=this.__instance.children;if(t&&t.length){let n=this.previousSibling;if(n!==t[t.length-1])for(let a=0,o;a<t.length&&(o=t[a]);a++)e.insertBefore(o,this)}}}return!0}__syncHostProperties(){let e=this.__invalidProps;if(e){for(let t in e)this.__instance._setPendingProperty(t,this.__dataHost[t]);this.__invalidProps=null,this.__instance._flushProperties()}}__teardownInstance(){if(this.__instance){let e=this.__instance.children;if(e&&e.length){let t=e[0].parentNode;for(let a=0,o;a<e.length&&(o=e[a]);a++)t.removeChild(o)}this.__instance=null,this.__invalidProps=null}}_showHideChildren(){let e=this.__hideTemplateChildren__||!this.if;this.__instance&&this.__instance._showHideChildren(e)}}customElements.define(p.is,p),t.DomIf=p},function(e,t,n){'use strict';Object.defineProperty(t,'__esModule',{value:!0}),t.ArraySelector=t.ArraySelectorMixin=void 0;var a=n(5),o=n(4),r=n(37),s=n(16);let d=(0,o.dedupingMixin)((e)=>{let t=(0,s.ElementMixin)(e);class n extends t{static get properties(){return{items:{type:Array},multi:{type:Boolean,value:!1},selected:{type:Object,notify:!0},selectedItem:{type:Object,notify:!0},toggle:{type:Boolean,value:!1}}}static get observers(){return['__updateSelection(multi, items.*)']}constructor(){super(),this.__lastItems=null,this.__lastMulti=null,this.__selectedMap=null}__updateSelection(e,t){let n=t.path;if('items'==n){let n=t.base||[],a=this.__lastItems,o=this.__lastMulti;if(e!==o&&this.clearSelection(),a){let e=(0,r.calculateSplices)(n,a);this.__applySplices(e)}this.__lastItems=n,this.__lastMulti=e}else if('items.splices'==t.path)this.__applySplices(t.value.indexSplices);else{let e=n.slice(6),t=parseInt(e,10);0>e.indexOf('.')&&e==t&&this.__deselectChangedIdx(t)}}__applySplices(e){let t=this.__selectedMap;for(let n=0,a;n<e.length;n++){a=e[n],t.forEach((e,n)=>{e<a.index||(e>=a.index+a.removed.length?t.set(n,e+a.addedCount-a.removed.length):t.set(n,-1))});for(let e=0,n;e<a.addedCount;e++)n=a.index+e,t.has(this.items[n])&&t.set(this.items[n],n)}this.__updateLinks();let n=0;t.forEach((e,a)=>{0>e?(this.multi?this.splice('selected',n,1):this.selected=this.selectedItem=null,t.delete(a)):n++})}__updateLinks(){if(this.__dataLinkedPaths={},this.multi){let e=0;this.__selectedMap.forEach((t)=>{0<=t&&this.linkPaths('items.'+t,'selected.'+e++)})}else this.__selectedMap.forEach((e)=>{this.linkPaths('selected','items.'+e),this.linkPaths('selectedItem','items.'+e)})}clearSelection(){this.__dataLinkedPaths={},this.__selectedMap=new Map,this.selected=this.multi?[]:null,this.selectedItem=null}isSelected(e){return this.__selectedMap.has(e)}isIndexSelected(e){return this.isSelected(this.items[e])}__deselectChangedIdx(e){let t=this.__selectedIndexForItemIndex(e);if(0<=t){let e=0;this.__selectedMap.forEach((n,a)=>{t==e++&&this.deselect(a)})}}__selectedIndexForItemIndex(e){let t=this.__dataLinkedPaths['items.'+e];if(t)return parseInt(t.slice(9),10)}deselect(e){let t=this.__selectedMap.get(e);if(0<=t){this.__selectedMap.delete(e);let n;this.multi&&(n=this.__selectedIndexForItemIndex(t)),this.__updateLinks(),this.multi?this.splice('selected',n,1):this.selected=this.selectedItem=null}}deselectIndex(e){this.deselect(this.items[e])}select(e){this.selectIndex(this.items.indexOf(e))}selectIndex(e){let t=this.items[e];this.isSelected(t)?this.toggle&&this.deselectIndex(e):(!this.multi&&this.__selectedMap.clear(),this.__selectedMap.set(t,e),this.__updateLinks(),this.multi?this.push('selected',t):this.selected=this.selectedItem=t)}}return n});t.ArraySelectorMixin=d;let l=d(a.Element);class p extends l{static get is(){return'array-selector'}}customElements.define(p.is,p),t.ArraySelector=p},function(e,t,n){'use strict';Object.defineProperty(t,'__esModule',{value:!0}),t.CustomStyle=void 0,n(62);var a=n(28);const o='include',r=window.ShadyCSS.CustomStyleInterface;class s extends HTMLElement{constructor(){super(),this._style=null,r.addCustomStyle(this)}getStyle(){if(this._style)return this._style;const e=this.querySelector('style');if(!e)return null;this._style=e;const t=e.getAttribute(o);return t&&(e.removeAttribute(o),e.textContent=(0,a.cssFromModules)(t)+e.textContent),this._style}}window.customElements.define('custom-style',s),t.CustomStyle=s},function(e,t,n){'use strict';/**
+*/
+
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.invalidate = invalidate;
+exports.invalidateTemplate = invalidateTemplate;
+exports.isValid = isValid;
+exports.templateIsValid = templateIsValid;
+exports.isValidating = isValidating;
+exports.templateIsValidating = templateIsValidating;
+exports.startValidating = startValidating;
+exports.startValidatingTemplate = startValidatingTemplate;
+exports.elementsAreInvalid = elementsAreInvalid;
+
+var _templateMap = __webpack_require__(32);
+
+var _templateMap2 = _interopRequireDefault(_templateMap);
+
+var _cssParse = __webpack_require__(19);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+// eslint-disable-line no-unused-vars
+
+/*
+ * Utilities for handling invalidating apply-shim mixins for a given template.
+ *
+ * The invalidation strategy involves keeping track of the "current" version of a template's mixins, and updating that count when a mixin is invalidated.
+ * The template
+ */
+
+/** @const {string} */
+const CURRENT_VERSION = '_applyShimCurrentVersion';
+
+/** @const {string} */
+const NEXT_VERSION = '_applyShimNextVersion';
+
+/** @const {string} */
+const VALIDATING_VERSION = '_applyShimValidatingVersion';
+
+/**
+ * @const {Promise<void>}
+ */
+const promise = Promise.resolve();
+
+/**
+ * @param {string} elementName
+ */
+function invalidate(elementName) {
+  let template = _templateMap2.default[elementName];
+  if (template) {
+    invalidateTemplate(template);
+  }
+}
+
+/**
+ * This function can be called multiple times to mark a template invalid
+ * and signal that the style inside must be regenerated.
+ *
+ * Use `startValidatingTemplate` to begin an asynchronous validation cycle.
+ * During that cycle, call `templateIsValidating` to see if the template must
+ * be revalidated
+ * @param {HTMLTemplateElement} template
+ */
+function invalidateTemplate(template) {
+  // default the current version to 0
+  template[CURRENT_VERSION] = template[CURRENT_VERSION] || 0;
+  // ensure the "validating for" flag exists
+  template[VALIDATING_VERSION] = template[VALIDATING_VERSION] || 0;
+  // increment the next version
+  template[NEXT_VERSION] = (template[NEXT_VERSION] || 0) + 1;
+}
+
+/**
+ * @param {string} elementName
+ * @return {boolean}
+ */
+function isValid(elementName) {
+  let template = _templateMap2.default[elementName];
+  if (template) {
+    return templateIsValid(template);
+  }
+  return true;
+}
+
+/**
+ * @param {HTMLTemplateElement} template
+ * @return {boolean}
+ */
+function templateIsValid(template) {
+  return template[CURRENT_VERSION] === template[NEXT_VERSION];
+}
+
+/**
+ * @param {string} elementName
+ * @return {boolean}
+ */
+function isValidating(elementName) {
+  let template = _templateMap2.default[elementName];
+  if (template) {
+    return templateIsValidating(template);
+  }
+  return false;
+}
+
+/**
+ * Returns true if the template is currently invalid and `startValidating` has been called since the last invalidation.
+ * If false, the template must be validated.
+ * @param {HTMLTemplateElement} template
+ * @return {boolean}
+ */
+function templateIsValidating(template) {
+  return !templateIsValid(template) && template[VALIDATING_VERSION] === template[NEXT_VERSION];
+}
+
+/**
+ * the template is marked as `validating` for one microtask so that all instances
+ * found in the tree crawl of `applyStyle` will update themselves,
+ * but the template will only be updated once.
+ * @param {string} elementName
+*/
+function startValidating(elementName) {
+  let template = _templateMap2.default[elementName];
+  startValidatingTemplate(template);
+}
+
+/**
+ * Begin an asynchronous invalidation cycle.
+ * This should be called after every validation of a template
+ *
+ * After one microtask, the template will be marked as valid until the next call to `invalidateTemplate`
+ * @param {HTMLTemplateElement} template
+ */
+function startValidatingTemplate(template) {
+  // remember that the current "next version" is the reason for this validation cycle
+  template[VALIDATING_VERSION] = template[NEXT_VERSION];
+  // however, there only needs to be one async task to clear the counters
+  if (!template._validating) {
+    template._validating = true;
+    promise.then(function () {
+      // sync the current version to let future invalidations cause a refresh cycle
+      template[CURRENT_VERSION] = template[NEXT_VERSION];
+      template._validating = false;
+    });
+  }
+}
+
+/**
+ * @return {boolean}
+ */
+function elementsAreInvalid() {
+  for (let elementName in _templateMap2.default) {
+    let template = _templateMap2.default[elementName];
+    if (!templateIsValid(template)) {
+      return true;
+    }
+  }
+  return false;
+}
+
+/***/ }),
+/* 52 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.importHref = undefined;
+
+__webpack_require__(1);
+
+// run a callback when HTMLImports are ready or immediately if
+// this api is not available.
+function whenImportsReady(cb) {
+  if (window.HTMLImports) {
+    HTMLImports.whenReady(cb);
+  } else {
+    cb();
+  }
+}
+
+const importHref = exports.importHref = function (href, onload, onerror, optAsync) {
+  let link = /** @type {HTMLLinkElement} */
+  document.head.querySelector('link[href="' + href + '"][import-href]');
+  if (!link) {
+    link = /** @type {HTMLLinkElement} */document.createElement('link');
+    link.rel = 'import';
+    link.href = href;
+    link.setAttribute('import-href', '');
+  }
+  // always ensure link has `async` attribute if user specified one,
+  // even if it was previously not async. This is considered less confusing.
+  if (optAsync) {
+    link.setAttribute('async', '');
+  }
+  // NOTE: the link may now be in 3 states: (1) pending insertion,
+  // (2) inflight, (3) already laoded. In each case, we need to add
+  // event listeners to process callbacks.
+  let cleanup = function () {
+    link.removeEventListener('load', loadListener);
+    link.removeEventListener('error', errorListener);
+  };
+  let loadListener = function (event) {
+    cleanup();
+    // In case of a successful load, cache the load event on the link so
+    // that it can be used to short-circuit this method in the future when
+    // it is called with the same href param.
+    link.__dynamicImportLoaded = true;
+    if (onload) {
+      whenImportsReady(() => {
+        onload(event);
+      });
+    }
+  };
+  let errorListener = function (event) {
+    cleanup();
+    // In case of an error, remove the link from the document so that it
+    // will be automatically created again the next time `importHref` is
+    // called.
+    if (link.parentNode) {
+      link.parentNode.removeChild(link);
+    }
+    if (onerror) {
+      whenImportsReady(() => {
+        onerror(event);
+      });
+    }
+  };
+  link.addEventListener('load', loadListener);
+  link.addEventListener('error', errorListener);
+  if (link.parentNode == null) {
+    document.head.appendChild(link);
+    // if the link already loaded, dispatch a fake load event
+    // so that listeners are called and get a proper event argument.
+  } else if (link.__dynamicImportLoaded) {
+    link.dispatchEvent(new Event('load'));
+  }
+  return link;
+};
+
+/***/ }),
+/* 53 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.flush = undefined;
+exports.beforeNextRender = beforeNextRender;
+exports.afterNextRender = afterNextRender;
+
+__webpack_require__(1);
+
+let scheduled = false;
+let beforeRenderQueue = [];
+let afterRenderQueue = [];
+
+function schedule() {
+  scheduled = true;
+  // before next render
+  requestAnimationFrame(function () {
+    scheduled = false;
+    flushQueue(beforeRenderQueue);
+    // after the render
+    setTimeout(function () {
+      runQueue(afterRenderQueue);
+    });
+  });
+}
+
+function flushQueue(queue) {
+  while (queue.length) {
+    callMethod(queue.shift());
+  }
+}
+
+function runQueue(queue) {
+  for (let i = 0, l = queue.length; i < l; i++) {
+    callMethod(queue.shift());
+  }
+}
+
+function callMethod(info) {
+  const context = info[0];
+  const callback = info[1];
+  const args = info[2];
+  try {
+    callback.apply(context, args);
+  } catch (e) {
+    setTimeout(() => {
+      throw e;
+    });
+  }
+}
+
+function flush() {
+  while (beforeRenderQueue.length || afterRenderQueue.length) {
+    flushQueue(beforeRenderQueue);
+    flushQueue(afterRenderQueue);
+  }
+  scheduled = false;
+}
+
+function beforeNextRender(context, callback, args) {
+  if (!scheduled) {
+    schedule();
+  }
+  beforeRenderQueue.push([context, callback, args]);
+}
+
+function afterNextRender(context, callback, args) {
+  if (!scheduled) {
+    schedule();
+  }
+  afterRenderQueue.push([context, callback, args]);
+}
+
+exports.flush = flush;
+
+/***/ }),
+/* 54 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+function resolve() {
+  document.body.removeAttribute('unresolved');
+}
+
+if (document.readyState === 'interactive' || document.readyState === 'complete') {
+  resolve();
+} else {
+  window.addEventListener('DOMContentLoaded', resolve);
+}
+
+/***/ }),
+/* 55 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.FlattenedNodesObserver = undefined;
+
+__webpack_require__(1);
+
+var _arraySplice = __webpack_require__(37);
+
+var _async = __webpack_require__(6);
+
+/**
+ * Returns true if `node` is a slot element
+ * @param {HTMLElement} node Node to test.
+ * @return {boolean} Returns true if the given `node` is a slot
+ * @private
+ */
+function isSlot(node) {
+  return node.localName === 'slot';
+}
+
+/**
+ * Class that listens for changes (additions or removals) to
+ * "flattened nodes" on a given `node`. The list of flattened nodes consists
+ * of a node's children and, for any children that are `<slot>` elements,
+ * the expanded flattened list of `assignedNodes`.
+ * For example, if the observed node has children `<a></a><slot></slot><b></b>`
+ * and the `<slot>` has one `<div>` assigned to it, then the flattened
+ * nodes list is `<a></a><div></div><b></b>`. If the `<slot>` has other
+ * `<slot>` elements assigned to it, these are flattened as well.
+ *
+ * The provided `callback` is called whenever any change to this list
+ * of flattened nodes occurs, where an addition or removal of a node is
+ * considered a change. The `callback` is called with one argument, an object
+ * containing an array of any `addedNodes` and `removedNodes`.
+ *
+ * Note: the callback is called asynchronous to any changes
+ * at a microtask checkpoint. This is because observation is performed using
+ * `MutationObserver` and the `<slot>` element's `slotchange` event which
+ * are asynchronous.
+ *
+ * @memberof Polymer
+ * @summary Class that listens for changes (additions or removals) to
+ * "flattened nodes" on a given `node`.
+ */
+class FlattenedNodesObserver {
+
+  /**
+   * Returns the list of flattened nodes for the given `node`.
+   * This list consists of a node's children and, for any children
+   * that are `<slot>` elements, the expanded flattened list of `assignedNodes`.
+   * For example, if the observed node has children `<a></a><slot></slot><b></b>`
+   * and the `<slot>` has one `<div>` assigned to it, then the flattened
+   * nodes list is `<a></a><div></div><b></b>`. If the `<slot>` has other
+   * `<slot>` elements assigned to it, these are flattened as well.
+   *
+   * @param {HTMLElement|HTMLSlotElement} node The node for which to return the list of flattened nodes.
+   * @return {Array} The list of flattened nodes for the given `node`.
+  */
+  static getFlattenedNodes(node) {
+    if (isSlot(node)) {
+      return (/** @type {HTMLSlotElement} */node.assignedNodes({ flatten: true })
+      );
+    } else {
+      return Array.from(node.childNodes).map(node => {
+        if (isSlot(node)) {
+          return (/** @type {HTMLSlotElement} */node.assignedNodes({ flatten: true })
+          );
+        } else {
+          return [node];
+        }
+      }).reduce((a, b) => a.concat(b), []);
+    }
+  }
+
+  /**
+   * @param {Node} target Node on which to listen for changes.
+   * @param {Function} callback Function called when there are additions
+   * or removals from the target's list of flattened nodes.
+  */
+  constructor(target, callback) {
+    /** @type {MutationObserver} */
+    this._shadyChildrenObserver = null;
+    /** @type {MutationObserver} */
+    this._nativeChildrenObserver = null;
+    this._connected = false;
+    this._target = target;
+    this.callback = callback;
+    this._effectiveNodes = [];
+    this._observer = null;
+    this._scheduled = false;
+    /** @type {function()} */
+    this._boundSchedule = () => {
+      this._schedule();
+    };
+    this.connect();
+    this._schedule();
+  }
+
+  /**
+   * Activates an observer. This method is automatically called when
+   * a `FlattenedNodesObserver` is created. It should only be called to
+   * re-activate an observer that has been deactivated via the `disconnect` method.
+   */
+  connect() {
+    if (isSlot(this._target)) {
+      this._listenSlots([this._target]);
+    } else {
+      this._listenSlots(this._target.children);
+      if (window.ShadyDOM) {
+        this._shadyChildrenObserver = ShadyDOM.observeChildren(this._target, mutations => {
+          this._processMutations(mutations);
+        });
+      } else {
+        this._nativeChildrenObserver = new MutationObserver(mutations => {
+          this._processMutations(mutations);
+        });
+        this._nativeChildrenObserver.observe(this._target, { childList: true });
+      }
+    }
+    this._connected = true;
+  }
+
+  /**
+   * Deactivates the flattened nodes observer. After calling this method
+   * the observer callback will not be called when changes to flattened nodes
+   * occur. The `connect` method may be subsequently called to reactivate
+   * the observer.
+   */
+  disconnect() {
+    if (isSlot(this._target)) {
+      this._unlistenSlots([this._target]);
+    } else {
+      this._unlistenSlots(this._target.children);
+      if (window.ShadyDOM && this._shadyChildrenObserver) {
+        ShadyDOM.unobserveChildren(this._shadyChildrenObserver);
+        this._shadyChildrenObserver = null;
+      } else if (this._nativeChildrenObserver) {
+        this._nativeChildrenObserver.disconnect();
+        this._nativeChildrenObserver = null;
+      }
+    }
+    this._connected = false;
+  }
+
+  _schedule() {
+    if (!this._scheduled) {
+      this._scheduled = true;
+      _async.microTask.run(() => this.flush());
+    }
+  }
+
+  _processMutations(mutations) {
+    this._processSlotMutations(mutations);
+    this.flush();
+  }
+
+  _processSlotMutations(mutations) {
+    if (mutations) {
+      for (let i = 0; i < mutations.length; i++) {
+        let mutation = mutations[i];
+        if (mutation.addedNodes) {
+          this._listenSlots(mutation.addedNodes);
+        }
+        if (mutation.removedNodes) {
+          this._unlistenSlots(mutation.removedNodes);
+        }
+      }
+    }
+  }
+
+  /**
+   * Flushes the observer causing any pending changes to be immediately
+   * delivered the observer callback. By default these changes are delivered
+   * asynchronously at the next microtask checkpoint.
+   *
+   * @return {boolean} Returns true if any pending changes caused the observer
+   * callback to run.
+   */
+  flush() {
+    if (!this._connected) {
+      return false;
+    }
+    if (window.ShadyDOM) {
+      ShadyDOM.flush();
+    }
+    if (this._nativeChildrenObserver) {
+      this._processSlotMutations(this._nativeChildrenObserver.takeRecords());
+    } else if (this._shadyChildrenObserver) {
+      this._processSlotMutations(this._shadyChildrenObserver.takeRecords());
+    }
+    this._scheduled = false;
+    let info = {
+      target: this._target,
+      addedNodes: [],
+      removedNodes: []
+    };
+    let newNodes = this.constructor.getFlattenedNodes(this._target);
+    let splices = (0, _arraySplice.calculateSplices)(newNodes, this._effectiveNodes);
+    // process removals
+    for (let i = 0, s; i < splices.length && (s = splices[i]); i++) {
+      for (let j = 0, n; j < s.removed.length && (n = s.removed[j]); j++) {
+        info.removedNodes.push(n);
+      }
+    }
+    // process adds
+    for (let i = 0, s; i < splices.length && (s = splices[i]); i++) {
+      for (let j = s.index; j < s.index + s.addedCount; j++) {
+        info.addedNodes.push(newNodes[j]);
+      }
+    }
+    // update cache
+    this._effectiveNodes = newNodes;
+    let didFlush = false;
+    if (info.addedNodes.length || info.removedNodes.length) {
+      didFlush = true;
+      this.callback.call(this._target, info);
+    }
+    return didFlush;
+  }
+
+  _listenSlots(nodeList) {
+    for (let i = 0; i < nodeList.length; i++) {
+      let n = nodeList[i];
+      if (isSlot(n)) {
+        n.addEventListener('slotchange', this._boundSchedule);
+      }
+    }
+  }
+
+  _unlistenSlots(nodeList) {
+    for (let i = 0; i < nodeList.length; i++) {
+      let n = nodeList[i];
+      if (isSlot(n)) {
+        n.removeEventListener('slotchange', this._boundSchedule);
+      }
+    }
+  }
+
+}
+
+exports.FlattenedNodesObserver = FlattenedNodesObserver;
+
+/***/ }),
+/* 56 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.mixinBehaviors = exports.Class = undefined;
+
+var _legacyElementMixin = __webpack_require__(30);
+
+var _domModule = __webpack_require__(29);
+
+let metaProps = {
+  attached: true,
+  detached: true,
+  ready: true,
+  created: true,
+  beforeRegister: true,
+  registered: true,
+  attributeChanged: true,
+  // meta objects
+  behaviors: true
+};
+
+/**
+ * Applies a "legacy" behavior or array of behaviors to the provided class.
+ *
+ * Note: this method will automatically also apply the `Polymer.LegacyElementMixin`
+ * to ensure that any legacy behaviors can rely on legacy Polymer API on
+ * the underlying element.
+ *
+ * @param {!(Object|Array)} behaviors Behavior object or array of behaviors.
+ * @param {!HTMLElement|function(new:HTMLElement)} klass Element class.
+ * @return {function(new:HTMLElement)} Returns a new Element class extended by the
+ * passed in `behaviors` and also by `Polymer.LegacyElementMixin`.
+ * @memberof Polymer
+ * @suppress {invalidCasts, checkTypes}
+ */
+function mixinBehaviors(behaviors, klass) {
+  if (!behaviors) {
+    return (/** @type {HTMLElement} */klass
+    );
+  }
+  // NOTE: ensure the bahevior is extending a class with
+  // legacy element api. This is necessary since behaviors expect to be able
+  // to access 1.x legacy api.
+  klass = (0, _legacyElementMixin.LegacyElementMixin)(klass);
+  if (!Array.isArray(behaviors)) {
+    behaviors = [behaviors];
+  }
+  let superBehaviors = klass.prototype.behaviors;
+  // get flattened, deduped list of behaviors *not* already on super class
+  behaviors = flattenBehaviors(behaviors, null, superBehaviors);
+  // mixin new behaviors
+  klass = _mixinBehaviors(behaviors, klass);
+  if (superBehaviors) {
+    behaviors = superBehaviors.concat(behaviors);
+  }
+  // Set behaviors on prototype for BC...
+  klass.prototype.behaviors = behaviors;
+  return klass;
+}
+
+// NOTE:
+// 1.x
+// Behaviors were mixed in *in reverse order* and de-duped on the fly.
+// The rule was that behavior properties were copied onto the element
+// prototype if and only if the property did not already exist.
+// Given: Polymer{ behaviors: [A, B, C, A, B]}, property copy order was:
+// (1), B, (2), A, (3) C. This means prototype properties win over
+// B properties win over A win over C. This mirrors what would happen
+// with inheritance if element extended B extended A extended C.
+//
+// Again given, Polymer{ behaviors: [A, B, C, A, B]}, the resulting
+// `behaviors` array was [C, A, B].
+// Behavior lifecycle methods were called in behavior array order
+// followed by the element, e.g. (1) C.created, (2) A.created,
+// (3) B.created, (4) element.created. There was no support for
+// super, and "super-behavior" methods were callable only by name).
+//
+// 2.x
+// Behaviors are made into proper mixins which live in the
+// element's prototype chain. Behaviors are placed in the element prototype
+// eldest to youngest and de-duped youngest to oldest:
+// So, first [A, B, C, A, B] becomes [C, A, B] then,
+// the element prototype becomes (oldest) (1) Polymer.Element, (2) class(C),
+// (3) class(A), (4) class(B), (5) class(Polymer({...})).
+// Result:
+// This means element properties win over B properties win over A win
+// over C. (same as 1.x)
+// If lifecycle is called (super then me), order is
+// (1) C.created, (2) A.created, (3) B.created, (4) element.created
+// (again same as 1.x)
+function _mixinBehaviors(behaviors, klass) {
+  for (let i = 0; i < behaviors.length; i++) {
+    let b = behaviors[i];
+    if (b) {
+      klass = Array.isArray(b) ? _mixinBehaviors(b, klass) : GenerateClassFromInfo(b, klass);
+    }
+  }
+  return klass;
+}
+
+/**
+ * @param {Array} behaviors List of behaviors to flatten.
+ * @param {Array=} list Target list to flatten behaviors into.
+ * @param {Array=} exclude List of behaviors to exclude from the list.
+ * @return {!Array} Returns the list of flattened behaviors.
+ */
+function flattenBehaviors(behaviors, list, exclude) {
+  list = list || [];
+  for (let i = behaviors.length - 1; i >= 0; i--) {
+    let b = behaviors[i];
+    if (b) {
+      if (Array.isArray(b)) {
+        flattenBehaviors(b, list);
+      } else {
+        // dedup
+        if (list.indexOf(b) < 0 && (!exclude || exclude.indexOf(b) < 0)) {
+          list.unshift(b);
+        }
+      }
+    } else {
+      console.warn('behavior is null, check for missing or 404 import');
+    }
+  }
+  return list;
+}
+
+/**
+ * @param {!PolymerInit} info Polymer info object
+ * @param {function(new:HTMLElement)} Base base class to extend with info object
+ * @return {function(new:HTMLElement)} Generated class
+ * @suppress {checkTypes}
+ * @private
+ */
+function GenerateClassFromInfo(info, Base) {
+
+  class PolymerGenerated extends Base {
+
+    static get properties() {
+      return info.properties;
+    }
+
+    static get observers() {
+      return info.observers;
+    }
+
+    /**
+     * @return {HTMLTemplateElement} template for this class
+     */
+    static get template() {
+      // get template first from any imperative set in `info._template`
+      return info._template ||
+      // next look in dom-module associated with this element's is.
+      _domModule.DomModule && _domModule.DomModule.import(this.is, 'template') ||
+      // next look for superclass template (note: use superclass symbol
+      // to ensure correct `this.is`)
+      Base.template ||
+      // finally fall back to `_template` in element's protoype.
+      this.prototype._template || null;
+    }
+
+    created() {
+      super.created();
+      if (info.created) {
+        info.created.call(this);
+      }
+    }
+
+    _registered() {
+      super._registered();
+      /* NOTE: `beforeRegister` is called here for bc, but the behavior
+       is different than in 1.x. In 1.0, the method was called *after*
+       mixing prototypes together but *before* processing of meta-objects.
+       However, dynamic effects can still be set here and can be done either
+       in `beforeRegister` or `registered`. It is no longer possible to set
+       `is` in `beforeRegister` as you could in 1.x.
+      */
+      if (info.beforeRegister) {
+        info.beforeRegister.call(Object.getPrototypeOf(this));
+      }
+      if (info.registered) {
+        info.registered.call(Object.getPrototypeOf(this));
+      }
+    }
+
+    _applyListeners() {
+      super._applyListeners();
+      if (info.listeners) {
+        for (let l in info.listeners) {
+          this._addMethodEventListenerToNode(this, l, info.listeners[l]);
+        }
+      }
+    }
+
+    // note: exception to "super then me" rule;
+    // do work before calling super so that super attributes
+    // only apply if not already set.
+    _ensureAttributes() {
+      if (info.hostAttributes) {
+        for (let a in info.hostAttributes) {
+          this._ensureAttribute(a, info.hostAttributes[a]);
+        }
+      }
+      super._ensureAttributes();
+    }
+
+    ready() {
+      super.ready();
+      if (info.ready) {
+        info.ready.call(this);
+      }
+    }
+
+    attached() {
+      super.attached();
+      if (info.attached) {
+        info.attached.call(this);
+      }
+    }
+
+    detached() {
+      super.detached();
+      if (info.detached) {
+        info.detached.call(this);
+      }
+    }
+
+    attributeChanged(name, old, value) {
+      super.attributeChanged(name, old, value);
+      if (info.attributeChanged) {
+        info.attributeChanged.call(this, name, old, value);
+      }
+    }
+  }
+
+  PolymerGenerated.generatedFrom = info;
+
+  for (let p in info) {
+    // NOTE: cannot copy `metaProps` methods onto prototype at least because
+    // `super.ready` must be called and is not included in the user fn.
+    if (!(p in metaProps)) {
+      let pd = Object.getOwnPropertyDescriptor(info, p);
+      if (pd) {
+        Object.defineProperty(PolymerGenerated.prototype, p, pd);
+      }
+    }
+  }
+
+  return PolymerGenerated;
+}
+
+const Class = exports.Class = function (info) {
+  if (!info) {
+    console.warn('Polymer.Class requires `info` argument');
+  }
+  let klass = GenerateClassFromInfo(info, info.behaviors ?
+  // note: mixinBehaviors ensures `LegacyElementMixin`.
+  mixinBehaviors(info.behaviors, HTMLElement) : (0, _legacyElementMixin.LegacyElementMixin)(HTMLElement));
+  // decorate klass with registration info
+  klass.is = info.is;
+  return klass;
+};
+
+exports.mixinBehaviors = mixinBehaviors;
+
+/***/ }),
+/* 57 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.Templatizer = undefined;
+
+var _templatize = __webpack_require__(22);
+
+let TemplateInstanceBase = _templatize.TemplateInstanceBase; // eslint-disable-line
+
+/**
+ * @typedef {{
+ *   _templatizerTemplate: HTMLTemplateElement,
+ *   _parentModel: boolean,
+ *   _instanceProps: Object,
+ *   _forwardHostPropV2: Function,
+ *   _notifyInstancePropV2: Function,
+ *   ctor: TemplateInstanceBase
+ * }}
+ */
+let TemplatizerUser; // eslint-disable-line
+
+/**
+ * The `Polymer.Templatizer` behavior adds methods to generate instances of
+ * templates that are each managed by an anonymous `Polymer.PropertyEffects`
+ * instance where data-bindings in the stamped template content are bound to
+ * accessors on itself.
+ *
+ * This behavior is provided in Polymer 2.x as a hybrid-element convenience
+ * only.  For non-hybrid usage, the `Polymer.Templatize` library
+ * should be used instead.
+ *
+ * Example:
+ *
+ *     // Get a template from somewhere, e.g. light DOM
+ *     let template = this.querySelector('template');
+ *     // Prepare the template
+ *     this.templatize(template);
+ *     // Instance the template with an initial data model
+ *     let instance = this.stamp({myProp: 'initial'});
+ *     // Insert the instance's DOM somewhere, e.g. light DOM
+ *     Polymer.dom(this).appendChild(instance.root);
+ *     // Changing a property on the instance will propagate to bindings
+ *     // in the template
+ *     instance.myProp = 'new value';
+ *
+ * Users of `Templatizer` may need to implement the following abstract
+ * API's to determine how properties and paths from the host should be
+ * forwarded into to instances:
+ *
+ *     _forwardHostPropV2: function(prop, value)
+ *
+ * Likewise, users may implement these additional abstract API's to determine
+ * how instance-specific properties that change on the instance should be
+ * forwarded out to the host, if necessary.
+ *
+ *     _notifyInstancePropV2: function(inst, prop, value)
+ *
+ * In order to determine which properties are instance-specific and require
+ * custom notification via `_notifyInstanceProp`, define an `_instanceProps`
+ * object containing keys for each instance prop, for example:
+ *
+ *     _instanceProps: {
+ *       item: true,
+ *       index: true
+ *     }
+ *
+ * Any properties used in the template that are not defined in _instanceProp
+ * will be forwarded out to the Templatize `owner` automatically.
+ *
+ * Users may also implement the following abstract function to show or
+ * hide any DOM generated using `stamp`:
+ *
+ *     _showHideChildren: function(shouldHide)
+ *
+ * Note that some callbacks are suffixed with `V2` in the Polymer 2.x behavior
+ * as the implementations will need to differ from the callbacks required
+ * by the 1.x Templatizer API due to changes in the `TemplateInstance` API
+ * between versions 1.x and 2.x.
+ *
+ * @polymerBehavior
+ * @memberof Polymer
+ */
+let Templatizer = {
+
+  /**
+   * Generates an anonymous `TemplateInstance` class (stored as `this.ctor`)
+   * for the provided template.  This method should be called once per
+   * template to prepare an element for stamping the template, followed
+   * by `stamp` to create new instances of the template.
+   *
+   * @param {HTMLTemplateElement} template Template to prepare
+   * @param {boolean=} mutableData When `true`, the generated class will skip
+   *   strict dirty-checking for objects and arrays (always consider them to
+   *   be "dirty"). Defaults to false.
+   * @this {TemplatizerUser}
+   */
+  templatize(template, mutableData) {
+    this._templatizerTemplate = template;
+    this.ctor = _templatize.Templatize.templatize(template, this, {
+      mutableData: Boolean(mutableData),
+      parentModel: this._parentModel,
+      instanceProps: this._instanceProps,
+      forwardHostProp: this._forwardHostPropV2,
+      notifyInstanceProp: this._notifyInstancePropV2
+    });
+  },
+
+  /**
+   * Creates an instance of the template prepared by `templatize`.  The object
+   * returned is an instance of the anonymous class generated by `templatize`
+   * whose `root` property is a document fragment containing newly cloned
+   * template content, and which has property accessors corresponding to
+   * properties referenced in template bindings.
+   *
+   * @param {Object=} model Object containing initial property values to
+   *   populate into the template bindings.
+   * @return {TemplateInstanceBase} Returns the created instance of
+   * the template prepared by `templatize`.
+   * @this {TemplatizerUser}
+   */
+  stamp(model) {
+    return new this.ctor(model);
+  },
+
+  /**
+   * Returns the template "model" (`TemplateInstance`) associated with
+   * a given element, which serves as the binding scope for the template
+   * instance the element is contained in.  A template model should be used
+   * to manipulate data associated with this template instance.
+   *
+   * @param {HTMLElement} el Element for which to return a template model.
+   * @return {TemplateInstanceBase} Model representing the binding scope for
+   *   the element.
+   * @this {TemplatizerUser}
+   */
+  modelForElement(el) {
+    return _templatize.Templatize.modelForElement(this._templatizerTemplate, el);
+  }
+};
+
+exports.Templatizer = Templatizer;
+
+/***/ }),
+/* 58 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.DomBind = undefined;
+
+__webpack_require__(1);
+
+var _propertyEffects = __webpack_require__(17);
+
+var _mutableData = __webpack_require__(14);
+
+var _gestureEventListeners = __webpack_require__(35);
+
+/**
+ * @constructor
+ * @extends {HTMLElement}
+ * @implements {Polymer_PropertyEffects}
+ * @implements {Polymer_OptionalMutableData}
+ * @implements {Polymer_GestureEventListeners}
+ */
+const domBindBase = (0, _gestureEventListeners.GestureEventListeners)((0, _mutableData.OptionalMutableData)((0, _propertyEffects.PropertyEffects)(HTMLElement)));
+
+/**
+ * Custom element to allow using Polymer's template features (data binding,
+ * declarative event listeners, etc.) in the main document without defining
+ * a new custom element.
+ *
+ * `<template>` tags utilizing bindings may be wrapped with the `<dom-bind>`
+ * element, which will immediately stamp the wrapped template into the main
+ * document and bind elements to the `dom-bind` element itself as the
+ * binding scope.
+ *
+ * @polymer
+ * @customElement
+ * @appliesMixin Polymer.PropertyEffects
+ * @appliesMixin Polymer.OptionalMutableData
+ * @appliesMixin Polymer.GestureEventListeners
+ * @extends {domBindBase}
+ * @memberof Polymer
+ * @summary Custom element to allow using Polymer's template features (data
+ *   binding, declarative event listeners, etc.) in the main document.
+ */
+class DomBind extends domBindBase {
+
+  static get observedAttributes() {
+    return ['mutable-data'];
+  }
+
+  constructor() {
+    super();
+    this.root = null;
+    this.$ = null;
+    this.__children = null;
+  }
+
+  // assumes only one observed attribute
+  attributeChangedCallback() {
+    this.mutableData = true;
+  }
+
+  connectedCallback() {
+    this.render();
+  }
+
+  disconnectedCallback() {
+    this.__removeChildren();
+  }
+
+  __insertChildren() {
+    this.parentNode.insertBefore(this.root, this);
+  }
+
+  __removeChildren() {
+    if (this.__children) {
+      for (let i = 0; i < this.__children.length; i++) {
+        this.root.appendChild(this.__children[i]);
+      }
+    }
+  }
+
+  /**
+   * Forces the element to render its content. This is typically only
+   * necessary to call if HTMLImports with the async attribute are used.
+   */
+  render() {
+    let template;
+    if (!this.__children) {
+      template = /** @type {HTMLTemplateElement} */template || this.querySelector('template');
+      if (!template) {
+        // Wait until childList changes and template should be there by then
+        let observer = new MutationObserver(() => {
+          template = /** @type {HTMLTemplateElement} */this.querySelector('template');
+          if (template) {
+            observer.disconnect();
+            this.render();
+          } else {
+            throw new Error('dom-bind requires a <template> child');
+          }
+        });
+        observer.observe(this, { childList: true });
+        return;
+      }
+      this.root = this._stampTemplate(template);
+      this.$ = this.root.$;
+      this.__children = [];
+      for (let n = this.root.firstChild; n; n = n.nextSibling) {
+        this.__children[this.__children.length] = n;
+      }
+      this._enableProperties();
+    }
+    this.__insertChildren();
+    this.dispatchEvent(new CustomEvent('dom-change', {
+      bubbles: true,
+      composed: true
+    }));
+  }
+
+}
+
+customElements.define('dom-bind', DomBind);
+
+exports.DomBind = DomBind;
+
+/***/ }),
+/* 59 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.DomIf = undefined;
+
+var _polymerElement = __webpack_require__(5);
+
+var _templatize = __webpack_require__(22);
+
+var _debounce = __webpack_require__(8);
+
+var _flush = __webpack_require__(13);
+
+var _async = __webpack_require__(6);
+
+var _path = __webpack_require__(12);
+
+/**
+ * The `<dom-if>` element will stamp a light-dom `<template>` child when
+ * the `if` property becomes truthy, and the template can use Polymer
+ * data-binding and declarative event features when used in the context of
+ * a Polymer element's template.
+ *
+ * When `if` becomes falsey, the stamped content is hidden but not
+ * removed from dom. When `if` subsequently becomes truthy again, the content
+ * is simply re-shown. This approach is used due to its favorable performance
+ * characteristics: the expense of creating template content is paid only
+ * once and lazily.
+ *
+ * Set the `restamp` property to true to force the stamped content to be
+ * created / destroyed when the `if` condition changes.
+ *
+ * @customElement
+ * @polymer
+ * @extends Polymer.Element
+ * @memberof Polymer
+ * @summary Custom element that conditionally stamps and hides or removes
+ *   template content based on a boolean flag.
+ */
+class DomIf extends _polymerElement.Element {
+
+  // Not needed to find template; can be removed once the analyzer
+  // can find the tag name from customElements.define call
+  static get is() {
+    return 'dom-if';
+  }
+
+  static get template() {
+    return null;
+  }
+
+  static get properties() {
+
+    return {
+
+      /**
+       * Fired whenever DOM is added or removed/hidden by this template (by
+       * default, rendering occurs lazily).  To force immediate rendering, call
+       * `render`.
+       *
+       * @event dom-change
+       */
+
+      /**
+       * A boolean indicating whether this template should stamp.
+       */
+      if: {
+        type: Boolean,
+        observer: '__debounceRender'
+      },
+
+      /**
+       * When true, elements will be removed from DOM and discarded when `if`
+       * becomes false and re-created and added back to the DOM when `if`
+       * becomes true.  By default, stamped elements will be hidden but left
+       * in the DOM when `if` becomes false, which is generally results
+       * in better performance.
+       */
+      restamp: {
+        type: Boolean,
+        observer: '__debounceRender'
+      }
+
+    };
+  }
+
+  constructor() {
+    super();
+    this.__renderDebouncer = null;
+    this.__invalidProps = null;
+    this.__instance = null;
+    this._lastIf = false;
+    this.__ctor = null;
+  }
+
+  __debounceRender() {
+    // Render is async for 2 reasons:
+    // 1. To eliminate dom creation trashing if user code thrashes `if` in the
+    //    same turn. This was more common in 1.x where a compound computed
+    //    property could result in the result changing multiple times, but is
+    //    mitigated to a large extent by batched property processing in 2.x.
+    // 2. To avoid double object propagation when a bag including values bound
+    //    to the `if` property as well as one or more hostProps could enqueue
+    //    the <dom-if> to flush before the <template>'s host property
+    //    forwarding. In that scenario creating an instance would result in
+    //    the host props being set once, and then the enqueued changes on the
+    //    template would set properties a second time, potentially causing an
+    //    object to be set to an instance more than once.  Creating the
+    //    instance async from flushing data ensures this doesn't happen. If
+    //    we wanted a sync option in the future, simply having <dom-if> flush
+    //    (or clear) its template's pending host properties before creating
+    //    the instance would also avoid the problem.
+    this.__renderDebouncer = _debounce.Debouncer.debounce(this.__renderDebouncer, _async.microTask, () => this.__render());
+    (0, _flush.enqueueDebouncer)(this.__renderDebouncer);
+  }
+
+  disconnectedCallback() {
+    super.disconnectedCallback();
+    if (!this.parentNode || this.parentNode.nodeType == Node.DOCUMENT_FRAGMENT_NODE && !this.parentNode.host) {
+      this.__teardownInstance();
+    }
+  }
+
+  connectedCallback() {
+    super.connectedCallback();
+    if (this.if) {
+      this.__debounceRender();
+    }
+  }
+
+  /**
+   * Forces the element to render its content. Normally rendering is
+   * asynchronous to a provoking change. This is done for efficiency so
+   * that multiple changes trigger only a single render. The render method
+   * should be called if, for example, template rendering is required to
+   * validate application state.
+   */
+  render() {
+    (0, _flush.flush)();
+  }
+
+  __render() {
+    if (this.if) {
+      if (!this.__ensureInstance()) {
+        // No template found yet
+        return;
+      }
+      this._showHideChildren();
+    } else if (this.restamp) {
+      this.__teardownInstance();
+    }
+    if (!this.restamp && this.__instance) {
+      this._showHideChildren();
+    }
+    if (this.if != this._lastIf) {
+      this.dispatchEvent(new CustomEvent('dom-change', {
+        bubbles: true,
+        composed: true
+      }));
+      this._lastIf = this.if;
+    }
+  }
+
+  __ensureInstance() {
+    let parentNode = this.parentNode;
+    // Guard against element being detached while render was queued
+    if (parentNode) {
+      if (!this.__ctor) {
+        let template = this.querySelector('template');
+        if (!template) {
+          // Wait until childList changes and template should be there by then
+          let observer = new MutationObserver(() => {
+            if (this.querySelector('template')) {
+              observer.disconnect();
+              this.__render();
+            } else {
+              throw new Error('dom-if requires a <template> child');
+            }
+          });
+          observer.observe(this, { childList: true });
+          return false;
+        }
+        this.__ctor = _templatize.Templatize.templatize(template, this, {
+          // dom-if templatizer instances require `mutable: true`, as
+          // `__syncHostProperties` relies on that behavior to sync objects
+          mutableData: true,
+          /**
+           * @param {string} prop Property to forward
+           * @param {*} value Value of property
+           * @this {this}
+           */
+          forwardHostProp: function (prop, value) {
+            if (this.__instance) {
+              if (this.if) {
+                this.__instance.forwardHostProp(prop, value);
+              } else {
+                // If we have an instance but are squelching host property
+                // forwarding due to if being false, note the invalidated
+                // properties so `__syncHostProperties` can sync them the next
+                // time `if` becomes true
+                this.__invalidProps = this.__invalidProps || Object.create(null);
+                this.__invalidProps[(0, _path.root)(prop)] = true;
+              }
+            }
+          }
+        });
+      }
+      if (!this.__instance) {
+        this.__instance = new this.__ctor();
+        parentNode.insertBefore(this.__instance.root, this);
+      } else {
+        this.__syncHostProperties();
+        let c$ = this.__instance.children;
+        if (c$ && c$.length) {
+          // Detect case where dom-if was re-attached in new position
+          let lastChild = this.previousSibling;
+          if (lastChild !== c$[c$.length - 1]) {
+            for (let i = 0, n; i < c$.length && (n = c$[i]); i++) {
+              parentNode.insertBefore(n, this);
+            }
+          }
+        }
+      }
+    }
+    return true;
+  }
+
+  __syncHostProperties() {
+    let props = this.__invalidProps;
+    if (props) {
+      for (let prop in props) {
+        this.__instance._setPendingProperty(prop, this.__dataHost[prop]);
+      }
+      this.__invalidProps = null;
+      this.__instance._flushProperties();
+    }
+  }
+
+  __teardownInstance() {
+    if (this.__instance) {
+      let c$ = this.__instance.children;
+      if (c$ && c$.length) {
+        // use first child parent, for case when dom-if may have been detached
+        let parent = c$[0].parentNode;
+        for (let i = 0, n; i < c$.length && (n = c$[i]); i++) {
+          parent.removeChild(n);
+        }
+      }
+      this.__instance = null;
+      this.__invalidProps = null;
+    }
+  }
+
+  _showHideChildren() {
+    let hidden = this.__hideTemplateChildren__ || !this.if;
+    if (this.__instance) {
+      this.__instance._showHideChildren(hidden);
+    }
+  }
+
+}
+
+customElements.define(DomIf.is, DomIf);
+
+exports.DomIf = DomIf;
+
+/***/ }),
+/* 60 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.ArraySelector = exports.ArraySelectorMixin = undefined;
+
+var _polymerElement = __webpack_require__(5);
+
+var _mixin = __webpack_require__(4);
+
+var _arraySplice = __webpack_require__(37);
+
+var _elementMixin = __webpack_require__(16);
+
+/**
+ * Element mixin for recording dynamic associations between item paths in a
+ * master `items` array and a `selected` array such that path changes to the
+ * master array (at the host) element or elsewhere via data-binding) are
+ * correctly propagated to items in the selected array and vice-versa.
+ *
+ * The `items` property accepts an array of user data, and via the
+ * `select(item)` and `deselect(item)` API, updates the `selected` property
+ * which may be bound to other parts of the application, and any changes to
+ * sub-fields of `selected` item(s) will be kept in sync with items in the
+ * `items` array.  When `multi` is false, `selected` is a property
+ * representing the last selected item.  When `multi` is true, `selected`
+ * is an array of multiply selected items.
+ *
+ * @polymer
+ * @mixinFunction
+ * @appliesMixin Polymer.ElementMixin
+ * @memberof Polymer
+ * @summary Element mixin for recording dynamic associations between item paths in a
+ * master `items` array and a `selected` array
+ */
+let ArraySelectorMixin = (0, _mixin.dedupingMixin)(superClass => {
+
+  /**
+   * @constructor
+   * @extends {superClass}
+   * @implements {Polymer_ElementMixin}
+   */
+  let elementBase = (0, _elementMixin.ElementMixin)(superClass);
+
+  /**
+   * @polymer
+   * @mixinClass
+   * @implements {Polymer_ArraySelectorMixin}
+   * @unrestricted
+   */
+  class ArraySelectorMixin extends elementBase {
+
+    static get properties() {
+
+      return {
+
+        /**
+         * An array containing items from which selection will be made.
+         */
+        items: {
+          type: Array
+        },
+
+        /**
+         * When `true`, multiple items may be selected at once (in this case,
+         * `selected` is an array of currently selected items).  When `false`,
+         * only one item may be selected at a time.
+         */
+        multi: {
+          type: Boolean,
+          value: false
+        },
+
+        /**
+         * When `multi` is true, this is an array that contains any selected.
+         * When `multi` is false, this is the currently selected item, or `null`
+         * if no item is selected.
+         * @type {?(Object|Array<!Object>)}
+         */
+        selected: {
+          type: Object,
+          notify: true
+        },
+
+        /**
+         * When `multi` is false, this is the currently selected item, or `null`
+         * if no item is selected.
+         * @type {?Object}
+         */
+        selectedItem: {
+          type: Object,
+          notify: true
+        },
+
+        /**
+         * When `true`, calling `select` on an item that is already selected
+         * will deselect the item.
+         */
+        toggle: {
+          type: Boolean,
+          value: false
+        }
+
+      };
+    }
+
+    static get observers() {
+      return ['__updateSelection(multi, items.*)'];
+    }
+
+    constructor() {
+      super();
+      this.__lastItems = null;
+      this.__lastMulti = null;
+      this.__selectedMap = null;
+    }
+
+    __updateSelection(multi, itemsInfo) {
+      let path = itemsInfo.path;
+      if (path == 'items') {
+        // Case 1 - items array changed, so diff against previous array and
+        // deselect any removed items and adjust selected indices
+        let newItems = itemsInfo.base || [];
+        let lastItems = this.__lastItems;
+        let lastMulti = this.__lastMulti;
+        if (multi !== lastMulti) {
+          this.clearSelection();
+        }
+        if (lastItems) {
+          let splices = (0, _arraySplice.calculateSplices)(newItems, lastItems);
+          this.__applySplices(splices);
+        }
+        this.__lastItems = newItems;
+        this.__lastMulti = multi;
+      } else if (itemsInfo.path == 'items.splices') {
+        // Case 2 - got specific splice information describing the array mutation:
+        // deselect any removed items and adjust selected indices
+        this.__applySplices(itemsInfo.value.indexSplices);
+      } else {
+        // Case 3 - an array element was changed, so deselect the previous
+        // item for that index if it was previously selected
+        let part = path.slice('items.'.length);
+        let idx = parseInt(part, 10);
+        if (part.indexOf('.') < 0 && part == idx) {
+          this.__deselectChangedIdx(idx);
+        }
+      }
+    }
+
+    __applySplices(splices) {
+      let selected = this.__selectedMap;
+      // Adjust selected indices and mark removals
+      for (let i = 0; i < splices.length; i++) {
+        let s = splices[i];
+        selected.forEach((idx, item) => {
+          if (idx < s.index) {
+            // no change
+          } else if (idx >= s.index + s.removed.length) {
+            // adjust index
+            selected.set(item, idx + s.addedCount - s.removed.length);
+          } else {
+            // remove index
+            selected.set(item, -1);
+          }
+        });
+        for (let j = 0; j < s.addedCount; j++) {
+          let idx = s.index + j;
+          if (selected.has(this.items[idx])) {
+            selected.set(this.items[idx], idx);
+          }
+        }
+      }
+      // Update linked paths
+      this.__updateLinks();
+      // Remove selected items that were removed from the items array
+      let sidx = 0;
+      selected.forEach((idx, item) => {
+        if (idx < 0) {
+          if (this.multi) {
+            this.splice('selected', sidx, 1);
+          } else {
+            this.selected = this.selectedItem = null;
+          }
+          selected.delete(item);
+        } else {
+          sidx++;
+        }
+      });
+    }
+
+    __updateLinks() {
+      this.__dataLinkedPaths = {};
+      if (this.multi) {
+        let sidx = 0;
+        this.__selectedMap.forEach(idx => {
+          if (idx >= 0) {
+            this.linkPaths('items.' + idx, 'selected.' + sidx++);
+          }
+        });
+      } else {
+        this.__selectedMap.forEach(idx => {
+          this.linkPaths('selected', 'items.' + idx);
+          this.linkPaths('selectedItem', 'items.' + idx);
+        });
+      }
+    }
+
+    /**
+     * Clears the selection state.
+     *
+     */
+    clearSelection() {
+      // Unbind previous selection
+      this.__dataLinkedPaths = {};
+      // The selected map stores 3 pieces of information:
+      // key: items array object
+      // value: items array index
+      // order: selected array index
+      this.__selectedMap = new Map();
+      // Initialize selection
+      this.selected = this.multi ? [] : null;
+      this.selectedItem = null;
+    }
+
+    /**
+     * Returns whether the item is currently selected.
+     *
+     * @param {*} item Item from `items` array to test
+     * @return {boolean} Whether the item is selected
+     */
+    isSelected(item) {
+      return this.__selectedMap.has(item);
+    }
+
+    /**
+     * Returns whether the item is currently selected.
+     *
+     * @param {number} idx Index from `items` array to test
+     * @return {boolean} Whether the item is selected
+     */
+    isIndexSelected(idx) {
+      return this.isSelected(this.items[idx]);
+    }
+
+    __deselectChangedIdx(idx) {
+      let sidx = this.__selectedIndexForItemIndex(idx);
+      if (sidx >= 0) {
+        let i = 0;
+        this.__selectedMap.forEach((idx, item) => {
+          if (sidx == i++) {
+            this.deselect(item);
+          }
+        });
+      }
+    }
+
+    __selectedIndexForItemIndex(idx) {
+      let selected = this.__dataLinkedPaths['items.' + idx];
+      if (selected) {
+        return parseInt(selected.slice('selected.'.length), 10);
+      }
+    }
+
+    /**
+     * Deselects the given item if it is already selected.
+     *
+     * @param {*} item Item from `items` array to deselect
+     */
+    deselect(item) {
+      let idx = this.__selectedMap.get(item);
+      if (idx >= 0) {
+        this.__selectedMap.delete(item);
+        let sidx;
+        if (this.multi) {
+          sidx = this.__selectedIndexForItemIndex(idx);
+        }
+        this.__updateLinks();
+        if (this.multi) {
+          this.splice('selected', sidx, 1);
+        } else {
+          this.selected = this.selectedItem = null;
+        }
+      }
+    }
+
+    /**
+     * Deselects the given index if it is already selected.
+     *
+     * @param {number} idx Index from `items` array to deselect
+     */
+    deselectIndex(idx) {
+      this.deselect(this.items[idx]);
+    }
+
+    /**
+     * Selects the given item.  When `toggle` is true, this will automatically
+     * deselect the item if already selected.
+     *
+     * @param {*} item Item from `items` array to select
+     */
+    select(item) {
+      this.selectIndex(this.items.indexOf(item));
+    }
+
+    /**
+     * Selects the given index.  When `toggle` is true, this will automatically
+     * deselect the item if already selected.
+     *
+     * @param {number} idx Index from `items` array to select
+     */
+    selectIndex(idx) {
+      let item = this.items[idx];
+      if (!this.isSelected(item)) {
+        if (!this.multi) {
+          this.__selectedMap.clear();
+        }
+        this.__selectedMap.set(item, idx);
+        this.__updateLinks();
+        if (this.multi) {
+          this.push('selected', item);
+        } else {
+          this.selected = this.selectedItem = item;
+        }
+      } else if (this.toggle) {
+        this.deselectIndex(idx);
+      }
+    }
+
+  }
+
+  return ArraySelectorMixin;
+});
+
+exports.ArraySelectorMixin = ArraySelectorMixin;
+
+/**
+ * @constructor
+ * @extends {Polymer.Element}
+ * @implements {Polymer_ArraySelectorMixin}
+ */
+
+let baseArraySelector = ArraySelectorMixin(_polymerElement.Element);
+
+/**
+ * Element implementing the `Polymer.ArraySelector` mixin, which records
+ * dynamic associations between item paths in a master `items` array and a
+ * `selected` array such that path changes to the master array (at the host)
+ * element or elsewhere via data-binding) are correctly propagated to items
+ * in the selected array and vice-versa.
+ *
+ * The `items` property accepts an array of user data, and via the
+ * `select(item)` and `deselect(item)` API, updates the `selected` property
+ * which may be bound to other parts of the application, and any changes to
+ * sub-fields of `selected` item(s) will be kept in sync with items in the
+ * `items` array.  When `multi` is false, `selected` is a property
+ * representing the last selected item.  When `multi` is true, `selected`
+ * is an array of multiply selected items.
+ *
+ * Example:
+ *
+ * ```html
+ * <dom-module id="employee-list">
+ *
+ *   <template>
+ *
+ *     <div> Employee list: </div>
+ *     <template is="dom-repeat" id="employeeList" items="{{employees}}">
+ *         <div>First name: <span>{{item.first}}</span></div>
+ *         <div>Last name: <span>{{item.last}}</span></div>
+ *         <button on-click="toggleSelection">Select</button>
+ *     </template>
+ *
+ *     <array-selector id="selector" items="{{employees}}" selected="{{selected}}" multi toggle></array-selector>
+ *
+ *     <div> Selected employees: </div>
+ *     <template is="dom-repeat" items="{{selected}}">
+ *         <div>First name: <span>{{item.first}}</span></div>
+ *         <div>Last name: <span>{{item.last}}</span></div>
+ *     </template>
+ *
+ *   </template>
+ *
+ * </dom-module>
+ * ```
+ *
+ * ```js
+ * Polymer({
+ *   is: 'employee-list',
+ *   ready() {
+ *     this.employees = [
+ *         {first: 'Bob', last: 'Smith'},
+ *         {first: 'Sally', last: 'Johnson'},
+ *         ...
+ *     ];
+ *   },
+ *   toggleSelection(e) {
+ *     let item = this.$.employeeList.itemForElement(e.target);
+ *     this.$.selector.select(item);
+ *   }
+ * });
+ * ```
+ *
+ * @polymer
+ * @customElement
+ * @extends {baseArraySelector}
+ * @appliesMixin Polymer.ArraySelectorMixin
+ * @memberof Polymer
+ * @summary Custom element that links paths between an input `items` array and
+ *   an output `selected` item or array based on calls to its selection API.
+ */
+class ArraySelector extends baseArraySelector {
+  // Not needed to find template; can be removed once the analyzer
+  // can find the tag name from customElements.define call
+  static get is() {
+    return 'array-selector';
+  }
+}
+customElements.define(ArraySelector.is, ArraySelector);
+exports.ArraySelector = ArraySelector;
+
+/***/ }),
+/* 61 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.CustomStyle = undefined;
+
+__webpack_require__(62);
+
+var _styleGather = __webpack_require__(28);
+
+const attr = 'include';
+
+const CustomStyleInterface = window.ShadyCSS.CustomStyleInterface;
+
+/**
+ * Custom element for defining styles in the main document that can take
+ * advantage of [shady DOM](https://github.com/webcomponents/shadycss) shims
+ * for style encapsulation, custom properties, and custom mixins.
+ *
+ * - Document styles defined in a `<custom-style>` are shimmed to ensure they
+ *   do not leak into local DOM when running on browsers without native
+ *   Shadow DOM.
+ * - Custom properties can be defined in a `<custom-style>`. Use the `html` selector
+ *   to define custom properties that apply to all custom elements.
+ * - Custom mixins can be defined in a `<custom-style>`, if you import the optional
+ *   [apply shim](https://github.com/webcomponents/shadycss#about-applyshim)
+ *   (`shadycss/apply-shim.html`).
+ *
+ * To use:
+ *
+ * - Import `custom-style.html`.
+ * - Place a `<custom-style>` element in the main document, wrapping an inline `<style>` tag that
+ *   contains the CSS rules you want to shim.
+ *
+ * For example:
+ *
+ * ```
+ * <!-- import apply shim--only required if using mixins -->
+ * <link rel="import href="bower_components/shadycss/apply-shim.html">
+ * <!-- import custom-style element -->
+ * <link rel="import" href="bower_components/polymer/lib/elements/custom-style.html">
+ * ...
+ * <custom-style>
+ *   <style>
+ *     html {
+ *       --custom-color: blue;
+ *       --custom-mixin: {
+ *         font-weight: bold;
+ *         color: red;
+ *       };
+ *     }
+ *   </style>
+ * </custom-style>
+ * ```
+ *
+ * @customElement
+ * @extends HTMLElement
+ * @memberof Polymer
+ * @summary Custom element for defining styles in the main document that can
+ *   take advantage of Polymer's style scoping and custom properties shims.
+ */
+class CustomStyle extends HTMLElement {
+  constructor() {
+    super();
+    this._style = null;
+    CustomStyleInterface.addCustomStyle(this);
+  }
+  /**
+   * Returns the light-DOM `<style>` child this element wraps.  Upon first
+   * call any style modules referenced via the `include` attribute will be
+   * concatenated to this element's `<style>`.
+   *
+   * @return {HTMLStyleElement} This element's light-DOM `<style>`
+   */
+  getStyle() {
+    if (this._style) {
+      return this._style;
+    }
+    const style = /** @type {HTMLStyleElement} */this.querySelector('style');
+    if (!style) {
+      return null;
+    }
+    this._style = style;
+    const include = style.getAttribute(attr);
+    if (include) {
+      style.removeAttribute(attr);
+      style.textContent = (0, _styleGather.cssFromModules)(include) + style.textContent;
+    }
+    return this._style;
+  }
+}
+
+window.customElements.define('custom-style', CustomStyle);
+exports.CustomStyle = CustomStyle;
+
+/***/ }),
+/* 62 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+/**
 @license
 Copyright (c) 2017 The Polymer Project Authors. All rights reserved.
 This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
@@ -1107,7 +16017,1034 @@ The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
 The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
 Code distributed by Google as part of the polymer project is also
 subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
-*/var a=n(34),o=function(e){return e&&e.__esModule?e:{default:e}}(a),r=n(21),s=n(18);const d=new o.default;window.ShadyCSS||(window.ShadyCSS={prepareTemplate(){},styleSubtree(e,t){d.processStyles(),(0,r.updateNativeProperties)(e,t)},styleElement(){d.processStyles()},styleDocument(e){d.processStyles(),(0,r.updateNativeProperties)(document.body,e)},getComputedStyleValue(e,t){return(0,r.getComputedStyleValue)(e,t)},nativeCss:s.nativeCssVariables,nativeShadow:s.nativeShadow}),window.ShadyCSS.CustomStyleInterface=d},function(e,t,n){'use strict';Object.defineProperty(t,'__esModule',{value:!0}),t.OptionalMutableDataBehavior=t.MutableDataBehavior=void 0;var a=n(14);let o;(function(){o=a.MutableData._mutablePropertyChange})();const r=t.MutableDataBehavior={_shouldPropertyChange(e,t,n){return o(this,e,t,n,!0)}},s=t.OptionalMutableDataBehavior={properties:{mutableData:Boolean},_shouldPropertyChange(e,t,n){return o(this,e,t,n,this.mutableData)}}},function(e,t,n){'use strict';var a=Math.max;Object.defineProperty(t,'__esModule',{value:!0}),t.AppScrollEffectsBehavior=void 0,n(0);var o=n(65),r=n(66);t.AppScrollEffectsBehavior=[o.IronScrollTargetBehavior,{properties:{effects:{type:String},effectsConfig:{type:Object,value:function(){return{}}},disabled:{type:Boolean,reflectToAttribute:!0,value:!1},threshold:{type:Number,value:0},thresholdTriggered:{type:Boolean,notify:!0,readOnly:!0,reflectToAttribute:!0}},observers:['_effectsChanged(effects, effectsConfig, isAttached)'],_updateScrollState:function(){},isOnScreen:function(){return!1},isContentBelow:function(){return!1},_effectsRunFn:null,_effects:null,get _clampedScrollTop(){return a(0,this._scrollTop)},detached:function(){this._tearDownEffects()},createEffect:function(e,t){var n=r._scrollEffects[e];if(!n)throw new ReferenceError(this._getUndefinedMsg(e));var a=this._boundEffect(n,t||{});return a.setUp(),a},_effectsChanged:function(e,t,n){this._tearDownEffects();e&&n&&(e.split(' ').forEach(function(e){var n;''!==e&&((n=r._scrollEffects[e])?this._effects.push(this._boundEffect(n,t[e])):console.warn(this._getUndefinedMsg(e)))},this),this._setUpEffect())},_layoutIfDirty:function(){return this.offsetWidth},_boundEffect:function(e,t){t=t||{};var n=parseFloat(t.startsAt||0),o=parseFloat(t.endsAt||1),r=function(){},s=0===n&&1===o?e.run:function(t,r){e.run.call(this,a(0,(t-n)/(o-n)),r)};return{setUp:e.setUp?e.setUp.bind(this,t):r,run:e.run?s.bind(this):r,tearDown:e.tearDown?e.tearDown.bind(this):r}},_setUpEffect:function(){this.isAttached&&this._effects&&(this._effectsRunFn=[],this._effects.forEach(function(e){!1!==e.setUp()&&this._effectsRunFn.push(e.run)},this))},_tearDownEffects:function(){this._effects&&this._effects.forEach(function(e){e.tearDown()}),this._effectsRunFn=[],this._effects=[]},_runEffects:function(e,t){this._effectsRunFn&&this._effectsRunFn.forEach(function(n){n(e,t)})},_scrollHandler:function(){if(!this.disabled){var e=this._clampedScrollTop;this._updateScrollState(e),0<this.threshold&&this._setThresholdTriggered(e>=this.threshold)}},_getDOMRef:function(e){console.warn('_getDOMRef','`'+e+'` is undefined')},_getUndefinedMsg:function(e){return'Scroll effect `'+e+'` is undefined. Did you forget to import app-layout/app-scroll-effects/effects/'+e+'.html ?'}}]},function(e,t,n){'use strict';Object.defineProperty(t,'__esModule',{value:!0}),t.IronScrollTargetBehavior=void 0,n(0);var a=n(2);t.IronScrollTargetBehavior={properties:{scrollTarget:{type:HTMLElement,value:function(){return this._defaultScrollTarget}}},observers:['_scrollTargetChanged(scrollTarget, isAttached)'],_shouldHaveListener:!0,_scrollTargetChanged:function(e,t){if(this._oldScrollTarget&&(this._toggleScrollListener(!1,this._oldScrollTarget),this._oldScrollTarget=null),!!t)if('document'===e)this.scrollTarget=this._doc;else if('string'==typeof e){var n=this.domHost;this.scrollTarget=n&&n.$?n.$[e]:(0,a.dom)(this.ownerDocument).querySelector('#'+e)}else this._isValidScrollTarget()&&(this._oldScrollTarget=e,this._toggleScrollListener(this._shouldHaveListener,e))},_scrollHandler:function(){},get _defaultScrollTarget(){return this._doc},get _doc(){return this.ownerDocument.documentElement},get _scrollTop(){return this._isValidScrollTarget()?this.scrollTarget===this._doc?window.pageYOffset:this.scrollTarget.scrollTop:0},get _scrollLeft(){return this._isValidScrollTarget()?this.scrollTarget===this._doc?window.pageXOffset:this.scrollTarget.scrollLeft:0},set _scrollTop(e){this.scrollTarget===this._doc?window.scrollTo(window.pageXOffset,e):this._isValidScrollTarget()&&(this.scrollTarget.scrollTop=e)},set _scrollLeft(e){this.scrollTarget===this._doc?window.scrollTo(e,window.pageYOffset):this._isValidScrollTarget()&&(this.scrollTarget.scrollLeft=e)},scroll:function(e,t){this.scrollTarget===this._doc?window.scrollTo(e,t):this._isValidScrollTarget()&&(this.scrollTarget.scrollLeft=e,this.scrollTarget.scrollTop=t)},get _scrollTargetWidth(){return this._isValidScrollTarget()?this.scrollTarget===this._doc?window.innerWidth:this.scrollTarget.offsetWidth:0},get _scrollTargetHeight(){return this._isValidScrollTarget()?this.scrollTarget===this._doc?window.innerHeight:this.scrollTarget.offsetHeight:0},_isValidScrollTarget:function(){return this.scrollTarget instanceof HTMLElement},_toggleScrollListener:function(e,t){var n=t===this._doc?window:t;e?!this._boundScrollHandler&&(this._boundScrollHandler=this._scrollHandler.bind(this),n.addEventListener('scroll',this._boundScrollHandler)):this._boundScrollHandler&&(n.removeEventListener('scroll',this._boundScrollHandler),this._boundScrollHandler=null)},toggleScrollListener:function(e){this._shouldHaveListener=e,this._toggleScrollListener(e,this.scrollTarget)}}},function(e,t,n){'use strict';Object.defineProperty(t,'__esModule',{value:!0}),t.scroll=t.queryAllRoot=t.registerEffect=t.scrollTimingFunction=t._scrollEffects=void 0,n(0);const a=t._scrollEffects={},o=t.scrollTimingFunction=function(e,t,n,a){return e/=a,-n*e*(e-2)+t},r=t.registerEffect=function(e,t){if(null!=a[e])throw new Error('effect `'+e+'` is already registered.');a[e]=t},s=t.queryAllRoot=function(e,t){for(var n=[t],a=[];0<n.length;){var o=n.shift();for(a.push.apply(a,o.querySelectorAll(e)),i=0;o.children[i];i++)o.children[i].shadowRoot&&n.push(o.children[i].shadowRoot)}return a},d=t.scroll=function(e){e=e||{};var t=document.documentElement,n=e.target||t,a='scrollBehavior'in n.style&&n.scroll,r=e.top||0,d=e.left||0,l=n===t?window.scrollTo:function(e,t){n.scrollLeft=e,n.scrollTop=t};if('smooth'===e.behavior){if(a)n.scroll(e);else{var p=o,_=Date.now(),c=n===t?window.pageYOffset:n.scrollTop,u=n===t?window.pageXOffset:n.scrollLeft,m=300,h=function e(){var t=Date.now(),n=t-_;n<m?(l(p(n,u,d-u,m),p(n,c,r-c,m)),requestAnimationFrame(e)):l(d,r)}.bind(this);h()}}else if('silent'===e.behavior){var y=s('app-header',document.body);y.forEach(function(e){e.setAttribute('silent-scroll','')}),window.cancelAnimationFrame(Polymer.AppLayout._scrollTimer),Polymer.AppLayout._scrollTimer=window.requestAnimationFrame(function(){y.forEach(function(e){e.removeAttribute('silent-scroll')}),Polymer.AppLayout._scrollTimer=null}),l(d,r)}else l(d,r)}},function(e,t,n){'use strict';Object.defineProperty(t,'__esModule',{value:!0}),t.IronResizableBehavior=void 0,n(0);var a=n(9),o=n(2);t.IronResizableBehavior={properties:{_parentResizable:{type:Object,observer:'_parentResizableChanged'},_notifyingDescendant:{type:Boolean,value:!1}},listeners:{"iron-request-resize-notifications":'_onIronRequestResizeNotifications'},created:function(){this._interestedResizables=[],this._boundNotifyResize=this.notifyResize.bind(this)},attached:function(){this._requestResizeNotifications()},detached:function(){this._parentResizable?this._parentResizable.stopResizeNotificationsFor(this):window.removeEventListener('resize',this._boundNotifyResize),this._parentResizable=null},notifyResize:function(){this.isAttached&&(this._interestedResizables.forEach(function(e){this.resizerShouldNotify(e)&&this._notifyDescendant(e)},this),this._fireResize())},assignParentResizable:function(e){this._parentResizable=e},stopResizeNotificationsFor:function(e){var t=this._interestedResizables.indexOf(e);-1<t&&(this._interestedResizables.splice(t,1),this.unlisten(e,'iron-resize','_onDescendantIronResize'))},resizerShouldNotify:function(){return!0},_onDescendantIronResize:function(e){return this._notifyingDescendant?void e.stopPropagation():void(!a.Settings.useShadow&&this._fireResize())},_fireResize:function(){this.fire('iron-resize',null,{node:this,bubbles:!1})},_onIronRequestResizeNotifications:function(e){var t=(0,o.dom)(e).rootTarget;t===this||(-1===this._interestedResizables.indexOf(t)&&(this._interestedResizables.push(t),this.listen(t,'iron-resize','_onDescendantIronResize')),t.assignParentResizable(this),this._notifyDescendant(t),e.stopPropagation())},_parentResizableChanged:function(e){e&&window.removeEventListener('resize',this._boundNotifyResize)},_notifyDescendant:function(e){this.isAttached&&(this._notifyingDescendant=!0,e.notifyResize(),this._notifyingDescendant=!1)},_requestResizeNotifications:function(){if(this.isAttached)if('loading'===document.readyState){var e=this._requestResizeNotifications.bind(this);document.addEventListener('readystatechange',function t(){document.removeEventListener('readystatechange',t),e()})}else this.fire('iron-request-resize-notifications',null,{node:this,bubbles:!0,cancelable:!0}),this._parentResizable||(window.addEventListener('resize',this._boundNotifyResize),this.notifyResize())}}},function(e,t,n){'use strict';n(0),n(7);var a=n(39),o=n(3),r=n(2);(0,o.Polymer)({_template:`
+*/
+
+
+
+var _customStyleInterface = __webpack_require__(34);
+
+var _customStyleInterface2 = _interopRequireDefault(_customStyleInterface);
+
+var _commonUtils = __webpack_require__(21);
+
+var _styleSettings = __webpack_require__(18);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+const customStyleInterface = new _customStyleInterface2.default();
+
+if (!window.ShadyCSS) {
+  window.ShadyCSS = {
+    /**
+     * @param {HTMLTemplateElement} template
+     * @param {string} elementName
+     * @param {string=} elementExtends
+     */
+    prepareTemplate(template, elementName, elementExtends) {}, // eslint-disable-line no-unused-vars
+
+    /**
+     * @param {Element} element
+     * @param {Object=} properties
+     */
+    styleSubtree(element, properties) {
+      customStyleInterface.processStyles();
+      (0, _commonUtils.updateNativeProperties)(element, properties);
+    },
+
+    /**
+     * @param {Element} element
+     */
+    styleElement(element) {
+      // eslint-disable-line no-unused-vars
+      customStyleInterface.processStyles();
+    },
+
+    /**
+     * @param {Object=} properties
+     */
+    styleDocument(properties) {
+      customStyleInterface.processStyles();
+      (0, _commonUtils.updateNativeProperties)(document.body, properties);
+    },
+
+    /**
+     * @param {Element} element
+     * @param {string} property
+     * @return {string}
+     */
+    getComputedStyleValue(element, property) {
+      return (0, _commonUtils.getComputedStyleValue)(element, property);
+    },
+    nativeCss: _styleSettings.nativeCssVariables,
+    nativeShadow: _styleSettings.nativeShadow
+  };
+}
+
+window.ShadyCSS.CustomStyleInterface = customStyleInterface;
+
+/***/ }),
+/* 63 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.OptionalMutableDataBehavior = exports.MutableDataBehavior = undefined;
+
+var _mutableData = __webpack_require__(14);
+
+let mutablePropertyChange;
+(
+/** @suppress {missingProperties} */
+function () {
+  mutablePropertyChange = _mutableData.MutableData._mutablePropertyChange;
+})();
+
+const MutableDataBehavior = exports.MutableDataBehavior = {
+
+  /**
+   * Overrides `Polymer.PropertyEffects` to provide option for skipping
+   * strict equality checking for Objects and Arrays.
+   *
+   * This method pulls the value to dirty check against from the `__dataTemp`
+   * cache (rather than the normal `__data` cache) for Objects.  Since the temp
+   * cache is cleared at the end of a turn, this implementation allows
+   * side-effects of deep object changes to be processed by re-setting the
+   * same object (using the temp cache as an in-turn backstop to prevent
+   * cycles due to 2-way notification).
+   *
+   * @param {string} property Property name
+   * @param {*} value New property value
+   * @param {*} old Previous property value
+   * @return {boolean} Whether the property should be considered a change
+   * @protected
+   */
+  _shouldPropertyChange(property, value, old) {
+    return mutablePropertyChange(this, property, value, old, true);
+  }
+};
+
+const OptionalMutableDataBehavior = exports.OptionalMutableDataBehavior = {
+
+  properties: {
+    /**
+     * Instance-level flag for configuring the dirty-checking strategy
+     * for this element.  When true, Objects and Arrays will skip dirty
+     * checking, otherwise strict equality checking will be used.
+     */
+    mutableData: Boolean
+  },
+
+  /**
+   * Overrides `Polymer.PropertyEffects` to skip strict equality checking
+   * for Objects and Arrays.
+   *
+   * Pulls the value to dirty check against from the `__dataTemp` cache
+   * (rather than the normal `__data` cache) for Objects.  Since the temp
+   * cache is cleared at the end of a turn, this implementation allows
+   * side-effects of deep object changes to be processed by re-setting the
+   * same object (using the temp cache as an in-turn backstop to prevent
+   * cycles due to 2-way notification).
+   *
+   * @param {string} property Property name
+   * @param {*} value New property value
+   * @param {*} old Previous property value
+   * @return {boolean} Whether the property should be considered a change
+   * @this {this}
+   * @protected
+   */
+  _shouldPropertyChange(property, value, old) {
+    return mutablePropertyChange(this, property, value, old, this.mutableData);
+  }
+};
+
+/***/ }),
+/* 64 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.AppScrollEffectsBehavior = undefined;
+
+__webpack_require__(0);
+
+var _ironScrollTargetBehavior = __webpack_require__(65);
+
+var _helpers = __webpack_require__(66);
+
+const AppScrollEffectsBehavior = exports.AppScrollEffectsBehavior = [_ironScrollTargetBehavior.IronScrollTargetBehavior, {
+
+  properties: {
+
+    /**
+     * A space-separated list of the effects names that will be triggered when the user scrolls.
+     * e.g. `waterfall parallax-background` installs the `waterfall` and `parallax-background`.
+     */
+    effects: {
+      type: String
+    },
+
+    /**
+     * An object that configurates the effects installed via the `effects` property. e.g.
+     * ```js
+     *  element.effectsConfig = {
+     *   "blend-background": {
+     *     "startsAt": 0.5
+     *   }
+     * };
+     * ```
+     * Every effect has at least two config properties: `startsAt` and `endsAt`.
+     * These properties indicate when the event should start and end respectively
+     * and relative to the overall element progress. So for example, if `blend-background`
+     * starts at `0.5`, the effect will only start once the current element reaches 0.5
+     * of its progress. In this context, the progress is a value in the range of `[0, 1]`
+     * that indicates where this element is on the screen relative to the viewport.
+     */
+    effectsConfig: {
+      type: Object,
+      value: function () {
+        return {};
+      }
+    },
+
+    /**
+     * Disables CSS transitions and scroll effects on the element.
+     */
+    disabled: {
+      type: Boolean,
+      reflectToAttribute: true,
+      value: false
+    },
+
+    /**
+     * Allows to set a `scrollTop` threshold. When greater than 0, `thresholdTriggered`
+     * is true only when the scroll target's `scrollTop` has reached this value.
+     *
+     * For example, if `threshold = 100`, `thresholdTriggered` is true when the `scrollTop`
+     * is at least `100`.
+     */
+    threshold: {
+      type: Number,
+      value: 0
+    },
+
+    /**
+     * True if the `scrollTop` threshold (set in `scrollTopThreshold`) has
+     * been reached.
+     */
+    thresholdTriggered: {
+      type: Boolean,
+      notify: true,
+      readOnly: true,
+      reflectToAttribute: true
+    }
+  },
+
+  observers: ['_effectsChanged(effects, effectsConfig, isAttached)'],
+
+  /**
+   * Updates the scroll state. This method should be overridden
+   * by the consumer of this behavior.
+   *
+   * @method _updateScrollState
+   */
+  _updateScrollState: function () {},
+
+  /**
+   * Returns true if the current element is on the screen.
+   * That is, visible in the current viewport. This method should be
+   * overridden by the consumer of this behavior.
+   *
+   * @method isOnScreen
+   * @return {boolean}
+   */
+  isOnScreen: function () {
+    return false;
+  },
+
+  /**
+   * Returns true if there's content below the current element. This method
+   * should be overridden by the consumer of this behavior.
+   *
+   * @method isContentBelow
+   * @return {boolean}
+   */
+  isContentBelow: function () {
+    return false;
+  },
+
+  /**
+   * List of effects handlers that will take place during scroll.
+   *
+   * @type {Array<Function>}
+   */
+  _effectsRunFn: null,
+
+  /**
+   * List of the effects definitions installed via the `effects` property.
+   *
+   * @type {Array<Object>}
+   */
+  _effects: null,
+
+  /**
+   * The clamped value of `_scrollTop`.
+   * @type number
+   */
+  get _clampedScrollTop() {
+    return Math.max(0, this._scrollTop);
+  },
+
+  detached: function () {
+    this._tearDownEffects();
+  },
+
+  /**
+   * Creates an effect object from an effect's name that can be used to run
+   * effects programmatically.
+   *
+   * @method createEffect
+   * @param {string} effectName The effect's name registered via `Polymer.AppLayout.registerEffect`.
+   * @param {Object=} effectConfig The effect config object. (Optional)
+   * @return {Object} An effect object with the following functions:
+   *
+   *  * `effect.setUp()`, Sets up the requirements for the effect.
+   *       This function is called automatically before the `effect` function returns.
+   *  * `effect.run(progress, y)`, Runs the effect given a `progress`.
+   *  * `effect.tearDown()`, Cleans up any DOM nodes or element references used by the effect.
+   *
+   * Example:
+   * ```js
+   * var parallax = element.createEffect('parallax-background');
+   * // runs the effect
+   * parallax.run(0.5, 0);
+   * ```
+   */
+  createEffect: function (effectName, effectConfig) {
+    var effectDef = _helpers._scrollEffects[effectName];
+    if (!effectDef) {
+      throw new ReferenceError(this._getUndefinedMsg(effectName));
+    }
+    var prop = this._boundEffect(effectDef, effectConfig || {});
+    prop.setUp();
+    return prop;
+  },
+
+  /**
+   * Called when `effects` or `effectsConfig` changes.
+   */
+  _effectsChanged: function (effects, effectsConfig, isAttached) {
+    this._tearDownEffects();
+
+    if (!effects || !isAttached) {
+      return;
+    }
+    effects.split(' ').forEach(function (effectName) {
+      var effectDef;
+      if (effectName !== '') {
+        if (effectDef = _helpers._scrollEffects[effectName]) {
+          this._effects.push(this._boundEffect(effectDef, effectsConfig[effectName]));
+        } else {
+          console.warn(this._getUndefinedMsg(effectName));
+        }
+      }
+    }, this);
+
+    this._setUpEffect();
+  },
+
+  /**
+   * Forces layout
+   */
+  _layoutIfDirty: function () {
+    return this.offsetWidth;
+  },
+
+  /**
+   * Returns an effect object bound to the current context.
+   *
+   * @param {Object} effectDef
+   * @param {Object=} effectsConfig The effect config object if the effect accepts config values. (Optional)
+   */
+  _boundEffect: function (effectDef, effectsConfig) {
+    effectsConfig = effectsConfig || {};
+    var startsAt = parseFloat(effectsConfig.startsAt || 0);
+    var endsAt = parseFloat(effectsConfig.endsAt || 1);
+    var deltaS = endsAt - startsAt;
+    var noop = function () {};
+    // fast path if possible
+    var runFn = startsAt === 0 && endsAt === 1 ? effectDef.run : function (progress, y) {
+      effectDef.run.call(this, Math.max(0, (progress - startsAt) / deltaS), y);
+    };
+    return {
+      setUp: effectDef.setUp ? effectDef.setUp.bind(this, effectsConfig) : noop,
+      run: effectDef.run ? runFn.bind(this) : noop,
+      tearDown: effectDef.tearDown ? effectDef.tearDown.bind(this) : noop
+    };
+  },
+
+  /**
+   * Sets up the effects.
+   */
+  _setUpEffect: function () {
+    if (this.isAttached && this._effects) {
+      this._effectsRunFn = [];
+      this._effects.forEach(function (effectDef) {
+        // install the effect only if no error was reported
+        if (effectDef.setUp() !== false) {
+          this._effectsRunFn.push(effectDef.run);
+        }
+      }, this);
+    }
+  },
+
+  /**
+   * Tears down the effects.
+   */
+  _tearDownEffects: function () {
+    if (this._effects) {
+      this._effects.forEach(function (effectDef) {
+        effectDef.tearDown();
+      });
+    }
+    this._effectsRunFn = [];
+    this._effects = [];
+  },
+
+  /**
+   * Runs the effects.
+   *
+   * @param {number} p The progress
+   * @param {number} y The top position of the current element relative to the viewport.
+   */
+  _runEffects: function (p, y) {
+    if (this._effectsRunFn) {
+      this._effectsRunFn.forEach(function (run) {
+        run(p, y);
+      });
+    }
+  },
+
+  /**
+   * Overrides the `_scrollHandler`.
+   */
+  _scrollHandler: function () {
+    if (!this.disabled) {
+      var scrollTop = this._clampedScrollTop;
+      this._updateScrollState(scrollTop);
+      if (this.threshold > 0) {
+        this._setThresholdTriggered(scrollTop >= this.threshold);
+      }
+    }
+  },
+
+  /**
+   * Override this method to return a reference to a node in the local DOM.
+   * The node is consumed by a scroll effect.
+   *
+   * @param {string} id The id for the node.
+   */
+  _getDOMRef: function (id) {
+    console.warn('_getDOMRef', '`' + id + '` is undefined');
+  },
+
+  _getUndefinedMsg: function (effectName) {
+    return 'Scroll effect `' + effectName + '` is undefined. ' + 'Did you forget to import app-layout/app-scroll-effects/effects/' + effectName + '.html ?';
+  }
+
+}];
+
+/***/ }),
+/* 65 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.IronScrollTargetBehavior = undefined;
+
+__webpack_require__(0);
+
+var _polymerDom = __webpack_require__(2);
+
+const IronScrollTargetBehavior = exports.IronScrollTargetBehavior = {
+
+  properties: {
+
+    /**
+     * Specifies the element that will handle the scroll event
+     * on the behalf of the current element. This is typically a reference to an element,
+     * but there are a few more posibilities:
+     *
+     * ### Elements id
+     *
+     *```html
+     * <div id="scrollable-element" style="overflow: auto;">
+     *  <x-element scroll-target="scrollable-element">
+     *    <!-- Content-->
+     *  </x-element>
+     * </div>
+     *```
+     * In this case, the `scrollTarget` will point to the outer div element.
+     *
+     * ### Document scrolling
+     *
+     * For document scrolling, you can use the reserved word `document`:
+     *
+     *```html
+     * <x-element scroll-target="document">
+     *   <!-- Content -->
+     * </x-element>
+     *```
+     *
+     * ### Elements reference
+     *
+     *```js
+     * appHeader.scrollTarget = document.querySelector('#scrollable-element');
+     *```
+     *
+     * @type {HTMLElement}
+     * @default document
+     */
+    scrollTarget: {
+      type: HTMLElement,
+      value: function () {
+        return this._defaultScrollTarget;
+      }
+    }
+  },
+
+  observers: ['_scrollTargetChanged(scrollTarget, isAttached)'],
+
+  /**
+   * True if the event listener should be installed.
+   */
+  _shouldHaveListener: true,
+
+  _scrollTargetChanged: function (scrollTarget, isAttached) {
+    var eventTarget;
+
+    if (this._oldScrollTarget) {
+      this._toggleScrollListener(false, this._oldScrollTarget);
+      this._oldScrollTarget = null;
+    }
+    if (!isAttached) {
+      return;
+    }
+    // Support element id references
+    if (scrollTarget === 'document') {
+
+      this.scrollTarget = this._doc;
+    } else if (typeof scrollTarget === 'string') {
+
+      var domHost = this.domHost;
+
+      this.scrollTarget = domHost && domHost.$ ? domHost.$[scrollTarget] : (0, _polymerDom.dom)(this.ownerDocument).querySelector('#' + scrollTarget);
+    } else if (this._isValidScrollTarget()) {
+
+      this._oldScrollTarget = scrollTarget;
+      this._toggleScrollListener(this._shouldHaveListener, scrollTarget);
+    }
+  },
+
+  /**
+   * Runs on every scroll event. Consumer of this behavior may override this method.
+   *
+   * @protected
+   */
+  _scrollHandler: function scrollHandler() {},
+
+  /**
+   * The default scroll target. Consumers of this behavior may want to customize
+   * the default scroll target.
+   *
+   * @type {Element}
+   */
+  get _defaultScrollTarget() {
+    return this._doc;
+  },
+
+  /**
+   * Shortcut for the document element
+   *
+   * @type {Element}
+   */
+  get _doc() {
+    return this.ownerDocument.documentElement;
+  },
+
+  /**
+   * Gets the number of pixels that the content of an element is scrolled upward.
+   *
+   * @type {number}
+   */
+  get _scrollTop() {
+    if (this._isValidScrollTarget()) {
+      return this.scrollTarget === this._doc ? window.pageYOffset : this.scrollTarget.scrollTop;
+    }
+    return 0;
+  },
+
+  /**
+   * Gets the number of pixels that the content of an element is scrolled to the left.
+   *
+   * @type {number}
+   */
+  get _scrollLeft() {
+    if (this._isValidScrollTarget()) {
+      return this.scrollTarget === this._doc ? window.pageXOffset : this.scrollTarget.scrollLeft;
+    }
+    return 0;
+  },
+
+  /**
+   * Sets the number of pixels that the content of an element is scrolled upward.
+   *
+   * @type {number}
+   */
+  set _scrollTop(top) {
+    if (this.scrollTarget === this._doc) {
+      window.scrollTo(window.pageXOffset, top);
+    } else if (this._isValidScrollTarget()) {
+      this.scrollTarget.scrollTop = top;
+    }
+  },
+
+  /**
+   * Sets the number of pixels that the content of an element is scrolled to the left.
+   *
+   * @type {number}
+   */
+  set _scrollLeft(left) {
+    if (this.scrollTarget === this._doc) {
+      window.scrollTo(left, window.pageYOffset);
+    } else if (this._isValidScrollTarget()) {
+      this.scrollTarget.scrollLeft = left;
+    }
+  },
+
+  /**
+   * Scrolls the content to a particular place.
+   *
+   * @method scroll
+   * @param {number} left The left position
+   * @param {number} top The top position
+   */
+  scroll: function (left, top) {
+    if (this.scrollTarget === this._doc) {
+      window.scrollTo(left, top);
+    } else if (this._isValidScrollTarget()) {
+      this.scrollTarget.scrollLeft = left;
+      this.scrollTarget.scrollTop = top;
+    }
+  },
+
+  /**
+   * Gets the width of the scroll target.
+   *
+   * @type {number}
+   */
+  get _scrollTargetWidth() {
+    if (this._isValidScrollTarget()) {
+      return this.scrollTarget === this._doc ? window.innerWidth : this.scrollTarget.offsetWidth;
+    }
+    return 0;
+  },
+
+  /**
+   * Gets the height of the scroll target.
+   *
+   * @type {number}
+   */
+  get _scrollTargetHeight() {
+    if (this._isValidScrollTarget()) {
+      return this.scrollTarget === this._doc ? window.innerHeight : this.scrollTarget.offsetHeight;
+    }
+    return 0;
+  },
+
+  /**
+   * Returns true if the scroll target is a valid HTMLElement.
+   *
+   * @return {boolean}
+   */
+  _isValidScrollTarget: function () {
+    return this.scrollTarget instanceof HTMLElement;
+  },
+
+  _toggleScrollListener: function (yes, scrollTarget) {
+    var eventTarget = scrollTarget === this._doc ? window : scrollTarget;
+    if (yes) {
+      if (!this._boundScrollHandler) {
+        this._boundScrollHandler = this._scrollHandler.bind(this);
+        eventTarget.addEventListener('scroll', this._boundScrollHandler);
+      }
+    } else {
+      if (this._boundScrollHandler) {
+        eventTarget.removeEventListener('scroll', this._boundScrollHandler);
+        this._boundScrollHandler = null;
+      }
+    }
+  },
+
+  /**
+   * Enables or disables the scroll event listener.
+   *
+   * @param {boolean} yes True to add the event, False to remove it.
+   */
+  toggleScrollListener: function (yes) {
+    this._shouldHaveListener = yes;
+    this._toggleScrollListener(yes, this.scrollTarget);
+  }
+
+};
+
+/***/ }),
+/* 66 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.scroll = exports.queryAllRoot = exports.registerEffect = exports.scrollTimingFunction = exports._scrollEffects = undefined;
+
+__webpack_require__(0);
+
+const _scrollEffects = exports._scrollEffects = {};
+
+const scrollTimingFunction = exports.scrollTimingFunction = function easeOutQuad(t, b, c, d) {
+  t /= d;
+  return -c * t * (t - 2) + b;
+};
+
+const registerEffect = exports.registerEffect = function registerEffect(effectName, effectDef) {
+  if (_scrollEffects[effectName] != null) {
+    throw new Error('effect `' + effectName + '` is already registered.');
+  }
+  _scrollEffects[effectName] = effectDef;
+};
+
+const queryAllRoot = exports.queryAllRoot = function (selector, root) {
+  var queue = [root];
+  var matches = [];
+
+  while (queue.length > 0) {
+    var node = queue.shift();
+    matches.push.apply(matches, node.querySelectorAll(selector));
+    for (i = 0; node.children[i]; i++) {
+      if (node.children[i].shadowRoot) {
+        queue.push(node.children[i].shadowRoot);
+      }
+    }
+  }
+  return matches;
+};
+
+const scroll = exports.scroll = function scroll(options) {
+  options = options || {};
+
+  var docEl = document.documentElement;
+  var target = options.target || docEl;
+  var hasNativeScrollBehavior = 'scrollBehavior' in target.style && target.scroll;
+  var scrollClassName = 'app-layout-silent-scroll';
+  var scrollTop = options.top || 0;
+  var scrollLeft = options.left || 0;
+  var scrollTo = target === docEl ? window.scrollTo : function scrollTo(scrollLeft, scrollTop) {
+    target.scrollLeft = scrollLeft;
+    target.scrollTop = scrollTop;
+  };
+
+  if (options.behavior === 'smooth') {
+
+    if (hasNativeScrollBehavior) {
+
+      target.scroll(options);
+    } else {
+
+      var timingFn = scrollTimingFunction;
+      var startTime = Date.now();
+      var currentScrollTop = target === docEl ? window.pageYOffset : target.scrollTop;
+      var currentScrollLeft = target === docEl ? window.pageXOffset : target.scrollLeft;
+      var deltaScrollTop = scrollTop - currentScrollTop;
+      var deltaScrollLeft = scrollLeft - currentScrollLeft;
+      var duration = 300;
+      var updateFrame = function updateFrame() {
+        var now = Date.now();
+        var elapsedTime = now - startTime;
+
+        if (elapsedTime < duration) {
+          scrollTo(timingFn(elapsedTime, currentScrollLeft, deltaScrollLeft, duration), timingFn(elapsedTime, currentScrollTop, deltaScrollTop, duration));
+          requestAnimationFrame(updateFrame);
+        } else {
+          scrollTo(scrollLeft, scrollTop);
+        }
+      }.bind(this);
+
+      updateFrame();
+    }
+  } else if (options.behavior === 'silent') {
+    var headers = queryAllRoot('app-header', document.body);
+
+    headers.forEach(function (header) {
+      header.setAttribute('silent-scroll', '');
+    });
+
+    // Browsers keep the scroll momentum even if the bottom of the scrolling content
+    // was reached. This means that calling scroll({top: 0, behavior: 'silent'}) when
+    // the momentum is still going will result in more scroll events and thus scroll effects.
+    // This seems to only apply when using document scrolling.
+    // Therefore, when should we remove the class from the document element?
+
+    window.cancelAnimationFrame(Polymer.AppLayout._scrollTimer);
+
+    Polymer.AppLayout._scrollTimer = window.requestAnimationFrame(function () {
+      headers.forEach(function (header) {
+        header.removeAttribute('silent-scroll');
+      });
+      Polymer.AppLayout._scrollTimer = null;
+    });
+
+    scrollTo(scrollLeft, scrollTop);
+  } else {
+
+    scrollTo(scrollLeft, scrollTop);
+  }
+};
+
+/***/ }),
+/* 67 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.IronResizableBehavior = undefined;
+
+__webpack_require__(0);
+
+var _settings = __webpack_require__(9);
+
+var _polymerDom = __webpack_require__(2);
+
+const IronResizableBehavior = exports.IronResizableBehavior = {
+  properties: {
+    /**
+     * The closest ancestor element that implements `IronResizableBehavior`.
+     */
+    _parentResizable: {
+      type: Object,
+      observer: '_parentResizableChanged'
+    },
+
+    /**
+     * True if this element is currently notifying its descendant elements of
+     * resize.
+     */
+    _notifyingDescendant: {
+      type: Boolean,
+      value: false
+    }
+  },
+
+  listeners: {
+    'iron-request-resize-notifications': '_onIronRequestResizeNotifications'
+  },
+
+  created: function () {
+    // We don't really need property effects on these, and also we want them
+    // to be created before the `_parentResizable` observer fires:
+    this._interestedResizables = [];
+    this._boundNotifyResize = this.notifyResize.bind(this);
+  },
+
+  attached: function () {
+    this._requestResizeNotifications();
+  },
+
+  detached: function () {
+    if (this._parentResizable) {
+      this._parentResizable.stopResizeNotificationsFor(this);
+    } else {
+      window.removeEventListener('resize', this._boundNotifyResize);
+    }
+
+    this._parentResizable = null;
+  },
+
+  /**
+   * Can be called to manually notify a resizable and its descendant
+   * resizables of a resize change.
+   */
+  notifyResize: function () {
+    if (!this.isAttached) {
+      return;
+    }
+
+    this._interestedResizables.forEach(function (resizable) {
+      if (this.resizerShouldNotify(resizable)) {
+        this._notifyDescendant(resizable);
+      }
+    }, this);
+
+    this._fireResize();
+  },
+
+  /**
+   * Used to assign the closest resizable ancestor to this resizable
+   * if the ancestor detects a request for notifications.
+   */
+  assignParentResizable: function (parentResizable) {
+    this._parentResizable = parentResizable;
+  },
+
+  /**
+   * Used to remove a resizable descendant from the list of descendants
+   * that should be notified of a resize change.
+   */
+  stopResizeNotificationsFor: function (target) {
+    var index = this._interestedResizables.indexOf(target);
+
+    if (index > -1) {
+      this._interestedResizables.splice(index, 1);
+      this.unlisten(target, 'iron-resize', '_onDescendantIronResize');
+    }
+  },
+
+  /**
+   * This method can be overridden to filter nested elements that should or
+   * should not be notified by the current element. Return true if an element
+   * should be notified, or false if it should not be notified.
+   *
+   * @param {HTMLElement} element A candidate descendant element that
+   * implements `IronResizableBehavior`.
+   * @return {boolean} True if the `element` should be notified of resize.
+   */
+  resizerShouldNotify: function (element) {
+    return true;
+  },
+
+  _onDescendantIronResize: function (event) {
+    if (this._notifyingDescendant) {
+      event.stopPropagation();
+      return;
+    }
+
+    // NOTE(cdata): In ShadowDOM, event retargeting makes echoing of the
+    // otherwise non-bubbling event "just work." We do it manually here for
+    // the case where Polymer is not using shadow roots for whatever reason:
+    if (!_settings.Settings.useShadow) {
+      this._fireResize();
+    }
+  },
+
+  _fireResize: function () {
+    this.fire('iron-resize', null, {
+      node: this,
+      bubbles: false
+    });
+  },
+
+  _onIronRequestResizeNotifications: function (event) {
+    var target = /** @type {!EventTarget} */(0, _polymerDom.dom)(event).rootTarget;
+    if (target === this) {
+      return;
+    }
+
+    if (this._interestedResizables.indexOf(target) === -1) {
+      this._interestedResizables.push(target);
+      this.listen(target, 'iron-resize', '_onDescendantIronResize');
+    }
+
+    target.assignParentResizable(this);
+    this._notifyDescendant(target);
+
+    event.stopPropagation();
+  },
+
+  _parentResizableChanged: function (parentResizable) {
+    if (parentResizable) {
+      window.removeEventListener('resize', this._boundNotifyResize);
+    }
+  },
+
+  _notifyDescendant: function (descendant) {
+    // NOTE(cdata): In IE10, attached is fired on children first, so it's
+    // important not to notify them if the parent is not attached yet (or
+    // else they will get redundantly notified when the parent attaches).
+    if (!this.isAttached) {
+      return;
+    }
+
+    this._notifyingDescendant = true;
+    descendant.notifyResize();
+    this._notifyingDescendant = false;
+  },
+
+  _requestResizeNotifications: function () {
+    if (!this.isAttached) return;
+
+    // NOTE(valdrin) In CustomElements v1 with native HTMLImports, the order
+    // of imports affects the order of `attached` callbacks (see webcomponents/custom-elements#15).
+    // This might cause a child to notify parents too early (as the parent
+    // still has to be upgraded), resulting in a parent not able to keep track
+    // of the `_interestedResizables`. To solve this, we wait for the document
+    // to be done loading before firing the event.
+    if (document.readyState === 'loading') {
+      var _requestResizeNotifications = this._requestResizeNotifications.bind(this);
+      document.addEventListener('readystatechange', function readystatechanged() {
+        document.removeEventListener('readystatechange', readystatechanged);
+        _requestResizeNotifications();
+      });
+    } else {
+      this.fire('iron-request-resize-notifications', null, {
+        node: this,
+        bubbles: true,
+        cancelable: true
+      });
+
+      if (!this._parentResizable) {
+        window.addEventListener('resize', this._boundNotifyResize);
+        this.notifyResize();
+      }
+    }
+  }
+};
+
+/***/ }),
+/* 68 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+__webpack_require__(0);
+
+__webpack_require__(7);
+
+var _appLayoutBehavior = __webpack_require__(39);
+
+var _polymerFn = __webpack_require__(3);
+
+var _polymerDom = __webpack_require__(2);
+
+(0, _polymerFn.Polymer)({
+  _template: `
     <style>
       :host {
         display: block;
@@ -1184,7 +17121,90 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         <slot></slot>
       </div>
     </div>
-`,is:'app-header-layout',behaviors:[a.AppLayoutBehavior],properties:{hasScrollingRegion:{type:Boolean,value:!1,reflectToAttribute:!0}},observers:['resetLayout(isAttached, hasScrollingRegion)'],get header(){return(0,r.dom)(this.$.headerSlot).getDistributedNodes()[0]},_updateLayoutStates:function(){var e=this.header;if(this.isAttached&&e){this.$.wrapper.classList.remove('initializing'),e.scrollTarget=this.hasScrollingRegion?this.$.contentContainer:this.ownerDocument.documentElement;var t=e.offsetHeight;this.hasScrollingRegion?(e.style.left='',e.style.right=''):requestAnimationFrame(function(){var t=this.getBoundingClientRect(),n=document.documentElement.clientWidth-t.right;e.style.left=t.left+'px',e.style.right=n+'px'}.bind(this));var n=this.$.contentContainer.style;e.fixed&&!e.condenses&&this.hasScrollingRegion?(n.marginTop=t+'px',n.paddingTop=''):(n.paddingTop=t+'px',n.marginTop='')}}})},function(e,t,n){'use strict';n(0),n(7);var a=n(3);(0,a.Polymer)({_template:`
+`,
+
+  is: 'app-header-layout',
+
+  behaviors: [_appLayoutBehavior.AppLayoutBehavior],
+
+  properties: {
+    /**
+     * If true, the current element will have its own scrolling region.
+     * Otherwise, it will use the document scroll to control the header.
+     */
+    hasScrollingRegion: {
+      type: Boolean,
+      value: false,
+      reflectToAttribute: true
+    }
+  },
+
+  observers: ['resetLayout(isAttached, hasScrollingRegion)'],
+
+  /**
+   * A reference to the app-header element.
+   *
+   * @property header
+   */
+  get header() {
+    return (0, _polymerDom.dom)(this.$.headerSlot).getDistributedNodes()[0];
+  },
+
+  _updateLayoutStates: function () {
+    var header = this.header;
+    if (!this.isAttached || !header) {
+      return;
+    }
+    // Remove the initializing class, which staticly positions the header and the content
+    // until the height of the header can be read.
+    this.$.wrapper.classList.remove('initializing');
+    // Update scroll target.
+    header.scrollTarget = this.hasScrollingRegion ? this.$.contentContainer : this.ownerDocument.documentElement;
+    // Get header height here so that style reads are batched together before style writes
+    // (i.e. getBoundingClientRect() below).
+    var headerHeight = header.offsetHeight;
+    // Update the header position.
+    if (!this.hasScrollingRegion) {
+      requestAnimationFrame(function () {
+        var rect = this.getBoundingClientRect();
+        var rightOffset = document.documentElement.clientWidth - rect.right;
+        header.style.left = rect.left + 'px';
+        header.style.right = rightOffset + 'px';
+      }.bind(this));
+    } else {
+      header.style.left = '';
+      header.style.right = '';
+    }
+    // Update the content container position.
+    var containerStyle = this.$.contentContainer.style;
+    if (header.fixed && !header.condenses && this.hasScrollingRegion) {
+      // If the header size does not change and we're using a scrolling region, exclude
+      // the header area from the scrolling region so that the header doesn't overlap
+      // the scrollbar.
+      containerStyle.marginTop = headerHeight + 'px';
+      containerStyle.paddingTop = '';
+    } else {
+      containerStyle.paddingTop = headerHeight + 'px';
+      containerStyle.marginTop = '';
+    }
+  }
+});
+
+/***/ }),
+/* 69 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+__webpack_require__(0);
+
+__webpack_require__(7);
+
+var _polymerFn = __webpack_require__(3);
+
+(0, _polymerFn.Polymer)({
+  _template: `
     <style>
 
       :host {
@@ -1232,7 +17252,26 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     </style>
 
     <slot></slot>
-`,is:'app-toolbar'})},function(e,t,n){'use strict';n(23),n(71);const a=document.createElement('div');a.setAttribute('style','display: none;'),a.innerHTML=`<iron-iconset-svg name="icons" size="24">
+`,
+
+  is: 'app-toolbar'
+});
+
+/***/ }),
+/* 70 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+__webpack_require__(23);
+
+__webpack_require__(71);
+
+const $_documentContainer = document.createElement('div');
+$_documentContainer.setAttribute('style', 'display: none;');
+
+$_documentContainer.innerHTML = `<iron-iconset-svg name="icons" size="24">
 <svg><defs>
 <g id="3d-rotation"><path d="M7.52 21.48C4.25 19.94 1.91 16.76 1.55 13H.05C.56 19.16 5.71 24 12 24l.66-.03-3.81-3.81-1.33 1.32zm.89-6.52c-.19 0-.37-.03-.52-.08-.16-.06-.29-.13-.4-.24-.11-.1-.2-.22-.26-.37-.06-.14-.09-.3-.09-.47h-1.3c0 .36.07.68.21.95.14.27.33.5.56.69.24.18.51.32.82.41.3.1.62.15.96.15.37 0 .72-.05 1.03-.15.32-.1.6-.25.83-.44s.42-.43.55-.72c.13-.29.2-.61.2-.97 0-.19-.02-.38-.07-.56-.05-.18-.12-.35-.23-.51-.1-.16-.24-.3-.4-.43-.17-.13-.37-.23-.61-.31.2-.09.37-.2.52-.33.15-.13.27-.27.37-.42.1-.15.17-.3.22-.46.05-.16.07-.32.07-.48 0-.36-.06-.68-.18-.96-.12-.28-.29-.51-.51-.69-.2-.19-.47-.33-.77-.43C9.1 8.05 8.76 8 8.39 8c-.36 0-.69.05-1 .16-.3.11-.57.26-.79.45-.21.19-.38.41-.51.67-.12.26-.18.54-.18.85h1.3c0-.17.03-.32.09-.45s.14-.25.25-.34c.11-.09.23-.17.38-.22.15-.05.3-.08.48-.08.4 0 .7.1.89.31.19.2.29.49.29.86 0 .18-.03.34-.08.49-.05.15-.14.27-.25.37-.11.1-.25.18-.41.24-.16.06-.36.09-.58.09H7.5v1.03h.77c.22 0 .42.02.6.07s.33.13.45.23c.12.11.22.24.29.4.07.16.1.35.1.57 0 .41-.12.72-.35.93-.23.23-.55.33-.95.33zm8.55-5.92c-.32-.33-.7-.59-1.14-.77-.43-.18-.92-.27-1.46-.27H12v8h2.3c.55 0 1.06-.09 1.51-.27.45-.18.84-.43 1.16-.76.32-.33.57-.73.74-1.19.17-.47.26-.99.26-1.57v-.4c0-.58-.09-1.1-.26-1.57-.18-.47-.43-.87-.75-1.2zm-.39 3.16c0 .42-.05.79-.14 1.13-.1.33-.24.62-.43.85-.19.23-.43.41-.71.53-.29.12-.62.18-.99.18h-.91V9.12h.97c.72 0 1.27.23 1.64.69.38.46.57 1.12.57 1.99v.4zM12 0l-.66.03 3.81 3.81 1.33-1.33c3.27 1.55 5.61 4.72 5.96 8.48h1.5C23.44 4.84 18.29 0 12 0z"></path></g>
 <g id="accessibility"><path d="M12 2c1.1 0 2 .9 2 2s-.9 2-2 2-2-.9-2-2 .9-2 2-2zm9 7h-6v13h-2v-6h-2v6H9V9H3V7h18v2z"></path></g>
@@ -1544,7 +17583,275 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <g id="zoom-in"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14zm2.5-4h-2v2H9v-2H7V9h2V7h1v2h2v1z"></path></g>
 <g id="zoom-out"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14zM7 9h5v1H7z"></path></g>
 </defs></svg>
-</iron-iconset-svg>`,document.head.appendChild(a)},function(e,t,n){'use strict';n(0);var a=n(40),o=n(3),r=n(2);(0,o.Polymer)({is:'iron-iconset-svg',properties:{name:{type:String,observer:'_nameChanged'},size:{type:Number,value:24},rtlMirroring:{type:Boolean,value:!1}},created:function(){this._meta=new a.IronMeta({type:'iconset',key:null,value:null})},attached:function(){this.style.display='none'},getIconNames:function(){return this._icons=this._createIconMap(),Object.keys(this._icons).map(function(e){return this.name+':'+e},this)},applyIcon:function(e,t){this.removeIcon(e);var n=this._cloneIcon(t,this.rtlMirroring&&this._targetIsRTL(e));if(n){var a=(0,r.dom)(e.root||e);return a.insertBefore(n,a.childNodes[0]),e._svgIcon=n}return null},removeIcon:function(e){e._svgIcon&&((0,r.dom)(e.root||e).removeChild(e._svgIcon),e._svgIcon=null)},_targetIsRTL:function(e){return null==this.__targetIsRTL&&(e&&e.nodeType!==Node.ELEMENT_NODE&&(e=e.host),this.__targetIsRTL=e&&'rtl'===window.getComputedStyle(e).direction),this.__targetIsRTL},_nameChanged:function(){this._meta.value=null,this._meta.key=this.name,this._meta.value=this,this.async(function(){this.fire('iron-iconset-added',this,{node:window})})},_createIconMap:function(){var e=Object.create(null);return(0,r.dom)(this).querySelectorAll('[id]').forEach(function(t){e[t.id]=t}),e},_cloneIcon:function(e,t){return this._icons=this._icons||this._createIconMap(),this._prepareSvgClone(this._icons[e],this.size,t)},_prepareSvgClone:function(e,t,n){if(e){var a=e.cloneNode(!0),o=document.createElementNS('http://www.w3.org/2000/svg','svg'),r=a.getAttribute('viewBox')||'0 0 '+t+' '+t,s='pointer-events: none; display: block; width: 100%; height: 100%;';return n&&a.hasAttribute('mirror-in-rtl')&&(s+='-webkit-transform:scale(-1,1);transform:scale(-1,1);'),o.setAttribute('viewBox',r),o.setAttribute('preserveAspectRatio','xMidYMid meet'),o.setAttribute('focusable','false'),o.style.cssText=s,o.appendChild(a).removeAttribute('id'),o}return null}})},function(e,t,n){'use strict';n(0),n(23);var a=n(73);n(15);var o=n(3);const r=document.createElement('div');r.setAttribute('style','display: none;'),r.innerHTML=`<dom-module id="paper-icon-button">
+</iron-iconset-svg>`;
+
+document.head.appendChild($_documentContainer);
+
+/***/ }),
+/* 71 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+__webpack_require__(0);
+
+var _ironMeta = __webpack_require__(40);
+
+var _polymerFn = __webpack_require__(3);
+
+var _polymerDom = __webpack_require__(2);
+
+/**
+ * The `iron-iconset-svg` element allows users to define their own icon sets
+ * that contain svg icons. The svg icon elements should be children of the
+ * `iron-iconset-svg` element. Multiple icons should be given distinct id's.
+ *
+ * Using svg elements to create icons has a few advantages over traditional
+ * bitmap graphics like jpg or png. Icons that use svg are vector based so
+ * they are resolution independent and should look good on any device. They
+ * are stylable via css. Icons can be themed, colorized, and even animated.
+ *
+ * Example:
+ *
+ *     <iron-iconset-svg name="my-svg-icons" size="24">
+ *       <svg>
+ *         <defs>
+ *           <g id="shape">
+ *             <rect x="12" y="0" width="12" height="24" />
+ *             <circle cx="12" cy="12" r="12" />
+ *           </g>
+ *         </defs>
+ *       </svg>
+ *     </iron-iconset-svg>
+ *
+ * This will automatically register the icon set "my-svg-icons" to the iconset
+ * database.  To use these icons from within another element, make a
+ * `iron-iconset` element and call the `byId` method
+ * to retrieve a given iconset. To apply a particular icon inside an
+ * element use the `applyIcon` method. For example:
+ *
+ *     iconset.applyIcon(iconNode, 'car');
+ *
+ * @element iron-iconset-svg
+ * @demo demo/index.html
+ * @implements {Polymer.Iconset}
+ */
+(0, _polymerFn.Polymer)({
+  is: 'iron-iconset-svg',
+
+  properties: {
+
+    /**
+     * The name of the iconset.
+     */
+    name: {
+      type: String,
+      observer: '_nameChanged'
+    },
+
+    /**
+     * The size of an individual icon. Note that icons must be square.
+     */
+    size: {
+      type: Number,
+      value: 24
+    },
+
+    /**
+     * Set to true to enable mirroring of icons where specified when they are
+     * stamped. Icons that should be mirrored should be decorated with a
+     * `mirror-in-rtl` attribute.
+     *
+     * NOTE: For performance reasons, direction will be resolved once per
+     * document per iconset, so moving icons in and out of RTL subtrees will
+     * not cause their mirrored state to change.
+     */
+    rtlMirroring: {
+      type: Boolean,
+      value: false
+    }
+  },
+
+  created: function () {
+    this._meta = new _ironMeta.IronMeta({ type: 'iconset', key: null, value: null });
+  },
+
+  attached: function () {
+    this.style.display = 'none';
+  },
+
+  /**
+   * Construct an array of all icon names in this iconset.
+   *
+   * @return {!Array} Array of icon names.
+   */
+  getIconNames: function () {
+    this._icons = this._createIconMap();
+    return Object.keys(this._icons).map(function (n) {
+      return this.name + ':' + n;
+    }, this);
+  },
+
+  /**
+   * Applies an icon to the given element.
+   *
+   * An svg icon is prepended to the element's shadowRoot if it exists,
+   * otherwise to the element itself.
+   *
+   * If RTL mirroring is enabled, and the icon is marked to be mirrored in
+   * RTL, the element will be tested (once and only once ever for each
+   * iconset) to determine the direction of the subtree the element is in.
+   * This direction will apply to all future icon applications, although only
+   * icons marked to be mirrored will be affected.
+   *
+   * @method applyIcon
+   * @param {Element} element Element to which the icon is applied.
+   * @param {string} iconName Name of the icon to apply.
+   * @return {?Element} The svg element which renders the icon.
+   */
+  applyIcon: function (element, iconName) {
+    // Remove old svg element
+    this.removeIcon(element);
+    // install new svg element
+    var svg = this._cloneIcon(iconName, this.rtlMirroring && this._targetIsRTL(element));
+    if (svg) {
+      // insert svg element into shadow root, if it exists
+      var pde = (0, _polymerDom.dom)(element.root || element);
+      pde.insertBefore(svg, pde.childNodes[0]);
+      return element._svgIcon = svg;
+    }
+    return null;
+  },
+
+  /**
+   * Remove an icon from the given element by undoing the changes effected
+   * by `applyIcon`.
+   *
+   * @param {Element} element The element from which the icon is removed.
+   */
+  removeIcon: function (element) {
+    // Remove old svg element
+    if (element._svgIcon) {
+      (0, _polymerDom.dom)(element.root || element).removeChild(element._svgIcon);
+      element._svgIcon = null;
+    }
+  },
+
+  /**
+   * Measures and memoizes the direction of the element. Note that this
+   * measurement is only done once and the result is memoized for future
+   * invocations.
+   */
+  _targetIsRTL: function (target) {
+    if (this.__targetIsRTL == null) {
+      if (target && target.nodeType !== Node.ELEMENT_NODE) {
+        target = target.host;
+      }
+
+      this.__targetIsRTL = target && window.getComputedStyle(target)['direction'] === 'rtl';
+    }
+
+    return this.__targetIsRTL;
+  },
+
+  /**
+   *
+   * When name is changed, register iconset metadata
+   *
+   */
+  _nameChanged: function () {
+    this._meta.value = null;
+    this._meta.key = this.name;
+    this._meta.value = this;
+
+    this.async(function () {
+      this.fire('iron-iconset-added', this, { node: window });
+    });
+  },
+
+  /**
+   * Create a map of child SVG elements by id.
+   *
+   * @return {!Object} Map of id's to SVG elements.
+   */
+  _createIconMap: function () {
+    // Objects chained to Object.prototype (`{}`) have members. Specifically,
+    // on FF there is a `watch` method that confuses the icon map, so we
+    // need to use a null-based object here.
+    var icons = Object.create(null);
+    (0, _polymerDom.dom)(this).querySelectorAll('[id]').forEach(function (icon) {
+      icons[icon.id] = icon;
+    });
+    return icons;
+  },
+
+  /**
+   * Produce installable clone of the SVG element matching `id` in this
+   * iconset, or `undefined` if there is no matching element.
+   *
+   * @return {Element} Returns an installable clone of the SVG element
+   * matching `id`.
+   */
+  _cloneIcon: function (id, mirrorAllowed) {
+    // create the icon map on-demand, since the iconset itself has no discrete
+    // signal to know when it's children are fully parsed
+    this._icons = this._icons || this._createIconMap();
+    return this._prepareSvgClone(this._icons[id], this.size, mirrorAllowed);
+  },
+
+  /**
+   * @param {Element} sourceSvg
+   * @param {number} size
+   * @param {Boolean} mirrorAllowed
+   * @return {Element}
+   */
+  _prepareSvgClone: function (sourceSvg, size, mirrorAllowed) {
+    if (sourceSvg) {
+      var content = sourceSvg.cloneNode(true),
+          svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg'),
+          viewBox = content.getAttribute('viewBox') || '0 0 ' + size + ' ' + size,
+          cssText = 'pointer-events: none; display: block; width: 100%; height: 100%;';
+
+      if (mirrorAllowed && content.hasAttribute('mirror-in-rtl')) {
+        cssText += '-webkit-transform:scale(-1,1);transform:scale(-1,1);';
+      }
+
+      svg.setAttribute('viewBox', viewBox);
+      svg.setAttribute('preserveAspectRatio', 'xMidYMid meet');
+      svg.setAttribute('focusable', 'false');
+      // TODO(dfreedm): `pointer-events: none` works around https://crbug.com/370136
+      // TODO(sjmiles): inline style may not be ideal, but avoids requiring a shadow-root
+      svg.style.cssText = cssText;
+      svg.appendChild(content).removeAttribute('id');
+      return svg;
+    }
+    return null;
+  }
+
+});
+
+/***/ }),
+/* 72 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+__webpack_require__(0);
+
+__webpack_require__(23);
+
+var _paperInkyFocusBehavior = __webpack_require__(73);
+
+__webpack_require__(15);
+
+var _polymerFn = __webpack_require__(3);
+
+const $_documentContainer = document.createElement('div');
+$_documentContainer.setAttribute('style', 'display: none;');
+
+$_documentContainer.innerHTML = `<dom-module id="paper-icon-button">
   <template strip-whitespace="">
     <style>
       :host {
@@ -1604,7 +17911,491 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   </template>
 
   
-</dom-module>`,document.head.appendChild(r),(0,o.Polymer)({is:'paper-icon-button',hostAttributes:{role:'button',tabindex:'0'},behaviors:[a.PaperInkyFocusBehavior],properties:{src:{type:String},icon:{type:String},alt:{type:String,observer:'_altChanged'}},_altChanged:function(e,t){var n=this.getAttribute('aria-label');n&&t!=n||this.setAttribute('aria-label',e)}})},function(e,t,n){'use strict';Object.defineProperty(t,'__esModule',{value:!0}),t.PaperInkyFocusBehavior=t.PaperInkyFocusBehaviorImpl=void 0,n(0);var a=n(24),o=n(74),r=n(26);const s=t.PaperInkyFocusBehaviorImpl={observers:['_focusedChanged(receivedFocusFromKeyboard)'],_focusedChanged:function(e){e&&this.ensureRipple(),this.hasRipple()&&(this._ripple.holdDown=e)},_createRipple:function(){var e=o.PaperRippleBehavior._createRipple();return e.id='ink',e.setAttribute('center',''),e.classList.add('circle'),e}},d=t.PaperInkyFocusBehavior=[a.IronButtonState,r.IronControlState,o.PaperRippleBehavior,s]},function(e,t,n){'use strict';Object.defineProperty(t,'__esModule',{value:!0}),t.PaperRippleBehavior=void 0,n(0),n(75);var a=n(24),o=n(2);t.PaperRippleBehavior={properties:{noink:{type:Boolean,observer:'_noinkChanged'},_rippleContainer:{type:Object}},_buttonStateChanged:function(){this.focused&&this.ensureRipple()},_downHandler:function(e){a.IronButtonStateImpl._downHandler.call(this,e),this.pressed&&this.ensureRipple(e)},ensureRipple:function(e){if(!this.hasRipple()){this._ripple=this._createRipple(),this._ripple.noink=this.noink;var t=this._rippleContainer||this.root;if(t&&(0,o.dom)(t).appendChild(this._ripple),e){var n=(0,o.dom)(this._rippleContainer||this),a=(0,o.dom)(e).rootTarget;n.deepContains(a)&&this._ripple.uiDownAction(e)}}},getRipple:function(){return this.ensureRipple(),this._ripple},hasRipple:function(){return!!this._ripple},_createRipple:function(){return document.createElement('paper-ripple')},_noinkChanged:function(e){this.hasRipple()&&(this._ripple.noink=e)}}},function(e,t,n){'use strict';function a(e){this.element=e,this.width=this.boundingRect.width,this.height=this.boundingRect.height,this.size=s(this.width,this.height)}function o(e){this.element=e,this.color=window.getComputedStyle(e).color,this.wave=document.createElement('div'),this.waveContainer=document.createElement('div'),this.wave.style.backgroundColor=this.color,this.wave.classList.add('wave'),this.waveContainer.classList.add('wave-container'),(0,p.dom)(this.waveContainer).appendChild(this.wave),this.resetInteractionState()}var r=Math.sqrt,s=Math.max,d=Math.min;n(0);var l=n(25),p=n(2),_=n(3),c={distance:function(e,t,n,a){var o=e-n,s=t-a;return r(o*o+s*s)},now:window.performance&&window.performance.now?window.performance.now.bind(window.performance):Date.now};a.prototype={get boundingRect(){return this.element.getBoundingClientRect()},furthestCornerDistanceFrom:function(e,t){var n=c.distance(e,t,0,0),a=c.distance(e,t,this.width,0),o=c.distance(e,t,0,this.height),r=c.distance(e,t,this.width,this.height);return s(n,a,o,r)}},o.MAX_RADIUS=300,o.prototype={get recenters(){return this.element.recenters},get center(){return this.element.center},get mouseDownElapsed(){var e;return this.mouseDownStart?(e=c.now()-this.mouseDownStart,this.mouseUpStart&&(e-=this.mouseUpElapsed),e):0},get mouseUpElapsed(){return this.mouseUpStart?c.now()-this.mouseUpStart:0},get mouseDownElapsedSeconds(){return this.mouseDownElapsed/1e3},get mouseUpElapsedSeconds(){return this.mouseUpElapsed/1e3},get mouseInteractionSeconds(){return this.mouseDownElapsedSeconds+this.mouseUpElapsedSeconds},get initialOpacity(){return this.element.initialOpacity},get opacityDecayVelocity(){return this.element.opacityDecayVelocity},get radius(){var e=this.containerMetrics.width*this.containerMetrics.width,t=this.containerMetrics.height*this.containerMetrics.height,n=1.1*d(r(e+t),o.MAX_RADIUS)+5,a=1.1-0.2*(n/o.MAX_RADIUS),s=this.mouseInteractionSeconds/a,l=n*(1-Math.pow(80,-s));return Math.abs(l)},get opacity(){return this.mouseUpStart?s(0,this.initialOpacity-this.mouseUpElapsedSeconds*this.opacityDecayVelocity):this.initialOpacity},get outerOpacity(){var e=0.3*this.mouseUpElapsedSeconds,t=this.opacity;return s(0,d(e,t))},get isOpacityFullyDecayed(){return 0.01>this.opacity&&this.radius>=d(this.maxRadius,o.MAX_RADIUS)},get isRestingAtMaxRadius(){return this.opacity>=this.initialOpacity&&this.radius>=d(this.maxRadius,o.MAX_RADIUS)},get isAnimationComplete(){return this.mouseUpStart?this.isOpacityFullyDecayed:this.isRestingAtMaxRadius},get translationFraction(){return d(1,2*(this.radius/this.containerMetrics.size)/1.4142135623730951)},get xNow(){return this.xEnd?this.xStart+this.translationFraction*(this.xEnd-this.xStart):this.xStart},get yNow(){return this.yEnd?this.yStart+this.translationFraction*(this.yEnd-this.yStart):this.yStart},get isMouseDown(){return this.mouseDownStart&&!this.mouseUpStart},resetInteractionState:function(){this.maxRadius=0,this.mouseDownStart=0,this.mouseUpStart=0,this.xStart=0,this.yStart=0,this.xEnd=0,this.yEnd=0,this.slideDistance=0,this.containerMetrics=new a(this.element)},draw:function(){var e,t,n;this.wave.style.opacity=this.opacity,e=this.radius/(this.containerMetrics.size/2),t=this.xNow-this.containerMetrics.width/2,n=this.yNow-this.containerMetrics.height/2,this.waveContainer.style.webkitTransform='translate('+t+'px, '+n+'px)',this.waveContainer.style.transform='translate3d('+t+'px, '+n+'px, 0)',this.wave.style.webkitTransform='scale('+e+','+e+')',this.wave.style.transform='scale3d('+e+','+e+',1)'},downAction:function(e){var t=this.containerMetrics.width/2,n=this.containerMetrics.height/2;this.resetInteractionState(),this.mouseDownStart=c.now(),this.center?(this.xStart=t,this.yStart=n,this.slideDistance=c.distance(this.xStart,this.yStart,this.xEnd,this.yEnd)):(this.xStart=e?e.detail.x-this.containerMetrics.boundingRect.left:this.containerMetrics.width/2,this.yStart=e?e.detail.y-this.containerMetrics.boundingRect.top:this.containerMetrics.height/2),this.recenters&&(this.xEnd=t,this.yEnd=n,this.slideDistance=c.distance(this.xStart,this.yStart,this.xEnd,this.yEnd)),this.maxRadius=this.containerMetrics.furthestCornerDistanceFrom(this.xStart,this.yStart),this.waveContainer.style.top=(this.containerMetrics.height-this.containerMetrics.size)/2+'px',this.waveContainer.style.left=(this.containerMetrics.width-this.containerMetrics.size)/2+'px',this.waveContainer.style.width=this.containerMetrics.size+'px',this.waveContainer.style.height=this.containerMetrics.size+'px'},upAction:function(){this.isMouseDown&&(this.mouseUpStart=c.now())},remove:function(){(0,p.dom)(this.waveContainer.parentNode).removeChild(this.waveContainer)}},(0,_.Polymer)({_template:`
+</dom-module>`;
+
+document.head.appendChild($_documentContainer);
+(0, _polymerFn.Polymer)({
+  is: 'paper-icon-button',
+
+  hostAttributes: {
+    role: 'button',
+    tabindex: '0'
+  },
+
+  behaviors: [_paperInkyFocusBehavior.PaperInkyFocusBehavior],
+
+  properties: {
+    /**
+     * The URL of an image for the icon. If the src property is specified,
+     * the icon property should not be.
+     */
+    src: {
+      type: String
+    },
+
+    /**
+     * Specifies the icon name or index in the set of icons available in
+     * the icon's icon set. If the icon property is specified,
+     * the src property should not be.
+     */
+    icon: {
+      type: String
+    },
+
+    /**
+     * Specifies the alternate text for the button, for accessibility.
+     */
+    alt: {
+      type: String,
+      observer: "_altChanged"
+    }
+  },
+
+  _altChanged: function (newValue, oldValue) {
+    var label = this.getAttribute('aria-label');
+
+    // Don't stomp over a user-set aria-label.
+    if (!label || oldValue == label) {
+      this.setAttribute('aria-label', newValue);
+    }
+  }
+});
+
+/***/ }),
+/* 73 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.PaperInkyFocusBehavior = exports.PaperInkyFocusBehaviorImpl = undefined;
+
+__webpack_require__(0);
+
+var _ironButtonState = __webpack_require__(24);
+
+var _paperRippleBehavior = __webpack_require__(74);
+
+var _ironControlState = __webpack_require__(26);
+
+const PaperInkyFocusBehaviorImpl = exports.PaperInkyFocusBehaviorImpl = {
+  observers: ['_focusedChanged(receivedFocusFromKeyboard)'],
+
+  _focusedChanged: function (receivedFocusFromKeyboard) {
+    if (receivedFocusFromKeyboard) {
+      this.ensureRipple();
+    }
+    if (this.hasRipple()) {
+      this._ripple.holdDown = receivedFocusFromKeyboard;
+    }
+  },
+
+  _createRipple: function () {
+    var ripple = _paperRippleBehavior.PaperRippleBehavior._createRipple();
+    ripple.id = 'ink';
+    ripple.setAttribute('center', '');
+    ripple.classList.add('circle');
+    return ripple;
+  }
+};
+
+const PaperInkyFocusBehavior = exports.PaperInkyFocusBehavior = [_ironButtonState.IronButtonState, _ironControlState.IronControlState, _paperRippleBehavior.PaperRippleBehavior, PaperInkyFocusBehaviorImpl];
+
+/***/ }),
+/* 74 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.PaperRippleBehavior = undefined;
+
+__webpack_require__(0);
+
+__webpack_require__(75);
+
+var _ironButtonState = __webpack_require__(24);
+
+var _polymerDom = __webpack_require__(2);
+
+const PaperRippleBehavior = exports.PaperRippleBehavior = {
+  properties: {
+    /**
+     * If true, the element will not produce a ripple effect when interacted
+     * with via the pointer.
+     */
+    noink: {
+      type: Boolean,
+      observer: '_noinkChanged'
+    },
+
+    /**
+     * @type {Element|undefined}
+     */
+    _rippleContainer: {
+      type: Object
+    }
+  },
+
+  /**
+   * Ensures a `<paper-ripple>` element is available when the element is
+   * focused.
+   */
+  _buttonStateChanged: function () {
+    if (this.focused) {
+      this.ensureRipple();
+    }
+  },
+
+  /**
+   * In addition to the functionality provided in `IronButtonState`, ensures
+   * a ripple effect is created when the element is in a `pressed` state.
+   */
+  _downHandler: function (event) {
+    _ironButtonState.IronButtonStateImpl._downHandler.call(this, event);
+    if (this.pressed) {
+      this.ensureRipple(event);
+    }
+  },
+
+  /**
+   * Ensures this element contains a ripple effect. For startup efficiency
+   * the ripple effect is dynamically on demand when needed.
+   * @param {!Event=} optTriggeringEvent (optional) event that triggered the
+   * ripple.
+   */
+  ensureRipple: function (optTriggeringEvent) {
+    if (!this.hasRipple()) {
+      this._ripple = this._createRipple();
+      this._ripple.noink = this.noink;
+      var rippleContainer = this._rippleContainer || this.root;
+      if (rippleContainer) {
+        (0, _polymerDom.dom)(rippleContainer).appendChild(this._ripple);
+      }
+      if (optTriggeringEvent) {
+        // Check if the event happened inside of the ripple container
+        // Fall back to host instead of the root because distributed text
+        // nodes are not valid event targets
+        var domContainer = (0, _polymerDom.dom)(this._rippleContainer || this);
+        var target = (0, _polymerDom.dom)(optTriggeringEvent).rootTarget;
+        if (domContainer.deepContains( /** @type {Node} */target)) {
+          this._ripple.uiDownAction(optTriggeringEvent);
+        }
+      }
+    }
+  },
+
+  /**
+   * Returns the `<paper-ripple>` element used by this element to create
+   * ripple effects. The element's ripple is created on demand, when
+   * necessary, and calling this method will force the
+   * ripple to be created.
+   */
+  getRipple: function () {
+    this.ensureRipple();
+    return this._ripple;
+  },
+
+  /**
+   * Returns true if this element currently contains a ripple effect.
+   * @return {boolean}
+   */
+  hasRipple: function () {
+    return Boolean(this._ripple);
+  },
+
+  /**
+   * Create the element's ripple effect via creating a `<paper-ripple>`.
+   * Override this method to customize the ripple element.
+   * @return {!PaperRippleElement} Returns a `<paper-ripple>` element.
+   */
+  _createRipple: function () {
+    return (/** @type {!PaperRippleElement} */document.createElement('paper-ripple')
+    );
+  },
+
+  _noinkChanged: function (noink) {
+    if (this.hasRipple()) {
+      this._ripple.noink = noink;
+    }
+  }
+};
+
+/***/ }),
+/* 75 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+__webpack_require__(0);
+
+var _ironA11yKeysBehavior = __webpack_require__(25);
+
+var _polymerDom = __webpack_require__(2);
+
+var _polymerFn = __webpack_require__(3);
+
+var Utility = {
+  distance: function (x1, y1, x2, y2) {
+    var xDelta = x1 - x2;
+    var yDelta = y1 - y2;
+
+    return Math.sqrt(xDelta * xDelta + yDelta * yDelta);
+  },
+
+  now: window.performance && window.performance.now ? window.performance.now.bind(window.performance) : Date.now
+};
+
+/**
+ * @param {HTMLElement} element
+ * @constructor
+ */
+function ElementMetrics(element) {
+  this.element = element;
+  this.width = this.boundingRect.width;
+  this.height = this.boundingRect.height;
+
+  this.size = Math.max(this.width, this.height);
+}
+
+ElementMetrics.prototype = {
+  get boundingRect() {
+    return this.element.getBoundingClientRect();
+  },
+
+  furthestCornerDistanceFrom: function (x, y) {
+    var topLeft = Utility.distance(x, y, 0, 0);
+    var topRight = Utility.distance(x, y, this.width, 0);
+    var bottomLeft = Utility.distance(x, y, 0, this.height);
+    var bottomRight = Utility.distance(x, y, this.width, this.height);
+
+    return Math.max(topLeft, topRight, bottomLeft, bottomRight);
+  }
+};
+
+/**
+ * @param {HTMLElement} element
+ * @constructor
+ */
+function Ripple(element) {
+  this.element = element;
+  this.color = window.getComputedStyle(element).color;
+
+  this.wave = document.createElement('div');
+  this.waveContainer = document.createElement('div');
+  this.wave.style.backgroundColor = this.color;
+  this.wave.classList.add('wave');
+  this.waveContainer.classList.add('wave-container');
+  (0, _polymerDom.dom)(this.waveContainer).appendChild(this.wave);
+
+  this.resetInteractionState();
+}
+
+Ripple.MAX_RADIUS = 300;
+
+Ripple.prototype = {
+  get recenters() {
+    return this.element.recenters;
+  },
+
+  get center() {
+    return this.element.center;
+  },
+
+  get mouseDownElapsed() {
+    var elapsed;
+
+    if (!this.mouseDownStart) {
+      return 0;
+    }
+
+    elapsed = Utility.now() - this.mouseDownStart;
+
+    if (this.mouseUpStart) {
+      elapsed -= this.mouseUpElapsed;
+    }
+
+    return elapsed;
+  },
+
+  get mouseUpElapsed() {
+    return this.mouseUpStart ? Utility.now() - this.mouseUpStart : 0;
+  },
+
+  get mouseDownElapsedSeconds() {
+    return this.mouseDownElapsed / 1000;
+  },
+
+  get mouseUpElapsedSeconds() {
+    return this.mouseUpElapsed / 1000;
+  },
+
+  get mouseInteractionSeconds() {
+    return this.mouseDownElapsedSeconds + this.mouseUpElapsedSeconds;
+  },
+
+  get initialOpacity() {
+    return this.element.initialOpacity;
+  },
+
+  get opacityDecayVelocity() {
+    return this.element.opacityDecayVelocity;
+  },
+
+  get radius() {
+    var width2 = this.containerMetrics.width * this.containerMetrics.width;
+    var height2 = this.containerMetrics.height * this.containerMetrics.height;
+    var waveRadius = Math.min(Math.sqrt(width2 + height2), Ripple.MAX_RADIUS) * 1.1 + 5;
+
+    var duration = 1.1 - 0.2 * (waveRadius / Ripple.MAX_RADIUS);
+    var timeNow = this.mouseInteractionSeconds / duration;
+    var size = waveRadius * (1 - Math.pow(80, -timeNow));
+
+    return Math.abs(size);
+  },
+
+  get opacity() {
+    if (!this.mouseUpStart) {
+      return this.initialOpacity;
+    }
+
+    return Math.max(0, this.initialOpacity - this.mouseUpElapsedSeconds * this.opacityDecayVelocity);
+  },
+
+  get outerOpacity() {
+    // Linear increase in background opacity, capped at the opacity
+    // of the wavefront (waveOpacity).
+    var outerOpacity = this.mouseUpElapsedSeconds * 0.3;
+    var waveOpacity = this.opacity;
+
+    return Math.max(0, Math.min(outerOpacity, waveOpacity));
+  },
+
+  get isOpacityFullyDecayed() {
+    return this.opacity < 0.01 && this.radius >= Math.min(this.maxRadius, Ripple.MAX_RADIUS);
+  },
+
+  get isRestingAtMaxRadius() {
+    return this.opacity >= this.initialOpacity && this.radius >= Math.min(this.maxRadius, Ripple.MAX_RADIUS);
+  },
+
+  get isAnimationComplete() {
+    return this.mouseUpStart ? this.isOpacityFullyDecayed : this.isRestingAtMaxRadius;
+  },
+
+  get translationFraction() {
+    return Math.min(1, this.radius / this.containerMetrics.size * 2 / Math.sqrt(2));
+  },
+
+  get xNow() {
+    if (this.xEnd) {
+      return this.xStart + this.translationFraction * (this.xEnd - this.xStart);
+    }
+
+    return this.xStart;
+  },
+
+  get yNow() {
+    if (this.yEnd) {
+      return this.yStart + this.translationFraction * (this.yEnd - this.yStart);
+    }
+
+    return this.yStart;
+  },
+
+  get isMouseDown() {
+    return this.mouseDownStart && !this.mouseUpStart;
+  },
+
+  resetInteractionState: function () {
+    this.maxRadius = 0;
+    this.mouseDownStart = 0;
+    this.mouseUpStart = 0;
+
+    this.xStart = 0;
+    this.yStart = 0;
+    this.xEnd = 0;
+    this.yEnd = 0;
+    this.slideDistance = 0;
+
+    this.containerMetrics = new ElementMetrics(this.element);
+  },
+
+  draw: function () {
+    var scale;
+    var translateString;
+    var dx;
+    var dy;
+
+    this.wave.style.opacity = this.opacity;
+
+    scale = this.radius / (this.containerMetrics.size / 2);
+    dx = this.xNow - this.containerMetrics.width / 2;
+    dy = this.yNow - this.containerMetrics.height / 2;
+
+    // 2d transform for safari because of border-radius and overflow:hidden clipping bug.
+    // https://bugs.webkit.org/show_bug.cgi?id=98538
+    this.waveContainer.style.webkitTransform = 'translate(' + dx + 'px, ' + dy + 'px)';
+    this.waveContainer.style.transform = 'translate3d(' + dx + 'px, ' + dy + 'px, 0)';
+    this.wave.style.webkitTransform = 'scale(' + scale + ',' + scale + ')';
+    this.wave.style.transform = 'scale3d(' + scale + ',' + scale + ',1)';
+  },
+
+  /** @param {Event=} event */
+  downAction: function (event) {
+    var xCenter = this.containerMetrics.width / 2;
+    var yCenter = this.containerMetrics.height / 2;
+
+    this.resetInteractionState();
+    this.mouseDownStart = Utility.now();
+
+    if (this.center) {
+      this.xStart = xCenter;
+      this.yStart = yCenter;
+      this.slideDistance = Utility.distance(this.xStart, this.yStart, this.xEnd, this.yEnd);
+    } else {
+      this.xStart = event ? event.detail.x - this.containerMetrics.boundingRect.left : this.containerMetrics.width / 2;
+      this.yStart = event ? event.detail.y - this.containerMetrics.boundingRect.top : this.containerMetrics.height / 2;
+    }
+
+    if (this.recenters) {
+      this.xEnd = xCenter;
+      this.yEnd = yCenter;
+      this.slideDistance = Utility.distance(this.xStart, this.yStart, this.xEnd, this.yEnd);
+    }
+
+    this.maxRadius = this.containerMetrics.furthestCornerDistanceFrom(this.xStart, this.yStart);
+
+    this.waveContainer.style.top = (this.containerMetrics.height - this.containerMetrics.size) / 2 + 'px';
+    this.waveContainer.style.left = (this.containerMetrics.width - this.containerMetrics.size) / 2 + 'px';
+
+    this.waveContainer.style.width = this.containerMetrics.size + 'px';
+    this.waveContainer.style.height = this.containerMetrics.size + 'px';
+  },
+
+  /** @param {Event=} event */
+  upAction: function (event) {
+    if (!this.isMouseDown) {
+      return;
+    }
+
+    this.mouseUpStart = Utility.now();
+  },
+
+  remove: function () {
+    (0, _polymerDom.dom)(this.waveContainer.parentNode).removeChild(this.waveContainer);
+  }
+};
+
+(0, _polymerFn.Polymer)({
+  _template: `
     <style>
       :host {
         display: block;
@@ -1674,7 +18465,406 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
     <div id="background"></div>
     <div id="waves"></div>
-`,is:'paper-ripple',behaviors:[l.IronA11yKeysBehavior],properties:{initialOpacity:{type:Number,value:0.25},opacityDecayVelocity:{type:Number,value:0.8},recenters:{type:Boolean,value:!1},center:{type:Boolean,value:!1},ripples:{type:Array,value:function(){return[]}},animating:{type:Boolean,readOnly:!0,reflectToAttribute:!0,value:!1},holdDown:{type:Boolean,value:!1,observer:'_holdDownChanged'},noink:{type:Boolean,value:!1},_animating:{type:Boolean},_boundAnimate:{type:Function,value:function(){return this.animate.bind(this)}}},get target(){return this.keyEventTarget},keyBindings:{"enter:keydown":'_onEnterKeydown',"space:keydown":'_onSpaceKeydown',"space:keyup":'_onSpaceKeyup'},attached:function(){this.keyEventTarget=11==this.parentNode.nodeType?(0,p.dom)(this).getOwnerRoot().host:this.parentNode;var e=this.keyEventTarget;this.listen(e,'up','uiUpAction'),this.listen(e,'down','uiDownAction')},detached:function(){this.unlisten(this.keyEventTarget,'up','uiUpAction'),this.unlisten(this.keyEventTarget,'down','uiDownAction'),this.keyEventTarget=null},get shouldKeepAnimating(){for(var e=0;e<this.ripples.length;++e)if(!this.ripples[e].isAnimationComplete)return!0;return!1},simulatedRipple:function(){this.downAction(null),this.async(function(){this.upAction()},1)},uiDownAction:function(e){this.noink||this.downAction(e)},downAction:function(e){if(!(this.holdDown&&0<this.ripples.length)){var t=this.addRipple();t.downAction(e),this._animating||(this._animating=!0,this.animate())}},uiUpAction:function(e){this.noink||this.upAction(e)},upAction:function(e){this.holdDown||(this.ripples.forEach(function(t){t.upAction(e)}),this._animating=!0,this.animate())},onAnimationComplete:function(){this._animating=!1,this.$.background.style.backgroundColor=null,this.fire('transitionend')},addRipple:function(){var e=new o(this);return(0,p.dom)(this.$.waves).appendChild(e.waveContainer),this.$.background.style.backgroundColor=e.color,this.ripples.push(e),this._setAnimating(!0),e},removeRipple:function(e){var t=this.ripples.indexOf(e);0>t||(this.ripples.splice(t,1),e.remove(),!this.ripples.length&&this._setAnimating(!1))},animate:function(){if(this._animating){var e,t;for(e=0;e<this.ripples.length;++e)t=this.ripples[e],t.draw(),this.$.background.style.opacity=t.outerOpacity,t.isOpacityFullyDecayed&&!t.isRestingAtMaxRadius&&this.removeRipple(t);this.shouldKeepAnimating||0!==this.ripples.length?window.requestAnimationFrame(this._boundAnimate):this.onAnimationComplete()}},_onEnterKeydown:function(){this.uiDownAction(),this.async(this.uiUpAction,1)},_onSpaceKeydown:function(){this.uiDownAction()},_onSpaceKeyup:function(){this.uiUpAction()},_holdDownChanged:function(e,t){void 0===t||(e?this.downAction():this.upAction())}})},function(e,t,n){'use strict';function a(e){return function(){var t=e.apply(this,arguments);return new Promise(function(e,n){function a(o,r){try{var s=t[o](r),d=s.value}catch(e){return void n(e)}return s.done?void e(d):Promise.resolve(d).then(function(e){a('next',e)},function(e){a('throw',e)})}return a('next')})}}var o=n(5);class r extends o.Element{static get is(){return'app-store'}static get properties(){return{currencies:{type:Array,value:[],notify:!0}}}constructor(){super()}connectedCallback(){super.connectedCallback(),this.load()}load(){var e=this;return a(function*(){const t=yield fetch('https://api.coinmarketcap.com/v1/ticker/?limit=50',{cache:'force-cache'});e.currencies=yield t.json()})()}}customElements.define(r.is,r)},function(e,t,n){'use strict';var a=n(5);n(78),n(38),n(82);class o extends a.Element{static get is(){return'currencies-list'}static get template(){return`
+`,
+
+  is: 'paper-ripple',
+
+  behaviors: [_ironA11yKeysBehavior.IronA11yKeysBehavior],
+
+  properties: {
+    /**
+     * The initial opacity set on the wave.
+     *
+     * @attribute initialOpacity
+     * @type number
+     * @default 0.25
+     */
+    initialOpacity: {
+      type: Number,
+      value: 0.25
+    },
+
+    /**
+     * How fast (opacity per second) the wave fades out.
+     *
+     * @attribute opacityDecayVelocity
+     * @type number
+     * @default 0.8
+     */
+    opacityDecayVelocity: {
+      type: Number,
+      value: 0.8
+    },
+
+    /**
+     * If true, ripples will exhibit a gravitational pull towards
+     * the center of their container as they fade away.
+     *
+     * @attribute recenters
+     * @type boolean
+     * @default false
+     */
+    recenters: {
+      type: Boolean,
+      value: false
+    },
+
+    /**
+     * If true, ripples will center inside its container
+     *
+     * @attribute recenters
+     * @type boolean
+     * @default false
+     */
+    center: {
+      type: Boolean,
+      value: false
+    },
+
+    /**
+     * A list of the visual ripples.
+     *
+     * @attribute ripples
+     * @type Array
+     * @default []
+     */
+    ripples: {
+      type: Array,
+      value: function () {
+        return [];
+      }
+    },
+
+    /**
+     * True when there are visible ripples animating within the
+     * element.
+     */
+    animating: {
+      type: Boolean,
+      readOnly: true,
+      reflectToAttribute: true,
+      value: false
+    },
+
+    /**
+     * If true, the ripple will remain in the "down" state until `holdDown`
+     * is set to false again.
+     */
+    holdDown: {
+      type: Boolean,
+      value: false,
+      observer: '_holdDownChanged'
+    },
+
+    /**
+     * If true, the ripple will not generate a ripple effect
+     * via pointer interaction.
+     * Calling ripple's imperative api like `simulatedRipple` will
+     * still generate the ripple effect.
+     */
+    noink: {
+      type: Boolean,
+      value: false
+    },
+
+    _animating: {
+      type: Boolean
+    },
+
+    _boundAnimate: {
+      type: Function,
+      value: function () {
+        return this.animate.bind(this);
+      }
+    }
+  },
+
+  get target() {
+    return this.keyEventTarget;
+  },
+
+  keyBindings: {
+    'enter:keydown': '_onEnterKeydown',
+    'space:keydown': '_onSpaceKeydown',
+    'space:keyup': '_onSpaceKeyup'
+  },
+
+  attached: function () {
+    // Set up a11yKeysBehavior to listen to key events on the target,
+    // so that space and enter activate the ripple even if the target doesn't
+    // handle key events. The key handlers deal with `noink` themselves.
+    if (this.parentNode.nodeType == 11) {
+      // DOCUMENT_FRAGMENT_NODE
+      this.keyEventTarget = (0, _polymerDom.dom)(this).getOwnerRoot().host;
+    } else {
+      this.keyEventTarget = this.parentNode;
+    }
+    var keyEventTarget = /** @type {!EventTarget} */this.keyEventTarget;
+    this.listen(keyEventTarget, 'up', 'uiUpAction');
+    this.listen(keyEventTarget, 'down', 'uiDownAction');
+  },
+
+  detached: function () {
+    this.unlisten(this.keyEventTarget, 'up', 'uiUpAction');
+    this.unlisten(this.keyEventTarget, 'down', 'uiDownAction');
+    this.keyEventTarget = null;
+  },
+
+  get shouldKeepAnimating() {
+    for (var index = 0; index < this.ripples.length; ++index) {
+      if (!this.ripples[index].isAnimationComplete) {
+        return true;
+      }
+    }
+
+    return false;
+  },
+
+  simulatedRipple: function () {
+    this.downAction(null);
+
+    // Please see polymer/polymer#1305
+    this.async(function () {
+      this.upAction();
+    }, 1);
+  },
+
+  /**
+   * Provokes a ripple down effect via a UI event,
+   * respecting the `noink` property.
+   * @param {Event=} event
+   */
+  uiDownAction: function (event) {
+    if (!this.noink) {
+      this.downAction(event);
+    }
+  },
+
+  /**
+   * Provokes a ripple down effect via a UI event,
+   * *not* respecting the `noink` property.
+   * @param {Event=} event
+   */
+  downAction: function (event) {
+    if (this.holdDown && this.ripples.length > 0) {
+      return;
+    }
+
+    var ripple = this.addRipple();
+
+    ripple.downAction(event);
+
+    if (!this._animating) {
+      this._animating = true;
+      this.animate();
+    }
+  },
+
+  /**
+   * Provokes a ripple up effect via a UI event,
+   * respecting the `noink` property.
+   * @param {Event=} event
+   */
+  uiUpAction: function (event) {
+    if (!this.noink) {
+      this.upAction(event);
+    }
+  },
+
+  /**
+   * Provokes a ripple up effect via a UI event,
+   * *not* respecting the `noink` property.
+   * @param {Event=} event
+   */
+  upAction: function (event) {
+    if (this.holdDown) {
+      return;
+    }
+
+    this.ripples.forEach(function (ripple) {
+      ripple.upAction(event);
+    });
+
+    this._animating = true;
+    this.animate();
+  },
+
+  onAnimationComplete: function () {
+    this._animating = false;
+    this.$.background.style.backgroundColor = null;
+    this.fire('transitionend');
+  },
+
+  addRipple: function () {
+    var ripple = new Ripple(this);
+
+    (0, _polymerDom.dom)(this.$.waves).appendChild(ripple.waveContainer);
+    this.$.background.style.backgroundColor = ripple.color;
+    this.ripples.push(ripple);
+
+    this._setAnimating(true);
+
+    return ripple;
+  },
+
+  removeRipple: function (ripple) {
+    var rippleIndex = this.ripples.indexOf(ripple);
+
+    if (rippleIndex < 0) {
+      return;
+    }
+
+    this.ripples.splice(rippleIndex, 1);
+
+    ripple.remove();
+
+    if (!this.ripples.length) {
+      this._setAnimating(false);
+    }
+  },
+
+  /**
+   * This conflicts with Element#antimate().
+   * https://developer.mozilla.org/en-US/docs/Web/API/Element/animate
+   * @suppress {checkTypes}
+   */
+  animate: function () {
+    if (!this._animating) {
+      return;
+    }
+    var index;
+    var ripple;
+
+    for (index = 0; index < this.ripples.length; ++index) {
+      ripple = this.ripples[index];
+
+      ripple.draw();
+
+      this.$.background.style.opacity = ripple.outerOpacity;
+
+      if (ripple.isOpacityFullyDecayed && !ripple.isRestingAtMaxRadius) {
+        this.removeRipple(ripple);
+      }
+    }
+
+    if (!this.shouldKeepAnimating && this.ripples.length === 0) {
+      this.onAnimationComplete();
+    } else {
+      window.requestAnimationFrame(this._boundAnimate);
+    }
+  },
+
+  _onEnterKeydown: function () {
+    this.uiDownAction();
+    this.async(this.uiUpAction, 1);
+  },
+
+  _onSpaceKeydown: function () {
+    this.uiDownAction();
+  },
+
+  _onSpaceKeyup: function () {
+    this.uiUpAction();
+  },
+
+  // note: holdDown does not respect noink since it can be a focus based
+  // effect.
+  _holdDownChanged: function (newVal, oldVal) {
+    if (oldVal === undefined) {
+      return;
+    }
+    if (newVal) {
+      this.downAction();
+    } else {
+      this.upAction();
+    }
+  }
+
+  /**
+  Fired when the animation finishes.
+  This is useful if you want to wait until
+  the ripple animation finishes to perform some action.
+   @event transitionend
+  @param {{node: Object}} detail Contains the animated node.
+  */
+});
+
+/***/ }),
+/* 76 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var _polymerElement = __webpack_require__(5);
+
+function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, arguments); return new Promise(function (resolve, reject) { function step(key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { return Promise.resolve(value).then(function (value) { step("next", value); }, function (err) { step("throw", err); }); } } return step("next"); }); }; } // Libs
+
+
+class AppStore extends _polymerElement.Element {
+    static get is() {
+        return 'app-store';
+    }
+
+    static get properties() {
+        return {
+            currencies: {
+                type: Array,
+                value: [],
+                notify: true
+            }
+        };
+    }
+
+    constructor() {
+        super();
+    }
+
+    connectedCallback() {
+        super.connectedCallback();
+
+        this.load();
+    }
+
+    load() {
+        var _this = this;
+
+        return _asyncToGenerator(function* () {
+            const response = yield fetch('https://api.coinmarketcap.com/v1/ticker/?limit=50', {
+                cache: 'force-cache'
+            });
+
+            _this.currencies = yield response.json();
+            //console.log(this.currencies);
+        })();
+    }
+}
+
+customElements.define(AppStore.is, AppStore);
+
+/***/ }),
+/* 77 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var _polymerElement = __webpack_require__(5);
+
+__webpack_require__(78);
+
+__webpack_require__(38);
+
+__webpack_require__(82);
+
+// Libs
+class CurrenciesList extends _polymerElement.Element {
+    static get is() {
+        return 'currencies-list';
+    }
+
+    static get template() {
+        return `
             <style>
                 :host {
                     display: block;
@@ -1689,7 +18879,44 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                     </template>
                 </dom-repeat>
             </paper-listbox>
-        `}static get properties(){return{currencies:{Type:Array,notify:!0}}}constructor(){super()}}customElements.define(o.is,o)},function(e,t,n){'use strict';n(0);var a=n(79);n(15);var o=n(3);(0,o.Polymer)({_template:`
+        `;
+    }
+
+    static get properties() {
+        return {
+            currencies: {
+                Type: Array,
+                notify: true
+            }
+        };
+    }
+
+    constructor() {
+        super();
+    }
+}
+// Components
+
+
+customElements.define(CurrenciesList.is, CurrenciesList);
+
+/***/ }),
+/* 78 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+__webpack_require__(0);
+
+var _ironMenuBehavior = __webpack_require__(79);
+
+__webpack_require__(15);
+
+var _polymerFn = __webpack_require__(3);
+
+(0, _polymerFn.Polymer)({
+  _template: `
     <style>
       :host {
         display: block;
@@ -1703,7 +18930,709 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     </style>
 
     <slot></slot>
-`,is:'paper-listbox',behaviors:[a.IronMenuBehavior],hostAttributes:{role:'listbox'}})},function(e,t,n){'use strict';Object.defineProperty(t,'__esModule',{value:!0}),t.IronMenuBehavior=t.IronMenuBehaviorImpl=void 0,n(0);var a=n(80),o=n(25),r=n(2),s=n(42);const d=t.IronMenuBehaviorImpl={properties:{focusedItem:{observer:'_focusedItemChanged',readOnly:!0,type:Object},attrForItemTitle:{type:String},disabled:{type:Boolean,value:!1,observer:'_disabledChanged'}},_MODIFIER_KEYS:['Alt','AltGraph','CapsLock','Control','Fn','FnLock','Hyper','Meta','NumLock','OS','ScrollLock','Shift','Super','Symbol','SymbolLock'],_SEARCH_RESET_TIMEOUT_MS:1e3,_previousTabIndex:0,hostAttributes:{role:'menu'},observers:['_updateMultiselectable(multi)'],listeners:{focus:'_onFocus',keydown:'_onKeydown',"iron-items-changed":'_onIronItemsChanged'},keyBindings:{up:'_onUpKey',down:'_onDownKey',esc:'_onEscKey',"shift+tab:keydown":'_onShiftTabDown'},attached:function(){this._resetTabindices()},select:function(e){this._defaultFocusAsync&&(this.cancelAsync(this._defaultFocusAsync),this._defaultFocusAsync=null);var t=this._valueToItem(e);t&&t.hasAttribute('disabled')||(this._setFocusedItem(t),a.IronMultiSelectableBehaviorImpl.select.apply(this,arguments))},_resetTabindices:function(){var e=this.multi?this.selectedItems&&this.selectedItems[0]:this.selectedItem;this.items.forEach(function(t){t.setAttribute('tabindex',t===e?'0':'-1')},this)},_updateMultiselectable:function(e){e?this.setAttribute('aria-multiselectable','true'):this.removeAttribute('aria-multiselectable')},_focusWithKeyboardEvent:function(e){if(-1===this._MODIFIER_KEYS.indexOf(e.key)){this.cancelDebouncer('_clearSearchText');var t=this._searchText||'',n=e.key&&1==e.key.length?e.key:String.fromCharCode(e.keyCode);t+=n.toLocaleLowerCase();for(var a=t.length,o=0,r;r=this.items[o];o++)if(!r.hasAttribute('disabled')){var s=this.attrForItemTitle||'textContent',d=(r[s]||r.getAttribute(s)||'').trim();if(!(d.length<a)&&d.slice(0,a).toLocaleLowerCase()==t){this._setFocusedItem(r);break}}this._searchText=t,this.debounce('_clearSearchText',this._clearSearchText,this._SEARCH_RESET_TIMEOUT_MS)}},_clearSearchText:function(){this._searchText=''},_focusPrevious:function(){for(var e=this.items.length,t=+this.indexOf(this.focusedItem),n=1,a;n<e+1;n++)if(a=this.items[(t-n+e)%e],!a.hasAttribute('disabled')){var o=(0,r.dom)(a).getOwnerRoot()||document;if(this._setFocusedItem(a),(0,r.dom)(o).activeElement==a)return}},_focusNext:function(){for(var e=this.items.length,t=+this.indexOf(this.focusedItem),n=1,a;n<e+1;n++)if(a=this.items[(t+n)%e],!a.hasAttribute('disabled')){var o=(0,r.dom)(a).getOwnerRoot()||document;if(this._setFocusedItem(a),(0,r.dom)(o).activeElement==a)return}},_applySelection:function(e,t){t?e.setAttribute('aria-selected','true'):e.removeAttribute('aria-selected'),s.IronSelectableBehavior._applySelection.apply(this,arguments)},_focusedItemChanged:function(e,t){t&&t.setAttribute('tabindex','-1'),!e||e.hasAttribute('disabled')||this.disabled||(e.setAttribute('tabindex','0'),e.focus())},_onIronItemsChanged:function(e){e.detail.addedNodes.length&&this._resetTabindices()},_onShiftTabDown:function(){var e=this.getAttribute('tabindex');d._shiftTabPressed=!0,this._setFocusedItem(null),this.setAttribute('tabindex','-1'),this.async(function(){this.setAttribute('tabindex',e),d._shiftTabPressed=!1},1)},_onFocus:function(e){if(!d._shiftTabPressed){var t=(0,r.dom)(e).rootTarget;(t===this||'undefined'==typeof t.tabIndex||this.isLightDescendant(t))&&(this._defaultFocusAsync=this.async(function(){var e=this.multi?this.selectedItems&&this.selectedItems[0]:this.selectedItem;this._setFocusedItem(null),e?this._setFocusedItem(e):this.items[0]&&this._focusNext()}))}},_onUpKey:function(e){this._focusPrevious(),e.detail.keyboardEvent.preventDefault()},_onDownKey:function(e){this._focusNext(),e.detail.keyboardEvent.preventDefault()},_onEscKey:function(){var e=this.focusedItem;e&&e.blur()},_onKeydown:function(e){this.keyboardEventMatchesKeys(e,'up down esc')||this._focusWithKeyboardEvent(e),e.stopPropagation()},_activateHandler:function(e){s.IronSelectableBehavior._activateHandler.call(this,e),e.stopPropagation()},_disabledChanged:function(e){e?(this._previousTabIndex=this.hasAttribute('tabindex')?this.tabIndex:0,this.removeAttribute('tabindex')):!this.hasAttribute('tabindex')&&this.setAttribute('tabindex',this._previousTabIndex)}};d._shiftTabPressed=!1;t.IronMenuBehavior=[a.IronMultiSelectableBehavior,o.IronA11yKeysBehavior,d]},function(e,t,n){'use strict';Object.defineProperty(t,'__esModule',{value:!0}),t.IronMultiSelectableBehavior=t.IronMultiSelectableBehaviorImpl=void 0,n(0);var a=n(42);const o=t.IronMultiSelectableBehaviorImpl={properties:{multi:{type:Boolean,value:!1,observer:'multiChanged'},selectedValues:{type:Array,notify:!0,value:function(){return[]}},selectedItems:{type:Array,readOnly:!0,notify:!0,value:function(){return[]}}},observers:['_updateSelected(selectedValues.splices)'],select:function(e){this.multi?this._toggleSelected(e):this.selected=e},multiChanged:function(e){this._selection.multi=e,this._updateSelected()},get _shouldUpdateSelection(){return null!=this.selected||null!=this.selectedValues&&this.selectedValues.length},_updateAttrForSelected:function(){this.multi?this.selectedItems&&0<this.selectedItems.length&&(this.selectedValues=this.selectedItems.map(function(e){return this._indexToValue(this.indexOf(e))},this).filter(function(e){return null!=e},this)):a.IronSelectableBehavior._updateAttrForSelected.apply(this)},_updateSelected:function(){this.multi?this._selectMulti(this.selectedValues):this._selectSelected(this.selected)},_selectMulti:function(e){e=e||[];var t=(this._valuesToItems(e)||[]).filter(function(e){return null!==e&&e!==void 0});this._selection.clear(t);for(var n=0;n<t.length;n++)this._selection.setItemSelected(t[n],!0);if(this.fallbackSelection&&!this._selection.get().length){var a=this._valueToItem(this.fallbackSelection);a&&this.select(this.fallbackSelection)}},_selectionChange:function(){var e=this._selection.get();this.multi?(this._setSelectedItems(e),this._setSelectedItem(e.length?e[0]:null)):null!==e&&e!==void 0?(this._setSelectedItems([e]),this._setSelectedItem(e)):(this._setSelectedItems([]),this._setSelectedItem(null))},_toggleSelected:function(e){var t=this.selectedValues.indexOf(e);0>t?this.push('selectedValues',e):this.splice('selectedValues',t,1)},_valuesToItems:function(e){return null==e?null:e.map(function(e){return this._valueToItem(e)},this)}},r=t.IronMultiSelectableBehavior=[a.IronSelectableBehavior,o]},function(e,t,n){'use strict';Object.defineProperty(t,'__esModule',{value:!0}),t.IronSelection=void 0,n(0);const a=t.IronSelection=function(e){this.selection=[],this.selectCallback=e};a.prototype={get:function(){return this.multi?this.selection.slice():this.selection[0]},clear:function(e){this.selection.slice().forEach(function(t){(!e||0>e.indexOf(t))&&this.setItemSelected(t,!1)},this)},isSelected:function(e){return 0<=this.selection.indexOf(e)},setItemSelected:function(e,t){if(null!=e&&t!==this.isSelected(e)){if(t)this.selection.push(e);else{var n=this.selection.indexOf(e);0<=n&&this.selection.splice(n,1)}this.selectCallback&&this.selectCallback(e,t)}},select:function(e){this.multi?this.toggle(e):this.get()!==e&&(this.setItemSelected(this.get(),!1),this.setItemSelected(e,!0))},toggle:function(e){this.setItemSelected(e,!this.isSelected(e))}}},function(e,t,n){'use strict';var a=n(5);n(23),n(83),n(87);class o extends a.Element{static get is(){return'currency-item'}static get template(){return`
+`,
+
+  is: 'paper-listbox',
+
+  behaviors: [_ironMenuBehavior.IronMenuBehavior],
+
+  hostAttributes: {
+    role: 'listbox'
+  }
+});
+
+/***/ }),
+/* 79 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.IronMenuBehavior = exports.IronMenuBehaviorImpl = undefined;
+
+__webpack_require__(0);
+
+var _ironMultiSelectable = __webpack_require__(80);
+
+var _ironA11yKeysBehavior = __webpack_require__(25);
+
+var _polymerDom = __webpack_require__(2);
+
+var _ironSelectable = __webpack_require__(42);
+
+const IronMenuBehaviorImpl = exports.IronMenuBehaviorImpl = {
+
+  properties: {
+
+    /**
+     * Returns the currently focused item.
+     * @type {?Object}
+     */
+    focusedItem: {
+      observer: '_focusedItemChanged',
+      readOnly: true,
+      type: Object
+    },
+
+    /**
+     * The attribute to use on menu items to look up the item title. Typing the first
+     * letter of an item when the menu is open focuses that item. If unset, `textContent`
+     * will be used.
+     */
+    attrForItemTitle: {
+      type: String
+    },
+
+    disabled: {
+      type: Boolean,
+      value: false,
+      observer: '_disabledChanged'
+    }
+  },
+
+  // The list of keys has been taken from
+  // https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/getModifierState
+  _MODIFIER_KEYS: ['Alt', 'AltGraph', 'CapsLock', 'Control', 'Fn', 'FnLock', 'Hyper', 'Meta', 'NumLock', 'OS', 'ScrollLock', 'Shift', 'Super', 'Symbol', 'SymbolLock'],
+
+  _SEARCH_RESET_TIMEOUT_MS: 1000,
+
+  _previousTabIndex: 0,
+
+  hostAttributes: {
+    'role': 'menu'
+  },
+
+  observers: ['_updateMultiselectable(multi)'],
+
+  listeners: {
+    'focus': '_onFocus',
+    'keydown': '_onKeydown',
+    'iron-items-changed': '_onIronItemsChanged'
+  },
+
+  keyBindings: {
+    'up': '_onUpKey',
+    'down': '_onDownKey',
+    'esc': '_onEscKey',
+    'shift+tab:keydown': '_onShiftTabDown'
+  },
+
+  attached: function () {
+    this._resetTabindices();
+  },
+
+  /**
+   * Selects the given value. If the `multi` property is true, then the selected state of the
+   * `value` will be toggled; otherwise the `value` will be selected.
+   *
+   * @param {string|number} value the value to select.
+   */
+  select: function (value) {
+    // Cancel automatically focusing a default item if the menu received focus
+    // through a user action selecting a particular item.
+    if (this._defaultFocusAsync) {
+      this.cancelAsync(this._defaultFocusAsync);
+      this._defaultFocusAsync = null;
+    }
+    var item = this._valueToItem(value);
+    if (item && item.hasAttribute('disabled')) return;
+    this._setFocusedItem(item);
+    _ironMultiSelectable.IronMultiSelectableBehaviorImpl.select.apply(this, arguments);
+  },
+
+  /**
+   * Resets all tabindex attributes to the appropriate value based on the
+   * current selection state. The appropriate value is `0` (focusable) for
+   * the default selected item, and `-1` (not keyboard focusable) for all
+   * other items.
+   */
+  _resetTabindices: function () {
+    var selectedItem = this.multi ? this.selectedItems && this.selectedItems[0] : this.selectedItem;
+
+    this.items.forEach(function (item) {
+      item.setAttribute('tabindex', item === selectedItem ? '0' : '-1');
+    }, this);
+  },
+
+  /**
+   * Sets appropriate ARIA based on whether or not the menu is meant to be
+   * multi-selectable.
+   *
+   * @param {boolean} multi True if the menu should be multi-selectable.
+   */
+  _updateMultiselectable: function (multi) {
+    if (multi) {
+      this.setAttribute('aria-multiselectable', 'true');
+    } else {
+      this.removeAttribute('aria-multiselectable');
+    }
+  },
+
+  /**
+   * Given a KeyboardEvent, this method will focus the appropriate item in the
+   * menu (if there is a relevant item, and it is possible to focus it).
+   *
+   * @param {KeyboardEvent} event A KeyboardEvent.
+   */
+  _focusWithKeyboardEvent: function (event) {
+    // Make sure that the key pressed is not a modifier key.
+    // getModifierState is not being used, as it is not available in Safari
+    // earlier than 10.0.2 (https://trac.webkit.org/changeset/206725/webkit)
+    if (this._MODIFIER_KEYS.indexOf(event.key) !== -1) return;
+
+    this.cancelDebouncer('_clearSearchText');
+
+    var searchText = this._searchText || '';
+    var key = event.key && event.key.length == 1 ? event.key : String.fromCharCode(event.keyCode);
+    searchText += key.toLocaleLowerCase();
+
+    var searchLength = searchText.length;
+
+    for (var i = 0, item; item = this.items[i]; i++) {
+      if (item.hasAttribute('disabled')) {
+        continue;
+      }
+
+      var attr = this.attrForItemTitle || 'textContent';
+      var title = (item[attr] || item.getAttribute(attr) || '').trim();
+
+      if (title.length < searchLength) {
+        continue;
+      }
+
+      if (title.slice(0, searchLength).toLocaleLowerCase() == searchText) {
+        this._setFocusedItem(item);
+        break;
+      }
+    }
+
+    this._searchText = searchText;
+    this.debounce('_clearSearchText', this._clearSearchText, this._SEARCH_RESET_TIMEOUT_MS);
+  },
+
+  _clearSearchText: function () {
+    this._searchText = '';
+  },
+
+  /**
+   * Focuses the previous item (relative to the currently focused item) in the
+   * menu, disabled items will be skipped.
+   * Loop until length + 1 to handle case of single item in menu.
+   */
+  _focusPrevious: function () {
+    var length = this.items.length;
+    var curFocusIndex = Number(this.indexOf(this.focusedItem));
+
+    for (var i = 1; i < length + 1; i++) {
+      var item = this.items[(curFocusIndex - i + length) % length];
+      if (!item.hasAttribute('disabled')) {
+        var owner = (0, _polymerDom.dom)(item).getOwnerRoot() || document;
+        this._setFocusedItem(item);
+
+        // Focus might not have worked, if the element was hidden or not
+        // focusable. In that case, try again.
+        if ((0, _polymerDom.dom)(owner).activeElement == item) {
+          return;
+        }
+      }
+    }
+  },
+
+  /**
+   * Focuses the next item (relative to the currently focused item) in the
+   * menu, disabled items will be skipped.
+   * Loop until length + 1 to handle case of single item in menu.
+   */
+  _focusNext: function () {
+    var length = this.items.length;
+    var curFocusIndex = Number(this.indexOf(this.focusedItem));
+
+    for (var i = 1; i < length + 1; i++) {
+      var item = this.items[(curFocusIndex + i) % length];
+      if (!item.hasAttribute('disabled')) {
+        var owner = (0, _polymerDom.dom)(item).getOwnerRoot() || document;
+        this._setFocusedItem(item);
+
+        // Focus might not have worked, if the element was hidden or not
+        // focusable. In that case, try again.
+        if ((0, _polymerDom.dom)(owner).activeElement == item) {
+          return;
+        }
+      }
+    }
+  },
+
+  /**
+   * Mutates items in the menu based on provided selection details, so that
+   * all items correctly reflect selection state.
+   *
+   * @param {Element} item An item in the menu.
+   * @param {boolean} isSelected True if the item should be shown in a
+   * selected state, otherwise false.
+   */
+  _applySelection: function (item, isSelected) {
+    if (isSelected) {
+      item.setAttribute('aria-selected', 'true');
+    } else {
+      item.removeAttribute('aria-selected');
+    }
+    _ironSelectable.IronSelectableBehavior._applySelection.apply(this, arguments);
+  },
+
+  /**
+   * Discretely updates tabindex values among menu items as the focused item
+   * changes.
+   *
+   * @param {Element} focusedItem The element that is currently focused.
+   * @param {?Element} old The last element that was considered focused, if
+   * applicable.
+   */
+  _focusedItemChanged: function (focusedItem, old) {
+    old && old.setAttribute('tabindex', '-1');
+    if (focusedItem && !focusedItem.hasAttribute('disabled') && !this.disabled) {
+      focusedItem.setAttribute('tabindex', '0');
+      focusedItem.focus();
+    }
+  },
+
+  /**
+   * A handler that responds to mutation changes related to the list of items
+   * in the menu.
+   *
+   * @param {CustomEvent} event An event containing mutation records as its
+   * detail.
+   */
+  _onIronItemsChanged: function (event) {
+    if (event.detail.addedNodes.length) {
+      this._resetTabindices();
+    }
+  },
+
+  /**
+   * Handler that is called when a shift+tab keypress is detected by the menu.
+   *
+   * @param {CustomEvent} event A key combination event.
+   */
+  _onShiftTabDown: function (event) {
+    var oldTabIndex = this.getAttribute('tabindex');
+
+    IronMenuBehaviorImpl._shiftTabPressed = true;
+
+    this._setFocusedItem(null);
+
+    this.setAttribute('tabindex', '-1');
+
+    this.async(function () {
+      this.setAttribute('tabindex', oldTabIndex);
+      IronMenuBehaviorImpl._shiftTabPressed = false;
+      // NOTE(cdata): polymer/polymer#1305
+    }, 1);
+  },
+
+  /**
+   * Handler that is called when the menu receives focus.
+   *
+   * @param {FocusEvent} event A focus event.
+   */
+  _onFocus: function (event) {
+    if (IronMenuBehaviorImpl._shiftTabPressed) {
+      // do not focus the menu itself
+      return;
+    }
+
+    // Do not focus the selected tab if the deepest target is part of the
+    // menu element's local DOM and is focusable.
+    var rootTarget = /** @type {?HTMLElement} */(0, _polymerDom.dom)(event).rootTarget;
+    if (rootTarget !== this && typeof rootTarget.tabIndex !== "undefined" && !this.isLightDescendant(rootTarget)) {
+      return;
+    }
+
+    // clear the cached focus item
+    this._defaultFocusAsync = this.async(function () {
+      // focus the selected item when the menu receives focus, or the first item
+      // if no item is selected
+      var selectedItem = this.multi ? this.selectedItems && this.selectedItems[0] : this.selectedItem;
+
+      this._setFocusedItem(null);
+
+      if (selectedItem) {
+        this._setFocusedItem(selectedItem);
+      } else if (this.items[0]) {
+        // We find the first none-disabled item (if one exists)
+        this._focusNext();
+      }
+    });
+  },
+
+  /**
+   * Handler that is called when the up key is pressed.
+   *
+   * @param {CustomEvent} event A key combination event.
+   */
+  _onUpKey: function (event) {
+    // up and down arrows moves the focus
+    this._focusPrevious();
+    event.detail.keyboardEvent.preventDefault();
+  },
+
+  /**
+   * Handler that is called when the down key is pressed.
+   *
+   * @param {CustomEvent} event A key combination event.
+   */
+  _onDownKey: function (event) {
+    this._focusNext();
+    event.detail.keyboardEvent.preventDefault();
+  },
+
+  /**
+   * Handler that is called when the esc key is pressed.
+   *
+   * @param {CustomEvent} event A key combination event.
+   */
+  _onEscKey: function (event) {
+    var focusedItem = this.focusedItem;
+    if (focusedItem) {
+      focusedItem.blur();
+    }
+  },
+
+  /**
+   * Handler that is called when a keydown event is detected.
+   *
+   * @param {KeyboardEvent} event A keyboard event.
+   */
+  _onKeydown: function (event) {
+    if (!this.keyboardEventMatchesKeys(event, 'up down esc')) {
+      // all other keys focus the menu item starting with that character
+      this._focusWithKeyboardEvent(event);
+    }
+    event.stopPropagation();
+  },
+
+  // override _activateHandler
+  _activateHandler: function (event) {
+    _ironSelectable.IronSelectableBehavior._activateHandler.call(this, event);
+    event.stopPropagation();
+  },
+
+  /**
+   * Updates this element's tab index when it's enabled/disabled.
+   * @param {boolean} disabled
+   */
+  _disabledChanged: function (disabled) {
+    if (disabled) {
+      this._previousTabIndex = this.hasAttribute('tabindex') ? this.tabIndex : 0;
+      this.removeAttribute('tabindex'); // No tabindex means not tab-able or select-able.
+    } else if (!this.hasAttribute('tabindex')) {
+      this.setAttribute('tabindex', this._previousTabIndex);
+    }
+  }
+};
+
+IronMenuBehaviorImpl._shiftTabPressed = false;
+
+const IronMenuBehavior = exports.IronMenuBehavior = [_ironMultiSelectable.IronMultiSelectableBehavior, _ironA11yKeysBehavior.IronA11yKeysBehavior, IronMenuBehaviorImpl];
+
+/***/ }),
+/* 80 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.IronMultiSelectableBehavior = exports.IronMultiSelectableBehaviorImpl = undefined;
+
+__webpack_require__(0);
+
+var _ironSelectable = __webpack_require__(42);
+
+const IronMultiSelectableBehaviorImpl = exports.IronMultiSelectableBehaviorImpl = {
+  properties: {
+
+    /**
+     * If true, multiple selections are allowed.
+     */
+    multi: {
+      type: Boolean,
+      value: false,
+      observer: 'multiChanged'
+    },
+
+    /**
+     * Gets or sets the selected elements. This is used instead of `selected` when `multi`
+     * is true.
+     */
+    selectedValues: {
+      type: Array,
+      notify: true,
+      value: function () {
+        return [];
+      }
+    },
+
+    /**
+     * Returns an array of currently selected items.
+     */
+    selectedItems: {
+      type: Array,
+      readOnly: true,
+      notify: true,
+      value: function () {
+        return [];
+      }
+    }
+
+  },
+
+  observers: ['_updateSelected(selectedValues.splices)'],
+
+  /**
+   * Selects the given value. If the `multi` property is true, then the selected state of the
+   * `value` will be toggled; otherwise the `value` will be selected.
+   *
+   * @method select
+   * @param {string|number} value the value to select.
+   */
+  select: function (value) {
+    if (this.multi) {
+      this._toggleSelected(value);
+    } else {
+      this.selected = value;
+    }
+  },
+
+  multiChanged: function (multi) {
+    this._selection.multi = multi;
+    this._updateSelected();
+  },
+
+  // UNUSED, FOR API COMPATIBILITY
+  get _shouldUpdateSelection() {
+    return this.selected != null || this.selectedValues != null && this.selectedValues.length;
+  },
+
+  _updateAttrForSelected: function () {
+    if (!this.multi) {
+      _ironSelectable.IronSelectableBehavior._updateAttrForSelected.apply(this);
+    } else if (this.selectedItems && this.selectedItems.length > 0) {
+      this.selectedValues = this.selectedItems.map(function (selectedItem) {
+        return this._indexToValue(this.indexOf(selectedItem));
+      }, this).filter(function (unfilteredValue) {
+        return unfilteredValue != null;
+      }, this);
+    }
+  },
+
+  _updateSelected: function () {
+    if (this.multi) {
+      this._selectMulti(this.selectedValues);
+    } else {
+      this._selectSelected(this.selected);
+    }
+  },
+
+  _selectMulti: function (values) {
+    values = values || [];
+
+    var selectedItems = (this._valuesToItems(values) || []).filter(function (item) {
+      return item !== null && item !== undefined;
+    });
+
+    // clear all but the current selected items
+    this._selection.clear(selectedItems);
+
+    // select only those not selected yet
+    for (var i = 0; i < selectedItems.length; i++) {
+      this._selection.setItemSelected(selectedItems[i], true);
+    }
+
+    // Check for items, since this array is populated only when attached
+    if (this.fallbackSelection && !this._selection.get().length) {
+      var fallback = this._valueToItem(this.fallbackSelection);
+      if (fallback) {
+        this.select(this.fallbackSelection);
+      }
+    }
+  },
+
+  _selectionChange: function () {
+    var s = this._selection.get();
+    if (this.multi) {
+      this._setSelectedItems(s);
+      this._setSelectedItem(s.length ? s[0] : null);
+    } else {
+      if (s !== null && s !== undefined) {
+        this._setSelectedItems([s]);
+        this._setSelectedItem(s);
+      } else {
+        this._setSelectedItems([]);
+        this._setSelectedItem(null);
+      }
+    }
+  },
+
+  _toggleSelected: function (value) {
+    var i = this.selectedValues.indexOf(value);
+    var unselected = i < 0;
+    if (unselected) {
+      this.push('selectedValues', value);
+    } else {
+      this.splice('selectedValues', i, 1);
+    }
+  },
+
+  _valuesToItems: function (values) {
+    return values == null ? null : values.map(function (value) {
+      return this._valueToItem(value);
+    }, this);
+  }
+};
+
+const IronMultiSelectableBehavior = exports.IronMultiSelectableBehavior = [_ironSelectable.IronSelectableBehavior, IronMultiSelectableBehaviorImpl];
+
+/***/ }),
+/* 81 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.IronSelection = undefined;
+
+__webpack_require__(0);
+
+const IronSelection = exports.IronSelection = function (selectCallback) {
+  this.selection = [];
+  this.selectCallback = selectCallback;
+};
+
+IronSelection.prototype = {
+
+  /**
+   * Retrieves the selected item(s).
+   *
+   * @method get
+   * @returns Returns the selected item(s). If the multi property is true,
+   * `get` will return an array, otherwise it will return
+   * the selected item or undefined if there is no selection.
+   */
+  get: function () {
+    return this.multi ? this.selection.slice() : this.selection[0];
+  },
+
+  /**
+   * Clears all the selection except the ones indicated.
+   *
+   * @method clear
+   * @param {Array} excludes items to be excluded.
+   */
+  clear: function (excludes) {
+    this.selection.slice().forEach(function (item) {
+      if (!excludes || excludes.indexOf(item) < 0) {
+        this.setItemSelected(item, false);
+      }
+    }, this);
+  },
+
+  /**
+   * Indicates if a given item is selected.
+   *
+   * @method isSelected
+   * @param {*} item The item whose selection state should be checked.
+   * @returns Returns true if `item` is selected.
+   */
+  isSelected: function (item) {
+    return this.selection.indexOf(item) >= 0;
+  },
+
+  /**
+   * Sets the selection state for a given item to either selected or deselected.
+   *
+   * @method setItemSelected
+   * @param {*} item The item to select.
+   * @param {boolean} isSelected True for selected, false for deselected.
+   */
+  setItemSelected: function (item, isSelected) {
+    if (item != null) {
+      if (isSelected !== this.isSelected(item)) {
+        // proceed to update selection only if requested state differs from current
+        if (isSelected) {
+          this.selection.push(item);
+        } else {
+          var i = this.selection.indexOf(item);
+          if (i >= 0) {
+            this.selection.splice(i, 1);
+          }
+        }
+        if (this.selectCallback) {
+          this.selectCallback(item, isSelected);
+        }
+      }
+    }
+  },
+
+  /**
+   * Sets the selection state for a given item. If the `multi` property
+   * is true, then the selected state of `item` will be toggled; otherwise
+   * the `item` will be selected.
+   *
+   * @method select
+   * @param {*} item The item to select.
+   */
+  select: function (item) {
+    if (this.multi) {
+      this.toggle(item);
+    } else if (this.get() !== item) {
+      this.setItemSelected(this.get(), false);
+      this.setItemSelected(item, true);
+    }
+  },
+
+  /**
+   * Toggles the selection state for `item`.
+   *
+   * @method toggle
+   * @param {*} item The item to toggle.
+   */
+  toggle: function (item) {
+    this.setItemSelected(item, !this.isSelected(item));
+  }
+
+};
+
+/***/ }),
+/* 82 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var _polymerElement = __webpack_require__(5);
+
+__webpack_require__(23);
+
+__webpack_require__(83);
+
+__webpack_require__(87);
+
+// Libs
+class CurrencyItem extends _polymerElement.Element {
+    static get is() {
+        return 'currency-item';
+    }
+
+    static get template() {
+        return `
             <style>
                 :host {
                     outline: none;
@@ -1757,7 +19686,66 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                     </div>
                 </paper-item-body>
             </paper-icon-item>
-        `}static get properties(){return{currency:Object,price:{type:String,computed:'_price(currency)'},isDepreciation:{type:Boolean,computed:'_isDepreciation(currency)'}}}constructor(){super(),this.attachShadow({mode:'open',delegatesFocus:!0})}_price(e){return(1*e.price_usd).toLocaleString('ru-RU',{style:'currency',currency:'USD'})}_isDepreciation(e){return 0>1*e.percent_change_24h}}customElements.define(o.is,o)},function(e,t,n){'use strict';n(0),n(7),n(27);var a=n(85);n(86);var o=n(3);(0,o.Polymer)({_template:`
+        `;
+    }
+
+    static get properties() {
+        return {
+            currency: Object,
+            price: {
+                type: String,
+                computed: '_price(currency)'
+            },
+            isDepreciation: {
+                type: Boolean,
+                computed: '_isDepreciation(currency)'
+            }
+        };
+    }
+
+    constructor() {
+        super();
+
+        this.attachShadow({
+            mode: 'open',
+            delegatesFocus: true
+        });
+    }
+
+    _price(currency) {
+        return (currency.price_usd * 1).toLocaleString('ru-RU', { style: 'currency', currency: 'USD' });
+    }
+
+    _isDepreciation(currency) {
+        return currency.percent_change_24h * 1 < 0;
+    }
+}
+// Components
+
+
+customElements.define(CurrencyItem.is, CurrencyItem);
+
+/***/ }),
+/* 83 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+__webpack_require__(0);
+
+__webpack_require__(7);
+
+__webpack_require__(27);
+
+var _paperItemBehavior = __webpack_require__(85);
+
+__webpack_require__(86);
+
+var _polymerFn = __webpack_require__(3);
+
+(0, _polymerFn.Polymer)({
+  _template: `
     <style include="paper-item-shared-styles"></style>
     <style>
       :host {
@@ -1782,9 +19770,74 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       <slot name="item-icon"></slot>
     </div>
     <slot></slot>
-`,is:'paper-icon-item',behaviors:[a.PaperItemBehavior]})},function(){'use strict';const e=document.createElement('div');e.setAttribute('style','display: none;'),e.innerHTML=`
+`,
+
+  is: 'paper-icon-item',
+
+  behaviors: [_paperItemBehavior.PaperItemBehavior]
+});
+
+/***/ }),
+/* 84 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+const $_documentContainer = document.createElement('div');
+$_documentContainer.setAttribute('style', 'display: none;');
+
+$_documentContainer.innerHTML = `
 <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Roboto+Mono:400,700|Roboto:400,300,300italic,400italic,500,500italic,700,700italic" crossorigin="anonymous">
-`,document.head.appendChild(e)},function(e,t,n){'use strict';Object.defineProperty(t,'__esModule',{value:!0}),t.PaperItemBehavior=t.PaperItemBehaviorImpl=void 0,n(0);var a=n(24),o=n(26);const r=t.PaperItemBehaviorImpl={hostAttributes:{role:'option',tabindex:'0'}},s=t.PaperItemBehavior=[a.IronButtonState,o.IronControlState,r]},function(e,t,n){'use strict';n(7),n(41),n(15),n(27);const a=document.createElement('div');a.setAttribute('style','display: none;'),a.innerHTML=`<dom-module id="paper-item-shared-styles">
+`;
+document.head.appendChild($_documentContainer);
+
+/***/ }),
+/* 85 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.PaperItemBehavior = exports.PaperItemBehaviorImpl = undefined;
+
+__webpack_require__(0);
+
+var _ironButtonState = __webpack_require__(24);
+
+var _ironControlState = __webpack_require__(26);
+
+const PaperItemBehaviorImpl = exports.PaperItemBehaviorImpl = {
+  hostAttributes: {
+    role: 'option',
+    tabindex: '0'
+  }
+};
+
+const PaperItemBehavior = exports.PaperItemBehavior = [_ironButtonState.IronButtonState, _ironControlState.IronControlState, PaperItemBehaviorImpl];
+
+/***/ }),
+/* 86 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+__webpack_require__(7);
+
+__webpack_require__(41);
+
+__webpack_require__(15);
+
+__webpack_require__(27);
+
+const $_documentContainer = document.createElement('div');
+$_documentContainer.setAttribute('style', 'display: none;');
+
+$_documentContainer.innerHTML = `<dom-module id="paper-item-shared-styles">
   <template>
     <style>
       :host, .paper-item {
@@ -1838,7 +19891,29 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       }
     </style>
   </template>
-</dom-module>`,document.head.appendChild(a)},function(e,t,n){'use strict';n(0),n(7),n(15),n(27);var a=n(3);(0,a.Polymer)({_template:`
+</dom-module>`;
+
+document.head.appendChild($_documentContainer);
+
+/***/ }),
+/* 87 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+__webpack_require__(0);
+
+__webpack_require__(7);
+
+__webpack_require__(15);
+
+__webpack_require__(27);
+
+var _polymerFn = __webpack_require__(3);
+
+(0, _polymerFn.Polymer)({
+  _template: `
     <style>
       :host {
         overflow: hidden; /* needed for text-overflow: ellipsis to work on ff */
@@ -1871,4 +19946,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     </style>
 
     <slot></slot>
-`,is:'paper-item-body'})}]);
+`,
+
+  is: 'paper-item-body'
+});
+
+/***/ })
+/******/ ]);
