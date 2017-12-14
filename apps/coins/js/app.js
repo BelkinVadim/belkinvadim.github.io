@@ -60,7 +60,7 @@
 /******/ 	__webpack_require__.p = "/";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 45);
+/******/ 	return __webpack_require__(__webpack_require__.s = 50);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -79,19 +79,19 @@ var _legacyElementMixin = __webpack_require__(32);
 
 __webpack_require__(1);
 
-__webpack_require__(59);
+__webpack_require__(64);
 
-__webpack_require__(60);
+__webpack_require__(65);
 
 __webpack_require__(40);
 
-__webpack_require__(61);
+__webpack_require__(66);
 
-__webpack_require__(62);
+__webpack_require__(67);
 
-__webpack_require__(63);
+__webpack_require__(68);
 
-__webpack_require__(65);
+__webpack_require__(70);
 
 const Base = exports.Base = (0, _legacyElementMixin.LegacyElementMixin)(HTMLElement).prototype;
 
@@ -107,7 +107,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.Polymer = undefined;
 
-var _class = __webpack_require__(58);
+var _class = __webpack_require__(63);
 
 const Polymer = exports.Polymer = function (info) {
   // if input is a `class` (aka a function with a prototype), use the prototype
@@ -152,7 +152,7 @@ __webpack_require__(2);
 
 __webpack_require__(12);
 
-var _flattenedNodesObserver = __webpack_require__(57);
+var _flattenedNodesObserver = __webpack_require__(62);
 
 var _flush = __webpack_require__(15);
 
@@ -1034,7 +1034,7 @@ document.head.appendChild($_documentContainer);
 
 __webpack_require__(0);
 
-__webpack_require__(43);
+__webpack_require__(48);
 
 const $_documentContainer = document.createElement('div');
 $_documentContainer.setAttribute('style', 'display: none;');
@@ -3308,9 +3308,9 @@ var _caseMap = __webpack_require__(10);
 
 var caseMap = _interopRequireWildcard(_caseMap);
 
-var _propertyAccessors = __webpack_require__(47);
+var _propertyAccessors = __webpack_require__(52);
 
-var _templateStamp = __webpack_require__(48);
+var _templateStamp = __webpack_require__(53);
 
 var _settings = __webpack_require__(12);
 
@@ -7170,7 +7170,7 @@ exports.IronSelectableBehavior = undefined;
 
 __webpack_require__(0);
 
-var _ironSelection = __webpack_require__(73);
+var _ironSelection = __webpack_require__(77);
 
 var _polymerDom = __webpack_require__(3);
 
@@ -7896,7 +7896,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.LegacyElementMixin = undefined;
 
-__webpack_require__(50);
+__webpack_require__(55);
 
 var _elementMixin = __webpack_require__(19);
 
@@ -7904,11 +7904,11 @@ var _gestureEventListeners = __webpack_require__(37);
 
 var _mixin = __webpack_require__(5);
 
-var _importHref = __webpack_require__(54);
+var _importHref = __webpack_require__(59);
 
-__webpack_require__(55);
+__webpack_require__(60);
 
-__webpack_require__(56);
+__webpack_require__(61);
 
 var _polymerDom = __webpack_require__(3);
 
@@ -8868,7 +8868,7 @@ var _cssParse = __webpack_require__(23);
 
 var _commonRegex = __webpack_require__(24);
 
-var _unscopedStyleHandler = __webpack_require__(52);
+var _unscopedStyleHandler = __webpack_require__(57);
 
 /**
  * @param {string|StyleNode} rules
@@ -11252,6 +11252,334 @@ exports.DomRepeat = DomRepeat;
 "use strict";
 
 
+__webpack_require__(0);
+
+var _polymerFn = __webpack_require__(1);
+
+(0, _polymerFn.Polymer)({
+  is: 'app-route',
+
+  properties: {
+    /**
+     * The URL component managed by this element.
+     */
+    route: {
+      type: Object,
+      notify: true
+    },
+
+    /**
+     * The pattern of slash-separated segments to match `route.path` against.
+     *
+     * For example the pattern "/foo" will match "/foo" or "/foo/bar"
+     * but not "/foobar".
+     *
+     * Path segments like `/:named` are mapped to properties on the `data` object.
+     */
+    pattern: {
+      type: String
+    },
+
+    /**
+     * The parameterized values that are extracted from the route as
+     * described by `pattern`.
+     */
+    data: {
+      type: Object,
+      value: function () {
+        return {};
+      },
+      notify: true
+    },
+
+    /**
+     * @type {?Object}
+     */
+    queryParams: {
+      type: Object,
+      value: function () {
+        return {};
+      },
+      notify: true
+    },
+
+    /**
+     * The part of `route.path` NOT consumed by `pattern`.
+     */
+    tail: {
+      type: Object,
+      value: function () {
+        return { path: null, prefix: null, __queryParams: null };
+      },
+      notify: true
+    },
+
+    /**
+     * Whether the current route is active. True if `route.path` matches the
+     * `pattern`, false otherwise.
+     */
+    active: {
+      type: Boolean,
+      notify: true,
+      readOnly: true
+    },
+
+    _queryParamsUpdating: {
+      type: Boolean,
+      value: false
+    },
+    /**
+     * @type {?string}
+     */
+    _matched: {
+      type: String,
+      value: ''
+    }
+  },
+
+  observers: ['__tryToMatch(route.path, pattern)', '__updatePathOnDataChange(data.*)', '__tailPathChanged(tail.path)', '__routeQueryParamsChanged(route.__queryParams)', '__tailQueryParamsChanged(tail.__queryParams)', '__queryParamsChanged(queryParams.*)'],
+
+  created: function () {
+    this.linkPaths('route.__queryParams', 'tail.__queryParams');
+    this.linkPaths('tail.__queryParams', 'route.__queryParams');
+  },
+
+  /**
+   * Deal with the query params object being assigned to wholesale.
+   */
+  __routeQueryParamsChanged: function (queryParams) {
+    if (queryParams && this.tail) {
+      if (this.tail.__queryParams !== queryParams) {
+        this.set('tail.__queryParams', queryParams);
+      }
+
+      if (!this.active || this._queryParamsUpdating) {
+        return;
+      }
+
+      // Copy queryParams and track whether there are any differences compared
+      // to the existing query params.
+      var copyOfQueryParams = {};
+      var anythingChanged = false;
+      for (var key in queryParams) {
+        copyOfQueryParams[key] = queryParams[key];
+        if (anythingChanged || !this.queryParams || queryParams[key] !== this.queryParams[key]) {
+          anythingChanged = true;
+        }
+      }
+      // Need to check whether any keys were deleted
+      for (var key in this.queryParams) {
+        if (anythingChanged || !(key in queryParams)) {
+          anythingChanged = true;
+          break;
+        }
+      }
+
+      if (!anythingChanged) {
+        return;
+      }
+      this._queryParamsUpdating = true;
+      this.set('queryParams', copyOfQueryParams);
+      this._queryParamsUpdating = false;
+    }
+  },
+
+  __tailQueryParamsChanged: function (queryParams) {
+    if (queryParams && this.route && this.route.__queryParams != queryParams) {
+      this.set('route.__queryParams', queryParams);
+    }
+  },
+
+  __queryParamsChanged: function (changes) {
+    if (!this.active || this._queryParamsUpdating) {
+      return;
+    }
+
+    this.set('route.__' + changes.path, changes.value);
+  },
+
+  __resetProperties: function () {
+    this._setActive(false);
+    this._matched = null;
+  },
+
+  __tryToMatch: function () {
+    if (!this.route) {
+      return;
+    }
+
+    var path = this.route.path;
+    var pattern = this.pattern;
+
+    if (!pattern) {
+      return;
+    }
+
+    if (!path) {
+      this.__resetProperties();
+      return;
+    }
+
+    var remainingPieces = path.split('/');
+    var patternPieces = pattern.split('/');
+
+    var matched = [];
+    var namedMatches = {};
+
+    for (var i = 0; i < patternPieces.length; i++) {
+      var patternPiece = patternPieces[i];
+      if (!patternPiece && patternPiece !== '') {
+        break;
+      }
+      var pathPiece = remainingPieces.shift();
+
+      // We don't match this path.
+      if (!pathPiece && pathPiece !== '') {
+        this.__resetProperties();
+        return;
+      }
+      matched.push(pathPiece);
+
+      if (patternPiece.charAt(0) == ':') {
+        namedMatches[patternPiece.slice(1)] = pathPiece;
+      } else if (patternPiece !== pathPiece) {
+        this.__resetProperties();
+        return;
+      }
+    }
+
+    this._matched = matched.join('/');
+
+    // Properties that must be updated atomically.
+    var propertyUpdates = {};
+
+    //this.active
+    if (!this.active) {
+      propertyUpdates.active = true;
+    }
+
+    // this.tail
+    var tailPrefix = this.route.prefix + this._matched;
+    var tailPath = remainingPieces.join('/');
+    if (remainingPieces.length > 0) {
+      tailPath = '/' + tailPath;
+    }
+    if (!this.tail || this.tail.prefix !== tailPrefix || this.tail.path !== tailPath) {
+      propertyUpdates.tail = {
+        prefix: tailPrefix,
+        path: tailPath,
+        __queryParams: this.route.__queryParams
+      };
+    }
+
+    // this.data
+    propertyUpdates.data = namedMatches;
+    this._dataInUrl = {};
+    for (var key in namedMatches) {
+      this._dataInUrl[key] = namedMatches[key];
+    }
+
+    if (this.setProperties) {
+      if (!this.active) {
+        this._setActive(true);
+      }
+      // atomic update
+      this.setProperties(propertyUpdates);
+    } else {
+      this.__setMulti(propertyUpdates);
+    }
+  },
+
+  __tailPathChanged: function (path) {
+    if (!this.active) {
+      return;
+    }
+    var tailPath = path;
+    var newPath = this._matched;
+    if (tailPath) {
+      if (tailPath.charAt(0) !== '/') {
+        tailPath = '/' + tailPath;
+      }
+      newPath += tailPath;
+    }
+    this.set('route.path', newPath);
+  },
+
+  __updatePathOnDataChange: function () {
+    if (!this.route || !this.active) {
+      return;
+    }
+    var newPath = this.__getLink({});
+    var oldPath = this.__getLink(this._dataInUrl);
+    if (newPath === oldPath) {
+      return;
+    }
+    this.set('route.path', newPath);
+  },
+
+  __getLink: function (overrideValues) {
+    var values = { tail: null };
+    for (var key in this.data) {
+      values[key] = this.data[key];
+    }
+    for (var key in overrideValues) {
+      values[key] = overrideValues[key];
+    }
+    var patternPieces = this.pattern.split('/');
+    var interp = patternPieces.map(function (value) {
+      if (value[0] == ':') {
+        value = values[value.slice(1)];
+      }
+      return value;
+    }, this);
+    if (values.tail && values.tail.path) {
+      if (interp.length > 0 && values.tail.path.charAt(0) === '/') {
+        interp.push(values.tail.path.slice(1));
+      } else {
+        interp.push(values.tail.path);
+      }
+    }
+    return interp.join('/');
+  },
+
+  __setMulti: function (setObj) {
+    // HACK(rictic): skirting around 1.0's lack of a setMulti by poking at
+    //     internal data structures. I would not advise that you copy this
+    //     example.
+    //
+    //     In the future this will be a feature of Polymer itself.
+    //     See: https://github.com/Polymer/polymer/issues/3640
+    //
+    //     Hacking around with private methods like this is juggling footguns,
+    //     and is likely to have unexpected and unsupported rough edges.
+    //
+    //     Be ye so warned.
+    for (var property in setObj) {
+      this._propertySetter(property, setObj[property]);
+    }
+    //notify in a specific order
+    if (setObj.data !== undefined) {
+      this._pathEffector('data', this.data);
+      this._notifyChange('data');
+    }
+    if (setObj.active !== undefined) {
+      this._pathEffector('active', this.active);
+      this._notifyChange('active');
+    }
+    if (setObj.tail !== undefined) {
+      this._pathEffector('tail', this.tail);
+      this._notifyChange('tail');
+    }
+  }
+});
+
+/***/ }),
+/* 42 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
@@ -11448,7 +11776,462 @@ const IronResizableBehavior = exports.IronResizableBehavior = {
 };
 
 /***/ }),
-/* 42 */
+/* 43 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+__webpack_require__(0);
+
+__webpack_require__(7);
+
+var _appScrollEffectsBehavior = __webpack_require__(80);
+
+var _appLayoutBehavior = __webpack_require__(44);
+
+var _polymerFn = __webpack_require__(1);
+
+var _polymerDom = __webpack_require__(3);
+
+(0, _polymerFn.Polymer)({
+  _template: `
+    <style>
+      :host {
+        position: relative;
+        display: block;
+        transition-timing-function: linear;
+        transition-property: -webkit-transform;
+        transition-property: transform;
+      }
+
+      :host::before {
+        position: absolute;
+        right: 0px;
+        bottom: -5px;
+        left: 0px;
+        width: 100%;
+        height: 5px;
+        content: "";
+        transition: opacity 0.4s;
+        pointer-events: none;
+        opacity: 0;
+        box-shadow: inset 0px 5px 6px -3px rgba(0, 0, 0, 0.4);
+        will-change: opacity;
+        @apply --app-header-shadow;
+      }
+
+      :host([shadow])::before {
+        opacity: 1;
+      }
+
+      #background {
+        @apply --layout-fit;
+        overflow: hidden;
+      }
+
+      #backgroundFrontLayer,
+      #backgroundRearLayer {
+        @apply --layout-fit;
+        height: 100%;
+        pointer-events: none;
+        background-size: cover;
+      }
+
+      #backgroundFrontLayer {
+        @apply --app-header-background-front-layer;
+      }
+
+      #backgroundRearLayer {
+        opacity: 0;
+        @apply --app-header-background-rear-layer;
+      }
+
+      #contentContainer {
+        position: relative;
+        width: 100%;
+        height: 100%;
+      }
+
+      :host([disabled]),
+      :host([disabled])::after,
+      :host([disabled]) #backgroundFrontLayer,
+      :host([disabled]) #backgroundRearLayer,
+      /* Silent scrolling should not run CSS transitions */
+      :host([silent-scroll]),
+      :host([silent-scroll])::after,
+      :host([silent-scroll]) #backgroundFrontLayer,
+      :host([silent-scroll]) #backgroundRearLayer {
+        transition: none !important;
+      }
+
+      :host([disabled]) ::slotted(app-toolbar:first-of-type),
+      :host([disabled]) ::slotted([sticky]),
+      /* Silent scrolling should not run CSS transitions */
+      :host([silent-scroll]) ::slotted(app-toolbar:first-of-type),
+      :host([silent-scroll]) ::slotted([sticky]) {
+        transition: none !important;
+      }
+
+    </style>
+    <div id="contentContainer">
+      <slot id="slot"></slot>
+    </div>
+`,
+
+  is: 'app-header',
+
+  behaviors: [_appScrollEffectsBehavior.AppScrollEffectsBehavior, _appLayoutBehavior.AppLayoutBehavior],
+
+  properties: {
+    /**
+     * If true, the header will automatically collapse when scrolling down.
+     * That is, the `sticky` element remains visible when the header is fully condensed
+     * whereas the rest of the elements will collapse below `sticky` element.
+     *
+     * By default, the `sticky` element is the first toolbar in the light DOM:
+     *
+     *```html
+     * <app-header condenses>
+     *   <app-toolbar>This toolbar remains on top</app-toolbar>
+     *   <app-toolbar></app-toolbar>
+     *   <app-toolbar></app-toolbar>
+     * </app-header>
+     * ```
+     *
+     * Additionally, you can specify which toolbar or element remains visible in condensed mode
+     * by adding the `sticky` attribute to that element. For example: if we want the last
+     * toolbar to remain visible, we can add the `sticky` attribute to it.
+     *
+     *```html
+     * <app-header condenses>
+     *   <app-toolbar></app-toolbar>
+     *   <app-toolbar></app-toolbar>
+     *   <app-toolbar sticky>This toolbar remains on top</app-toolbar>
+     * </app-header>
+     * ```
+     *
+     * Note the `sticky` element must be a direct child of `app-header`.
+     */
+    condenses: {
+      type: Boolean,
+      value: false
+    },
+
+    /**
+     * Mantains the header fixed at the top so it never moves away.
+     */
+    fixed: {
+      type: Boolean,
+      value: false
+    },
+
+    /**
+     * Slides back the header when scrolling back up.
+     */
+    reveals: {
+      type: Boolean,
+      value: false
+    },
+
+    /**
+     * Displays a shadow below the header.
+     */
+    shadow: {
+      type: Boolean,
+      reflectToAttribute: true,
+      value: false
+    }
+  },
+
+  observers: ['_configChanged(isAttached, condenses, fixed)'],
+
+  /**
+   * A cached offsetHeight of the current element.
+   *
+   * @type {number}
+   */
+  _height: 0,
+
+  /**
+   * The distance in pixels the header will be translated to when scrolling.
+   *
+   * @type {number}
+   */
+  _dHeight: 0,
+
+  /**
+   * The offsetTop of `_stickyEl`
+   *
+   * @type {number}
+   */
+  _stickyElTop: 0,
+
+  /**
+   * A reference to the element that remains visible when the header condenses.
+   *
+   * @type {HTMLElement}
+   */
+  _stickyElRef: null,
+
+  /**
+   * The header's top value used for the `transformY`
+   *
+   * @type {number}
+   */
+  _top: 0,
+
+  /**
+   * The current scroll progress.
+   *
+   * @type {number}
+   */
+  _progress: 0,
+
+  _wasScrollingDown: false,
+  _initScrollTop: 0,
+  _initTimestamp: 0,
+  _lastTimestamp: 0,
+  _lastScrollTop: 0,
+
+  /**
+   * The distance the header is allowed to move away.
+   *
+   * @type {number}
+   */
+  get _maxHeaderTop() {
+    return this.fixed ? this._dHeight : this._height + 5;
+  },
+
+  /**
+   * Returns a reference to the sticky element.
+   *
+   * @return {HTMLElement}?
+   */
+  get _stickyEl() {
+    if (this._stickyElRef) {
+      return this._stickyElRef;
+    }
+    var nodes = (0, _polymerDom.dom)(this.$.slot).getDistributedNodes();
+    // Get the element with the sticky attribute on it or the first element in the light DOM.
+    for (var i = 0, node; node = nodes[i]; i++) {
+      if (node.nodeType === Node.ELEMENT_NODE) {
+        if (node.hasAttribute('sticky')) {
+          this._stickyElRef = node;
+          break;
+        } else if (!this._stickyElRef) {
+          this._stickyElRef = node;
+        }
+      }
+    }
+    return this._stickyElRef;
+  },
+
+  _configChanged: function () {
+    this.resetLayout();
+    this._notifyLayoutChanged();
+  },
+
+  _updateLayoutStates: function () {
+    if (this.offsetWidth === 0 && this.offsetHeight === 0) {
+      return;
+    }
+    var scrollTop = this._clampedScrollTop;
+    var firstSetup = this._height === 0 || scrollTop === 0;
+    var currentDisabled = this.disabled;
+    this._height = this.offsetHeight;
+    this._stickyElRef = null;
+    this.disabled = true;
+    // prepare for measurement
+    if (!firstSetup) {
+      this._updateScrollState(0, true);
+    }
+    if (this._mayMove()) {
+      this._dHeight = this._stickyEl ? this._height - this._stickyEl.offsetHeight : 0;
+    } else {
+      this._dHeight = 0;
+    }
+    this._stickyElTop = this._stickyEl ? this._stickyEl.offsetTop : 0;
+    this._setUpEffect();
+    if (firstSetup) {
+      this._updateScrollState(scrollTop, true);
+    } else {
+      this._updateScrollState(this._lastScrollTop, true);
+      this._layoutIfDirty();
+    }
+    // restore no transition
+    this.disabled = currentDisabled;
+  },
+
+  /**
+   * Updates the scroll state.
+   *
+   * @param {number} scrollTop
+   * @param {boolean=} forceUpdate (default: false)
+   */
+  _updateScrollState: function (scrollTop, forceUpdate) {
+    if (this._height === 0) {
+      return;
+    }
+    var progress = 0;
+    var top = 0;
+    var lastTop = this._top;
+    var lastScrollTop = this._lastScrollTop;
+    var maxHeaderTop = this._maxHeaderTop;
+    var dScrollTop = scrollTop - this._lastScrollTop;
+    var absDScrollTop = Math.abs(dScrollTop);
+    var isScrollingDown = scrollTop > this._lastScrollTop;
+    var now = performance.now();
+
+    if (this._mayMove()) {
+      top = this._clamp(this.reveals ? lastTop + dScrollTop : scrollTop, 0, maxHeaderTop);
+    }
+    if (scrollTop >= this._dHeight) {
+      top = this.condenses && !this.fixed ? Math.max(this._dHeight, top) : top;
+      this.style.transitionDuration = '0ms';
+    }
+    if (this.reveals && !this.disabled && absDScrollTop < 100) {
+      // set the initial scroll position
+      if (now - this._initTimestamp > 300 || this._wasScrollingDown !== isScrollingDown) {
+        this._initScrollTop = scrollTop;
+        this._initTimestamp = now;
+      }
+      if (scrollTop >= maxHeaderTop) {
+        // check if the header is allowed to snap
+        if (Math.abs(this._initScrollTop - scrollTop) > 30 || absDScrollTop > 10) {
+          if (isScrollingDown && scrollTop >= maxHeaderTop) {
+            top = maxHeaderTop;
+          } else if (!isScrollingDown && scrollTop >= this._dHeight) {
+            top = this.condenses && !this.fixed ? this._dHeight : 0;
+          }
+          var scrollVelocity = dScrollTop / (now - this._lastTimestamp);
+          this.style.transitionDuration = this._clamp((top - lastTop) / scrollVelocity, 0, 300) + 'ms';
+        } else {
+          top = this._top;
+        }
+      }
+    }
+    if (this._dHeight === 0) {
+      progress = scrollTop > 0 ? 1 : 0;
+    } else {
+      progress = top / this._dHeight;
+    }
+    if (!forceUpdate) {
+      this._lastScrollTop = scrollTop;
+      this._top = top;
+      this._wasScrollingDown = isScrollingDown;
+      this._lastTimestamp = now;
+    }
+    if (forceUpdate || progress !== this._progress || lastTop !== top || scrollTop === 0) {
+      this._progress = progress;
+      this._runEffects(progress, top);
+      this._transformHeader(top);
+    }
+  },
+
+  /**
+   * Returns true if the current header is allowed to move as the user scrolls.
+   *
+   * @return {boolean}
+   */
+  _mayMove: function () {
+    return this.condenses || !this.fixed;
+  },
+
+  /**
+   * Returns true if the current header will condense based on the size of the header
+   * and the `consenses` property.
+   *
+   * @return {boolean}
+   */
+  willCondense: function () {
+    return this._dHeight > 0 && this.condenses;
+  },
+
+  /**
+   * Returns true if the current element is on the screen.
+   * That is, visible in the current viewport.
+   *
+   * @method isOnScreen
+   * @return {boolean}
+   */
+  isOnScreen: function () {
+    return this._height !== 0 && this._top < this._height;
+  },
+
+  /**
+   * Returns true if there's content below the current element.
+   *
+   * @method isContentBelow
+   * @return {boolean}
+   */
+  isContentBelow: function () {
+    return this._top === 0 ? this._clampedScrollTop > 0 : this._clampedScrollTop - this._maxHeaderTop >= 0;
+  },
+
+  /**
+   * Transforms the header.
+   *
+   * @param {number} y
+   */
+  _transformHeader: function (y) {
+    this.translate3d(0, -y + 'px', 0);
+    if (this._stickyEl) {
+      this.translate3d(0, this.condenses && y >= this._stickyElTop ? Math.min(y, this._dHeight) - this._stickyElTop + 'px' : 0, 0, this._stickyEl);
+    }
+  },
+
+  _clamp: function (v, min, max) {
+    return Math.min(max, Math.max(min, v));
+  },
+
+  _ensureBgContainers: function () {
+    if (!this._bgContainer) {
+      this._bgContainer = document.createElement('div');
+      this._bgContainer.id = 'background';
+      this._bgRear = document.createElement('div');
+      this._bgRear.id = 'backgroundRearLayer';
+      this._bgContainer.appendChild(this._bgRear);
+      this._bgFront = document.createElement('div');
+      this._bgFront.id = 'backgroundFrontLayer';
+      this._bgContainer.appendChild(this._bgFront);
+      (0, _polymerDom.dom)(this.root).insertBefore(this._bgContainer, this.$.contentContainer);
+    }
+  },
+
+  _getDOMRef: function (id) {
+    switch (id) {
+      case 'backgroundFrontLayer':
+        this._ensureBgContainers();
+        return this._bgFront;
+      case 'backgroundRearLayer':
+        this._ensureBgContainers();
+        return this._bgRear;
+      case 'background':
+        this._ensureBgContainers();
+        return this._bgContainer;
+      case 'mainTitle':
+        return (0, _polymerDom.dom)(this).querySelector('[main-title]');
+      case 'condensedTitle':
+        return (0, _polymerDom.dom)(this).querySelector('[condensed-title]');
+    }
+    return null;
+  },
+
+  /**
+   * Returns an object containing the progress value of the scroll effects
+   * and the top position of the header.
+   *
+   * @method getScrollState
+   * @return {Object}
+   */
+  getScrollState: function () {
+    return { progress: this._progress, top: this._top };
+  }
+});
+
+/***/ }),
+/* 44 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -11461,7 +12244,7 @@ exports.AppLayoutBehavior = undefined;
 
 __webpack_require__(0);
 
-var _ironResizableBehavior = __webpack_require__(41);
+var _ironResizableBehavior = __webpack_require__(42);
 
 var _polymerDom = __webpack_require__(3);
 
@@ -11543,7 +12326,368 @@ const AppLayoutBehavior = exports.AppLayoutBehavior = [_ironResizableBehavior.Ir
 }];
 
 /***/ }),
-/* 43 */
+/* 45 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+__webpack_require__(0);
+
+__webpack_require__(7);
+
+var _appLayoutBehavior = __webpack_require__(44);
+
+var _polymerFn = __webpack_require__(1);
+
+var _polymerDom = __webpack_require__(3);
+
+(0, _polymerFn.Polymer)({
+  _template: `
+    <style>
+      :host {
+        display: block;
+        /**
+         * Force app-header-layout to have its own stacking context so that its parent can
+         * control the stacking of it relative to other elements (e.g. app-drawer-layout).
+         * This could be done using \`isolation: isolate\`, but that's not well supported
+         * across browsers.
+         */
+        position: relative;
+        z-index: 0;
+      }
+
+      #wrapper ::slotted([slot=header]) {
+        @apply --layout-fixed-top;
+        z-index: 1;
+      }
+
+      #wrapper.initializing ::slotted([slot=header]) {
+        position: relative;
+      }
+
+      :host([has-scrolling-region]) {
+        height: 100%;
+      }
+
+      :host([has-scrolling-region]) #wrapper ::slotted([slot=header]) {
+        position: absolute;
+      }
+
+      :host([has-scrolling-region]) #wrapper.initializing ::slotted([slot=header]) {
+        position: relative;
+      }
+
+      :host([has-scrolling-region]) #wrapper #contentContainer {
+        @apply --layout-fit;
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+      }
+
+      :host([has-scrolling-region]) #wrapper.initializing #contentContainer {
+        position: relative;
+      }
+
+      :host([fullbleed]) {
+        @apply --layout-vertical;
+        @apply --layout-fit;
+      }
+
+      :host([fullbleed]) #wrapper,
+      :host([fullbleed]) #wrapper #contentContainer {
+        @apply --layout-vertical;
+        @apply --layout-flex;
+      }
+
+      #contentContainer {
+        /* Create a stacking context here so that all children appear below the header. */
+        position: relative;
+        z-index: 0;
+      }
+
+      @media print {
+        :host([has-scrolling-region]) #wrapper #contentContainer {
+          overflow-y: visible;
+        }
+      }
+
+    </style>
+
+    <div id="wrapper" class="initializing">
+      <slot id="headerSlot" name="header"></slot>
+
+      <div id="contentContainer">
+        <slot></slot>
+      </div>
+    </div>
+`,
+
+  is: 'app-header-layout',
+
+  behaviors: [_appLayoutBehavior.AppLayoutBehavior],
+
+  properties: {
+    /**
+     * If true, the current element will have its own scrolling region.
+     * Otherwise, it will use the document scroll to control the header.
+     */
+    hasScrollingRegion: {
+      type: Boolean,
+      value: false,
+      reflectToAttribute: true
+    }
+  },
+
+  observers: ['resetLayout(isAttached, hasScrollingRegion)'],
+
+  /**
+   * A reference to the app-header element.
+   *
+   * @property header
+   */
+  get header() {
+    return (0, _polymerDom.dom)(this.$.headerSlot).getDistributedNodes()[0];
+  },
+
+  _updateLayoutStates: function () {
+    var header = this.header;
+    if (!this.isAttached || !header) {
+      return;
+    }
+    // Remove the initializing class, which staticly positions the header and the content
+    // until the height of the header can be read.
+    this.$.wrapper.classList.remove('initializing');
+    // Update scroll target.
+    header.scrollTarget = this.hasScrollingRegion ? this.$.contentContainer : this.ownerDocument.documentElement;
+    // Get header height here so that style reads are batched together before style writes
+    // (i.e. getBoundingClientRect() below).
+    var headerHeight = header.offsetHeight;
+    // Update the header position.
+    if (!this.hasScrollingRegion) {
+      requestAnimationFrame(function () {
+        var rect = this.getBoundingClientRect();
+        var rightOffset = document.documentElement.clientWidth - rect.right;
+        header.style.left = rect.left + 'px';
+        header.style.right = rightOffset + 'px';
+      }.bind(this));
+    } else {
+      header.style.left = '';
+      header.style.right = '';
+    }
+    // Update the content container position.
+    var containerStyle = this.$.contentContainer.style;
+    if (header.fixed && !header.condenses && this.hasScrollingRegion) {
+      // If the header size does not change and we're using a scrolling region, exclude
+      // the header area from the scrolling region so that the header doesn't overlap
+      // the scrollbar.
+      containerStyle.marginTop = headerHeight + 'px';
+      containerStyle.paddingTop = '';
+    } else {
+      containerStyle.paddingTop = headerHeight + 'px';
+      containerStyle.marginTop = '';
+    }
+  }
+});
+
+/***/ }),
+/* 46 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+__webpack_require__(0);
+
+__webpack_require__(7);
+
+var _polymerFn = __webpack_require__(1);
+
+(0, _polymerFn.Polymer)({
+  _template: `
+    <style>
+
+      :host {
+        @apply --layout-horizontal;
+        @apply --layout-center;
+        position: relative;
+        height: 64px;
+        padding: 0 16px;
+        pointer-events: none;
+        font-size: var(--app-toolbar-font-size, 20px);
+      }
+
+      :host ::slotted(*) {
+        pointer-events: auto;
+      }
+
+      :host ::slotted(paper-icon-button) {
+        /* paper-icon-button/issues/33 */
+        font-size: 0;
+      }
+
+      :host ::slotted([main-title]),
+      :host ::slotted([condensed-title]) {
+        pointer-events: none;
+        @apply --layout-flex;
+      }
+
+      :host ::slotted([bottom-item]) {
+        position: absolute;
+        right: 0;
+        bottom: 0;
+        left: 0;
+      }
+
+      :host ::slotted([top-item]) {
+        position: absolute;
+        top: 0;
+        right: 0;
+        left: 0;
+      }
+
+      :host ::slotted([spacer]) {
+        margin-left: 64px;
+      }
+    </style>
+
+    <slot></slot>
+`,
+
+  is: 'app-toolbar'
+});
+
+/***/ }),
+/* 47 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+__webpack_require__(0);
+
+__webpack_require__(27);
+
+var _paperInkyFocusBehavior = __webpack_require__(83);
+
+__webpack_require__(8);
+
+var _polymerFn = __webpack_require__(1);
+
+const $_documentContainer = document.createElement('div');
+$_documentContainer.setAttribute('style', 'display: none;');
+
+$_documentContainer.innerHTML = `<dom-module id="paper-icon-button">
+  <template strip-whitespace="">
+    <style>
+      :host {
+        display: inline-block;
+        position: relative;
+        padding: 8px;
+        outline: none;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+        cursor: pointer;
+        z-index: 0;
+        line-height: 1;
+
+        width: 40px;
+        height: 40px;
+
+        /* NOTE: Both values are needed, since some phones require the value to be \`transparent\`. */
+        -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+        -webkit-tap-highlight-color: transparent;
+
+        /* Because of polymer/2558, this style has lower specificity than * */
+        box-sizing: border-box !important;
+
+        @apply --paper-icon-button;
+      }
+
+      :host #ink {
+        color: var(--paper-icon-button-ink-color, var(--primary-text-color));
+        opacity: 0.6;
+      }
+
+      :host([disabled]) {
+        color: var(--paper-icon-button-disabled-text, var(--disabled-text-color));
+        pointer-events: none;
+        cursor: auto;
+
+        @apply --paper-icon-button-disabled;
+      }
+
+      :host([hidden]) {
+        display: none !important;
+      }
+
+      :host(:hover) {
+        @apply --paper-icon-button-hover;
+      }
+
+      iron-icon {
+        --iron-icon-width: 100%;
+        --iron-icon-height: 100%;
+      }
+    </style>
+
+    <iron-icon id="icon" src="[[src]]" icon="[[icon]]" alt\$="[[alt]]"></iron-icon>
+  </template>
+
+  
+</dom-module>`;
+
+document.head.appendChild($_documentContainer);
+(0, _polymerFn.Polymer)({
+  is: 'paper-icon-button',
+
+  hostAttributes: {
+    role: 'button',
+    tabindex: '0'
+  },
+
+  behaviors: [_paperInkyFocusBehavior.PaperInkyFocusBehavior],
+
+  properties: {
+    /**
+     * The URL of an image for the icon. If the src property is specified,
+     * the icon property should not be.
+     */
+    src: {
+      type: String
+    },
+
+    /**
+     * Specifies the icon name or index in the set of icons available in
+     * the icon's icon set. If the icon property is specified,
+     * the src property should not be.
+     */
+    icon: {
+      type: String
+    },
+
+    /**
+     * Specifies the alternate text for the button, for accessibility.
+     */
+    alt: {
+      type: String,
+      observer: "_altChanged"
+    }
+  },
+
+  _altChanged: function (newValue, oldValue) {
+    var label = this.getAttribute('aria-label');
+
+    // Don't stomp over a user-set aria-label.
+    if (!label || oldValue == label) {
+      this.setAttribute('aria-label', newValue);
+    }
+  }
+});
+
+/***/ }),
+/* 48 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -11880,7 +13024,7 @@ $_documentContainer.innerHTML = `<custom-style>
 document.head.appendChild($_documentContainer);
 
 /***/ }),
-/* 44 */
+/* 49 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -11918,16 +13062,16 @@ const PaperInputAddonBehavior = exports.PaperInputAddonBehavior = {
 };
 
 /***/ }),
-/* 45 */
+/* 50 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-__webpack_require__(46);
+__webpack_require__(51);
 
 /***/ }),
-/* 46 */
+/* 51 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -11935,19 +13079,19 @@ __webpack_require__(46);
 
 var _polymerElement = __webpack_require__(4);
 
-__webpack_require__(49);
+__webpack_require__(54);
 
-__webpack_require__(69);
-
-__webpack_require__(70);
-
-__webpack_require__(72);
+__webpack_require__(41);
 
 __webpack_require__(74);
 
-__webpack_require__(75);
+__webpack_require__(76);
 
-__webpack_require__(107);
+__webpack_require__(78);
+
+__webpack_require__(79);
+
+__webpack_require__(105);
 
 // Libs
 class CoinApp extends _polymerElement.Element {
@@ -12030,7 +13174,7 @@ class CoinApp extends _polymerElement.Element {
 customElements.define(CoinApp.is, CoinApp);
 
 /***/ }),
-/* 47 */
+/* 52 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -12631,7 +13775,7 @@ const PropertyAccessors = exports.PropertyAccessors = (0, _mixin.dedupingMixin)(
 });
 
 /***/ }),
-/* 48 */
+/* 53 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -13093,7 +14237,7 @@ const TemplateStamp = exports.TemplateStamp = (0, _mixin.dedupingMixin)(superCla
 });
 
 /***/ }),
-/* 49 */
+/* 54 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -13101,11 +14245,11 @@ const TemplateStamp = exports.TemplateStamp = (0, _mixin.dedupingMixin)(superCla
 
 __webpack_require__(0);
 
-__webpack_require__(66);
+__webpack_require__(71);
 
-__webpack_require__(67);
+__webpack_require__(72);
 
-var _appRouteConverterBehavior = __webpack_require__(68);
+var _appRouteConverterBehavior = __webpack_require__(73);
 
 var _polymerFn = __webpack_require__(1);
 
@@ -13234,7 +14378,7 @@ var _polymerFn = __webpack_require__(1);
 });
 
 /***/ }),
-/* 50 */
+/* 55 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -13250,7 +14394,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
 
 
-var _applyShim = __webpack_require__(51);
+var _applyShim = __webpack_require__(56);
 
 var _applyShim2 = _interopRequireDefault(_applyShim);
 
@@ -13260,7 +14404,7 @@ var _templateMap2 = _interopRequireDefault(_templateMap);
 
 var _styleUtil = __webpack_require__(33);
 
-var _applyShimUtils = __webpack_require__(53);
+var _applyShimUtils = __webpack_require__(58);
 
 var ApplyShimUtils = _interopRequireWildcard(_applyShimUtils);
 
@@ -13455,7 +14599,7 @@ if (!window.ShadyCSS || !window.ShadyCSS.ScopingShim) {
 window.ShadyCSS.ApplyShim = applyShim;
 
 /***/ }),
-/* 51 */
+/* 56 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -13946,7 +15090,7 @@ Object.defineProperty(ApplyShim.prototype, 'invalidCallback', {
 exports.default = ApplyShim;
 
 /***/ }),
-/* 52 */
+/* 57 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -13998,7 +15142,7 @@ function isUnscopedStyle(style) {
 }
 
 /***/ }),
-/* 53 */
+/* 58 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -14174,7 +15318,7 @@ function elementsAreInvalid() {
 }
 
 /***/ }),
-/* 54 */
+/* 59 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -14257,7 +15401,7 @@ const importHref = exports.importHref = function (href, onload, onerror, optAsyn
 };
 
 /***/ }),
-/* 55 */
+/* 60 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -14339,7 +15483,7 @@ function afterNextRender(context, callback, args) {
 exports.flush = flush;
 
 /***/ }),
-/* 56 */
+/* 61 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -14356,7 +15500,7 @@ if (document.readyState === 'interactive' || document.readyState === 'complete')
 }
 
 /***/ }),
-/* 57 */
+/* 62 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -14606,7 +15750,7 @@ class FlattenedNodesObserver {
 exports.FlattenedNodesObserver = FlattenedNodesObserver;
 
 /***/ }),
-/* 58 */
+/* 63 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -14877,7 +16021,7 @@ const Class = exports.Class = function (info) {
 exports.mixinBehaviors = mixinBehaviors;
 
 /***/ }),
-/* 59 */
+/* 64 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -15026,7 +16170,7 @@ let Templatizer = {
 exports.Templatizer = Templatizer;
 
 /***/ }),
-/* 60 */
+/* 65 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -15156,7 +16300,7 @@ customElements.define('dom-bind', DomBind);
 exports.DomBind = DomBind;
 
 /***/ }),
-/* 61 */
+/* 66 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -15429,7 +16573,7 @@ customElements.define(DomIf.is, DomIf);
 exports.DomIf = DomIf;
 
 /***/ }),
-/* 62 */
+/* 67 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -15855,7 +16999,7 @@ customElements.define(ArraySelector.is, ArraySelector);
 exports.ArraySelector = ArraySelector;
 
 /***/ }),
-/* 63 */
+/* 68 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -15866,7 +17010,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.CustomStyle = undefined;
 
-__webpack_require__(64);
+__webpack_require__(69);
 
 var _styleGather = __webpack_require__(31);
 
@@ -15956,7 +17100,7 @@ window.customElements.define('custom-style', CustomStyle);
 exports.CustomStyle = CustomStyle;
 
 /***/ }),
-/* 64 */
+/* 69 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -16034,7 +17178,7 @@ if (!window.ShadyCSS) {
 window.ShadyCSS.CustomStyleInterface = customStyleInterface;
 
 /***/ }),
-/* 65 */
+/* 70 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -16113,7 +17257,7 @@ const OptionalMutableDataBehavior = exports.OptionalMutableDataBehavior = {
 };
 
 /***/ }),
-/* 66 */
+/* 71 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -16464,7 +17608,7 @@ function resolveURL(path, base) {
 });
 
 /***/ }),
-/* 67 */
+/* 72 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -16551,7 +17695,7 @@ var _polymerFn = __webpack_require__(1);
 });
 
 /***/ }),
-/* 68 */
+/* 73 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -16645,335 +17789,7 @@ const AppRouteConverterBehavior = exports.AppRouteConverterBehavior = {
 };
 
 /***/ }),
-/* 69 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-__webpack_require__(0);
-
-var _polymerFn = __webpack_require__(1);
-
-(0, _polymerFn.Polymer)({
-  is: 'app-route',
-
-  properties: {
-    /**
-     * The URL component managed by this element.
-     */
-    route: {
-      type: Object,
-      notify: true
-    },
-
-    /**
-     * The pattern of slash-separated segments to match `route.path` against.
-     *
-     * For example the pattern "/foo" will match "/foo" or "/foo/bar"
-     * but not "/foobar".
-     *
-     * Path segments like `/:named` are mapped to properties on the `data` object.
-     */
-    pattern: {
-      type: String
-    },
-
-    /**
-     * The parameterized values that are extracted from the route as
-     * described by `pattern`.
-     */
-    data: {
-      type: Object,
-      value: function () {
-        return {};
-      },
-      notify: true
-    },
-
-    /**
-     * @type {?Object}
-     */
-    queryParams: {
-      type: Object,
-      value: function () {
-        return {};
-      },
-      notify: true
-    },
-
-    /**
-     * The part of `route.path` NOT consumed by `pattern`.
-     */
-    tail: {
-      type: Object,
-      value: function () {
-        return { path: null, prefix: null, __queryParams: null };
-      },
-      notify: true
-    },
-
-    /**
-     * Whether the current route is active. True if `route.path` matches the
-     * `pattern`, false otherwise.
-     */
-    active: {
-      type: Boolean,
-      notify: true,
-      readOnly: true
-    },
-
-    _queryParamsUpdating: {
-      type: Boolean,
-      value: false
-    },
-    /**
-     * @type {?string}
-     */
-    _matched: {
-      type: String,
-      value: ''
-    }
-  },
-
-  observers: ['__tryToMatch(route.path, pattern)', '__updatePathOnDataChange(data.*)', '__tailPathChanged(tail.path)', '__routeQueryParamsChanged(route.__queryParams)', '__tailQueryParamsChanged(tail.__queryParams)', '__queryParamsChanged(queryParams.*)'],
-
-  created: function () {
-    this.linkPaths('route.__queryParams', 'tail.__queryParams');
-    this.linkPaths('tail.__queryParams', 'route.__queryParams');
-  },
-
-  /**
-   * Deal with the query params object being assigned to wholesale.
-   */
-  __routeQueryParamsChanged: function (queryParams) {
-    if (queryParams && this.tail) {
-      if (this.tail.__queryParams !== queryParams) {
-        this.set('tail.__queryParams', queryParams);
-      }
-
-      if (!this.active || this._queryParamsUpdating) {
-        return;
-      }
-
-      // Copy queryParams and track whether there are any differences compared
-      // to the existing query params.
-      var copyOfQueryParams = {};
-      var anythingChanged = false;
-      for (var key in queryParams) {
-        copyOfQueryParams[key] = queryParams[key];
-        if (anythingChanged || !this.queryParams || queryParams[key] !== this.queryParams[key]) {
-          anythingChanged = true;
-        }
-      }
-      // Need to check whether any keys were deleted
-      for (var key in this.queryParams) {
-        if (anythingChanged || !(key in queryParams)) {
-          anythingChanged = true;
-          break;
-        }
-      }
-
-      if (!anythingChanged) {
-        return;
-      }
-      this._queryParamsUpdating = true;
-      this.set('queryParams', copyOfQueryParams);
-      this._queryParamsUpdating = false;
-    }
-  },
-
-  __tailQueryParamsChanged: function (queryParams) {
-    if (queryParams && this.route && this.route.__queryParams != queryParams) {
-      this.set('route.__queryParams', queryParams);
-    }
-  },
-
-  __queryParamsChanged: function (changes) {
-    if (!this.active || this._queryParamsUpdating) {
-      return;
-    }
-
-    this.set('route.__' + changes.path, changes.value);
-  },
-
-  __resetProperties: function () {
-    this._setActive(false);
-    this._matched = null;
-  },
-
-  __tryToMatch: function () {
-    if (!this.route) {
-      return;
-    }
-
-    var path = this.route.path;
-    var pattern = this.pattern;
-
-    if (!pattern) {
-      return;
-    }
-
-    if (!path) {
-      this.__resetProperties();
-      return;
-    }
-
-    var remainingPieces = path.split('/');
-    var patternPieces = pattern.split('/');
-
-    var matched = [];
-    var namedMatches = {};
-
-    for (var i = 0; i < patternPieces.length; i++) {
-      var patternPiece = patternPieces[i];
-      if (!patternPiece && patternPiece !== '') {
-        break;
-      }
-      var pathPiece = remainingPieces.shift();
-
-      // We don't match this path.
-      if (!pathPiece && pathPiece !== '') {
-        this.__resetProperties();
-        return;
-      }
-      matched.push(pathPiece);
-
-      if (patternPiece.charAt(0) == ':') {
-        namedMatches[patternPiece.slice(1)] = pathPiece;
-      } else if (patternPiece !== pathPiece) {
-        this.__resetProperties();
-        return;
-      }
-    }
-
-    this._matched = matched.join('/');
-
-    // Properties that must be updated atomically.
-    var propertyUpdates = {};
-
-    //this.active
-    if (!this.active) {
-      propertyUpdates.active = true;
-    }
-
-    // this.tail
-    var tailPrefix = this.route.prefix + this._matched;
-    var tailPath = remainingPieces.join('/');
-    if (remainingPieces.length > 0) {
-      tailPath = '/' + tailPath;
-    }
-    if (!this.tail || this.tail.prefix !== tailPrefix || this.tail.path !== tailPath) {
-      propertyUpdates.tail = {
-        prefix: tailPrefix,
-        path: tailPath,
-        __queryParams: this.route.__queryParams
-      };
-    }
-
-    // this.data
-    propertyUpdates.data = namedMatches;
-    this._dataInUrl = {};
-    for (var key in namedMatches) {
-      this._dataInUrl[key] = namedMatches[key];
-    }
-
-    if (this.setProperties) {
-      if (!this.active) {
-        this._setActive(true);
-      }
-      // atomic update
-      this.setProperties(propertyUpdates);
-    } else {
-      this.__setMulti(propertyUpdates);
-    }
-  },
-
-  __tailPathChanged: function (path) {
-    if (!this.active) {
-      return;
-    }
-    var tailPath = path;
-    var newPath = this._matched;
-    if (tailPath) {
-      if (tailPath.charAt(0) !== '/') {
-        tailPath = '/' + tailPath;
-      }
-      newPath += tailPath;
-    }
-    this.set('route.path', newPath);
-  },
-
-  __updatePathOnDataChange: function () {
-    if (!this.route || !this.active) {
-      return;
-    }
-    var newPath = this.__getLink({});
-    var oldPath = this.__getLink(this._dataInUrl);
-    if (newPath === oldPath) {
-      return;
-    }
-    this.set('route.path', newPath);
-  },
-
-  __getLink: function (overrideValues) {
-    var values = { tail: null };
-    for (var key in this.data) {
-      values[key] = this.data[key];
-    }
-    for (var key in overrideValues) {
-      values[key] = overrideValues[key];
-    }
-    var patternPieces = this.pattern.split('/');
-    var interp = patternPieces.map(function (value) {
-      if (value[0] == ':') {
-        value = values[value.slice(1)];
-      }
-      return value;
-    }, this);
-    if (values.tail && values.tail.path) {
-      if (interp.length > 0 && values.tail.path.charAt(0) === '/') {
-        interp.push(values.tail.path.slice(1));
-      } else {
-        interp.push(values.tail.path);
-      }
-    }
-    return interp.join('/');
-  },
-
-  __setMulti: function (setObj) {
-    // HACK(rictic): skirting around 1.0's lack of a setMulti by poking at
-    //     internal data structures. I would not advise that you copy this
-    //     example.
-    //
-    //     In the future this will be a feature of Polymer itself.
-    //     See: https://github.com/Polymer/polymer/issues/3640
-    //
-    //     Hacking around with private methods like this is juggling footguns,
-    //     and is likely to have unexpected and unsupported rough edges.
-    //
-    //     Be ye so warned.
-    for (var property in setObj) {
-      this._propertySetter(property, setObj[property]);
-    }
-    //notify in a specific order
-    if (setObj.data !== undefined) {
-      this._pathEffector('data', this.data);
-      this._notifyChange('data');
-    }
-    if (setObj.active !== undefined) {
-      this._pathEffector('active', this.active);
-      this._notifyChange('active');
-    }
-    if (setObj.tail !== undefined) {
-      this._pathEffector('tail', this.tail);
-      this._notifyChange('tail');
-    }
-  }
-});
-
-/***/ }),
-/* 70 */
+/* 74 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -16981,7 +17797,7 @@ var _polymerFn = __webpack_require__(1);
 
 __webpack_require__(27);
 
-__webpack_require__(71);
+__webpack_require__(75);
 
 const $_documentContainer = document.createElement('div');
 $_documentContainer.setAttribute('style', 'display: none;');
@@ -17303,7 +18119,7 @@ $_documentContainer.innerHTML = `<iron-iconset-svg name="icons" size="24">
 document.head.appendChild($_documentContainer);
 
 /***/ }),
-/* 71 */
+/* 75 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -17547,7 +18363,7 @@ var _polymerDom = __webpack_require__(3);
 });
 
 /***/ }),
-/* 72 */
+/* 76 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -17555,7 +18371,7 @@ var _polymerDom = __webpack_require__(3);
 
 __webpack_require__(0);
 
-var _ironResizableBehavior = __webpack_require__(41);
+var _ironResizableBehavior = __webpack_require__(42);
 
 var _ironSelectable = __webpack_require__(29);
 
@@ -17601,7 +18417,7 @@ var _polymerFn = __webpack_require__(1);
 });
 
 /***/ }),
-/* 73 */
+/* 77 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -17714,7 +18530,7 @@ IronSelection.prototype = {
 };
 
 /***/ }),
-/* 74 */
+/* 78 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -17776,7 +18592,7 @@ class AppStore extends _polymerElement.Element {
 customElements.define(AppStore.is, AppStore);
 
 /***/ }),
-/* 75 */
+/* 79 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -17784,13 +18600,13 @@ customElements.define(AppStore.is, AppStore);
 
 var _polymerElement = __webpack_require__(4);
 
-__webpack_require__(76);
+__webpack_require__(43);
 
-__webpack_require__(80);
+__webpack_require__(45);
 
-__webpack_require__(81);
+__webpack_require__(46);
 
-__webpack_require__(82);
+__webpack_require__(47);
 
 __webpack_require__(86);
 
@@ -17826,7 +18642,7 @@ class PageCurrencies extends _polymerElement.Element {
                 <app-header slot="header" fixed shadow>
                     <app-toolbar hidden$="[[isOpenSearch]]">
                         <div main-title>Currencies</div>
-                        <paper-icon-button icon="search" on-tap="handleToggleSearch"></paper-icon-button>
+                        <paper-icon-button icon="search" on-click="handleToggleSearch"></paper-icon-button>
                     </app-toolbar>
                     <app-toolbar hidden$="[[!isOpenSearch]]">
                         <paper-input
@@ -17834,7 +18650,7 @@ class PageCurrencies extends _polymerElement.Element {
                             placeholder="Search"
                             value="{{searchValue::input}}"
                             no-label-float></paper-input>
-                        <paper-icon-button icon="close" on-tap="handleToggleSearch"></paper-icon-button>
+                        <paper-icon-button icon="close" on-click="handleToggleSearch"></paper-icon-button>
                     </app-toolbar>
                 </app-header>
 
@@ -17870,7 +18686,7 @@ class PageCurrencies extends _polymerElement.Element {
     }
 
     _filteredCurrencies(currencies, searchValue) {
-        return searchValue ? currencies.filter(currency => currency.name.toLowerCase().indexOf(searchValue.toLowerCase()) >= 0) : currencies;
+        return searchValue ? currencies.filter(currency => currency.name.toLowerCase().indexOf(searchValue.toLowerCase()) >= 0 || currency.symbol.toLowerCase().indexOf(searchValue.toLowerCase()) >= 0) : currencies;
     }
 
     handleToggleSearch() {
@@ -17879,9 +18695,7 @@ class PageCurrencies extends _polymerElement.Element {
         if (!this.isOpenSearch) {
             this.searchValue = '';
         } else {
-            setTimeout(() => {
-                this.$.search.focus();
-            }, 200);
+            this.$.search.focus();
         }
     }
 } // Libs
@@ -17890,462 +18704,7 @@ class PageCurrencies extends _polymerElement.Element {
 customElements.define(PageCurrencies.is, PageCurrencies);
 
 /***/ }),
-/* 76 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-__webpack_require__(0);
-
-__webpack_require__(7);
-
-var _appScrollEffectsBehavior = __webpack_require__(77);
-
-var _appLayoutBehavior = __webpack_require__(42);
-
-var _polymerFn = __webpack_require__(1);
-
-var _polymerDom = __webpack_require__(3);
-
-(0, _polymerFn.Polymer)({
-  _template: `
-    <style>
-      :host {
-        position: relative;
-        display: block;
-        transition-timing-function: linear;
-        transition-property: -webkit-transform;
-        transition-property: transform;
-      }
-
-      :host::before {
-        position: absolute;
-        right: 0px;
-        bottom: -5px;
-        left: 0px;
-        width: 100%;
-        height: 5px;
-        content: "";
-        transition: opacity 0.4s;
-        pointer-events: none;
-        opacity: 0;
-        box-shadow: inset 0px 5px 6px -3px rgba(0, 0, 0, 0.4);
-        will-change: opacity;
-        @apply --app-header-shadow;
-      }
-
-      :host([shadow])::before {
-        opacity: 1;
-      }
-
-      #background {
-        @apply --layout-fit;
-        overflow: hidden;
-      }
-
-      #backgroundFrontLayer,
-      #backgroundRearLayer {
-        @apply --layout-fit;
-        height: 100%;
-        pointer-events: none;
-        background-size: cover;
-      }
-
-      #backgroundFrontLayer {
-        @apply --app-header-background-front-layer;
-      }
-
-      #backgroundRearLayer {
-        opacity: 0;
-        @apply --app-header-background-rear-layer;
-      }
-
-      #contentContainer {
-        position: relative;
-        width: 100%;
-        height: 100%;
-      }
-
-      :host([disabled]),
-      :host([disabled])::after,
-      :host([disabled]) #backgroundFrontLayer,
-      :host([disabled]) #backgroundRearLayer,
-      /* Silent scrolling should not run CSS transitions */
-      :host([silent-scroll]),
-      :host([silent-scroll])::after,
-      :host([silent-scroll]) #backgroundFrontLayer,
-      :host([silent-scroll]) #backgroundRearLayer {
-        transition: none !important;
-      }
-
-      :host([disabled]) ::slotted(app-toolbar:first-of-type),
-      :host([disabled]) ::slotted([sticky]),
-      /* Silent scrolling should not run CSS transitions */
-      :host([silent-scroll]) ::slotted(app-toolbar:first-of-type),
-      :host([silent-scroll]) ::slotted([sticky]) {
-        transition: none !important;
-      }
-
-    </style>
-    <div id="contentContainer">
-      <slot id="slot"></slot>
-    </div>
-`,
-
-  is: 'app-header',
-
-  behaviors: [_appScrollEffectsBehavior.AppScrollEffectsBehavior, _appLayoutBehavior.AppLayoutBehavior],
-
-  properties: {
-    /**
-     * If true, the header will automatically collapse when scrolling down.
-     * That is, the `sticky` element remains visible when the header is fully condensed
-     * whereas the rest of the elements will collapse below `sticky` element.
-     *
-     * By default, the `sticky` element is the first toolbar in the light DOM:
-     *
-     *```html
-     * <app-header condenses>
-     *   <app-toolbar>This toolbar remains on top</app-toolbar>
-     *   <app-toolbar></app-toolbar>
-     *   <app-toolbar></app-toolbar>
-     * </app-header>
-     * ```
-     *
-     * Additionally, you can specify which toolbar or element remains visible in condensed mode
-     * by adding the `sticky` attribute to that element. For example: if we want the last
-     * toolbar to remain visible, we can add the `sticky` attribute to it.
-     *
-     *```html
-     * <app-header condenses>
-     *   <app-toolbar></app-toolbar>
-     *   <app-toolbar></app-toolbar>
-     *   <app-toolbar sticky>This toolbar remains on top</app-toolbar>
-     * </app-header>
-     * ```
-     *
-     * Note the `sticky` element must be a direct child of `app-header`.
-     */
-    condenses: {
-      type: Boolean,
-      value: false
-    },
-
-    /**
-     * Mantains the header fixed at the top so it never moves away.
-     */
-    fixed: {
-      type: Boolean,
-      value: false
-    },
-
-    /**
-     * Slides back the header when scrolling back up.
-     */
-    reveals: {
-      type: Boolean,
-      value: false
-    },
-
-    /**
-     * Displays a shadow below the header.
-     */
-    shadow: {
-      type: Boolean,
-      reflectToAttribute: true,
-      value: false
-    }
-  },
-
-  observers: ['_configChanged(isAttached, condenses, fixed)'],
-
-  /**
-   * A cached offsetHeight of the current element.
-   *
-   * @type {number}
-   */
-  _height: 0,
-
-  /**
-   * The distance in pixels the header will be translated to when scrolling.
-   *
-   * @type {number}
-   */
-  _dHeight: 0,
-
-  /**
-   * The offsetTop of `_stickyEl`
-   *
-   * @type {number}
-   */
-  _stickyElTop: 0,
-
-  /**
-   * A reference to the element that remains visible when the header condenses.
-   *
-   * @type {HTMLElement}
-   */
-  _stickyElRef: null,
-
-  /**
-   * The header's top value used for the `transformY`
-   *
-   * @type {number}
-   */
-  _top: 0,
-
-  /**
-   * The current scroll progress.
-   *
-   * @type {number}
-   */
-  _progress: 0,
-
-  _wasScrollingDown: false,
-  _initScrollTop: 0,
-  _initTimestamp: 0,
-  _lastTimestamp: 0,
-  _lastScrollTop: 0,
-
-  /**
-   * The distance the header is allowed to move away.
-   *
-   * @type {number}
-   */
-  get _maxHeaderTop() {
-    return this.fixed ? this._dHeight : this._height + 5;
-  },
-
-  /**
-   * Returns a reference to the sticky element.
-   *
-   * @return {HTMLElement}?
-   */
-  get _stickyEl() {
-    if (this._stickyElRef) {
-      return this._stickyElRef;
-    }
-    var nodes = (0, _polymerDom.dom)(this.$.slot).getDistributedNodes();
-    // Get the element with the sticky attribute on it or the first element in the light DOM.
-    for (var i = 0, node; node = nodes[i]; i++) {
-      if (node.nodeType === Node.ELEMENT_NODE) {
-        if (node.hasAttribute('sticky')) {
-          this._stickyElRef = node;
-          break;
-        } else if (!this._stickyElRef) {
-          this._stickyElRef = node;
-        }
-      }
-    }
-    return this._stickyElRef;
-  },
-
-  _configChanged: function () {
-    this.resetLayout();
-    this._notifyLayoutChanged();
-  },
-
-  _updateLayoutStates: function () {
-    if (this.offsetWidth === 0 && this.offsetHeight === 0) {
-      return;
-    }
-    var scrollTop = this._clampedScrollTop;
-    var firstSetup = this._height === 0 || scrollTop === 0;
-    var currentDisabled = this.disabled;
-    this._height = this.offsetHeight;
-    this._stickyElRef = null;
-    this.disabled = true;
-    // prepare for measurement
-    if (!firstSetup) {
-      this._updateScrollState(0, true);
-    }
-    if (this._mayMove()) {
-      this._dHeight = this._stickyEl ? this._height - this._stickyEl.offsetHeight : 0;
-    } else {
-      this._dHeight = 0;
-    }
-    this._stickyElTop = this._stickyEl ? this._stickyEl.offsetTop : 0;
-    this._setUpEffect();
-    if (firstSetup) {
-      this._updateScrollState(scrollTop, true);
-    } else {
-      this._updateScrollState(this._lastScrollTop, true);
-      this._layoutIfDirty();
-    }
-    // restore no transition
-    this.disabled = currentDisabled;
-  },
-
-  /**
-   * Updates the scroll state.
-   *
-   * @param {number} scrollTop
-   * @param {boolean=} forceUpdate (default: false)
-   */
-  _updateScrollState: function (scrollTop, forceUpdate) {
-    if (this._height === 0) {
-      return;
-    }
-    var progress = 0;
-    var top = 0;
-    var lastTop = this._top;
-    var lastScrollTop = this._lastScrollTop;
-    var maxHeaderTop = this._maxHeaderTop;
-    var dScrollTop = scrollTop - this._lastScrollTop;
-    var absDScrollTop = Math.abs(dScrollTop);
-    var isScrollingDown = scrollTop > this._lastScrollTop;
-    var now = performance.now();
-
-    if (this._mayMove()) {
-      top = this._clamp(this.reveals ? lastTop + dScrollTop : scrollTop, 0, maxHeaderTop);
-    }
-    if (scrollTop >= this._dHeight) {
-      top = this.condenses && !this.fixed ? Math.max(this._dHeight, top) : top;
-      this.style.transitionDuration = '0ms';
-    }
-    if (this.reveals && !this.disabled && absDScrollTop < 100) {
-      // set the initial scroll position
-      if (now - this._initTimestamp > 300 || this._wasScrollingDown !== isScrollingDown) {
-        this._initScrollTop = scrollTop;
-        this._initTimestamp = now;
-      }
-      if (scrollTop >= maxHeaderTop) {
-        // check if the header is allowed to snap
-        if (Math.abs(this._initScrollTop - scrollTop) > 30 || absDScrollTop > 10) {
-          if (isScrollingDown && scrollTop >= maxHeaderTop) {
-            top = maxHeaderTop;
-          } else if (!isScrollingDown && scrollTop >= this._dHeight) {
-            top = this.condenses && !this.fixed ? this._dHeight : 0;
-          }
-          var scrollVelocity = dScrollTop / (now - this._lastTimestamp);
-          this.style.transitionDuration = this._clamp((top - lastTop) / scrollVelocity, 0, 300) + 'ms';
-        } else {
-          top = this._top;
-        }
-      }
-    }
-    if (this._dHeight === 0) {
-      progress = scrollTop > 0 ? 1 : 0;
-    } else {
-      progress = top / this._dHeight;
-    }
-    if (!forceUpdate) {
-      this._lastScrollTop = scrollTop;
-      this._top = top;
-      this._wasScrollingDown = isScrollingDown;
-      this._lastTimestamp = now;
-    }
-    if (forceUpdate || progress !== this._progress || lastTop !== top || scrollTop === 0) {
-      this._progress = progress;
-      this._runEffects(progress, top);
-      this._transformHeader(top);
-    }
-  },
-
-  /**
-   * Returns true if the current header is allowed to move as the user scrolls.
-   *
-   * @return {boolean}
-   */
-  _mayMove: function () {
-    return this.condenses || !this.fixed;
-  },
-
-  /**
-   * Returns true if the current header will condense based on the size of the header
-   * and the `consenses` property.
-   *
-   * @return {boolean}
-   */
-  willCondense: function () {
-    return this._dHeight > 0 && this.condenses;
-  },
-
-  /**
-   * Returns true if the current element is on the screen.
-   * That is, visible in the current viewport.
-   *
-   * @method isOnScreen
-   * @return {boolean}
-   */
-  isOnScreen: function () {
-    return this._height !== 0 && this._top < this._height;
-  },
-
-  /**
-   * Returns true if there's content below the current element.
-   *
-   * @method isContentBelow
-   * @return {boolean}
-   */
-  isContentBelow: function () {
-    return this._top === 0 ? this._clampedScrollTop > 0 : this._clampedScrollTop - this._maxHeaderTop >= 0;
-  },
-
-  /**
-   * Transforms the header.
-   *
-   * @param {number} y
-   */
-  _transformHeader: function (y) {
-    this.translate3d(0, -y + 'px', 0);
-    if (this._stickyEl) {
-      this.translate3d(0, this.condenses && y >= this._stickyElTop ? Math.min(y, this._dHeight) - this._stickyElTop + 'px' : 0, 0, this._stickyEl);
-    }
-  },
-
-  _clamp: function (v, min, max) {
-    return Math.min(max, Math.max(min, v));
-  },
-
-  _ensureBgContainers: function () {
-    if (!this._bgContainer) {
-      this._bgContainer = document.createElement('div');
-      this._bgContainer.id = 'background';
-      this._bgRear = document.createElement('div');
-      this._bgRear.id = 'backgroundRearLayer';
-      this._bgContainer.appendChild(this._bgRear);
-      this._bgFront = document.createElement('div');
-      this._bgFront.id = 'backgroundFrontLayer';
-      this._bgContainer.appendChild(this._bgFront);
-      (0, _polymerDom.dom)(this.root).insertBefore(this._bgContainer, this.$.contentContainer);
-    }
-  },
-
-  _getDOMRef: function (id) {
-    switch (id) {
-      case 'backgroundFrontLayer':
-        this._ensureBgContainers();
-        return this._bgFront;
-      case 'backgroundRearLayer':
-        this._ensureBgContainers();
-        return this._bgRear;
-      case 'background':
-        this._ensureBgContainers();
-        return this._bgContainer;
-      case 'mainTitle':
-        return (0, _polymerDom.dom)(this).querySelector('[main-title]');
-      case 'condensedTitle':
-        return (0, _polymerDom.dom)(this).querySelector('[condensed-title]');
-    }
-    return null;
-  },
-
-  /**
-   * Returns an object containing the progress value of the scroll effects
-   * and the top position of the header.
-   *
-   * @method getScrollState
-   * @return {Object}
-   */
-  getScrollState: function () {
-    return { progress: this._progress, top: this._top };
-  }
-});
-
-/***/ }),
-/* 77 */
+/* 80 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -18358,9 +18717,9 @@ exports.AppScrollEffectsBehavior = undefined;
 
 __webpack_require__(0);
 
-var _ironScrollTargetBehavior = __webpack_require__(78);
+var _ironScrollTargetBehavior = __webpack_require__(81);
 
-var _helpers = __webpack_require__(79);
+var _helpers = __webpack_require__(82);
 
 const AppScrollEffectsBehavior = exports.AppScrollEffectsBehavior = [_ironScrollTargetBehavior.IronScrollTargetBehavior, {
 
@@ -18645,7 +19004,7 @@ const AppScrollEffectsBehavior = exports.AppScrollEffectsBehavior = [_ironScroll
 }];
 
 /***/ }),
-/* 78 */
+/* 81 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -18893,7 +19252,7 @@ const IronScrollTargetBehavior = exports.IronScrollTargetBehavior = {
 };
 
 /***/ }),
-/* 79 */
+/* 82 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -19006,367 +19365,6 @@ const scroll = exports.scroll = function scroll(options) {
     scrollTo(scrollLeft, scrollTop);
   }
 };
-
-/***/ }),
-/* 80 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-__webpack_require__(0);
-
-__webpack_require__(7);
-
-var _appLayoutBehavior = __webpack_require__(42);
-
-var _polymerFn = __webpack_require__(1);
-
-var _polymerDom = __webpack_require__(3);
-
-(0, _polymerFn.Polymer)({
-  _template: `
-    <style>
-      :host {
-        display: block;
-        /**
-         * Force app-header-layout to have its own stacking context so that its parent can
-         * control the stacking of it relative to other elements (e.g. app-drawer-layout).
-         * This could be done using \`isolation: isolate\`, but that's not well supported
-         * across browsers.
-         */
-        position: relative;
-        z-index: 0;
-      }
-
-      #wrapper ::slotted([slot=header]) {
-        @apply --layout-fixed-top;
-        z-index: 1;
-      }
-
-      #wrapper.initializing ::slotted([slot=header]) {
-        position: relative;
-      }
-
-      :host([has-scrolling-region]) {
-        height: 100%;
-      }
-
-      :host([has-scrolling-region]) #wrapper ::slotted([slot=header]) {
-        position: absolute;
-      }
-
-      :host([has-scrolling-region]) #wrapper.initializing ::slotted([slot=header]) {
-        position: relative;
-      }
-
-      :host([has-scrolling-region]) #wrapper #contentContainer {
-        @apply --layout-fit;
-        overflow-y: auto;
-        -webkit-overflow-scrolling: touch;
-      }
-
-      :host([has-scrolling-region]) #wrapper.initializing #contentContainer {
-        position: relative;
-      }
-
-      :host([fullbleed]) {
-        @apply --layout-vertical;
-        @apply --layout-fit;
-      }
-
-      :host([fullbleed]) #wrapper,
-      :host([fullbleed]) #wrapper #contentContainer {
-        @apply --layout-vertical;
-        @apply --layout-flex;
-      }
-
-      #contentContainer {
-        /* Create a stacking context here so that all children appear below the header. */
-        position: relative;
-        z-index: 0;
-      }
-
-      @media print {
-        :host([has-scrolling-region]) #wrapper #contentContainer {
-          overflow-y: visible;
-        }
-      }
-
-    </style>
-
-    <div id="wrapper" class="initializing">
-      <slot id="headerSlot" name="header"></slot>
-
-      <div id="contentContainer">
-        <slot></slot>
-      </div>
-    </div>
-`,
-
-  is: 'app-header-layout',
-
-  behaviors: [_appLayoutBehavior.AppLayoutBehavior],
-
-  properties: {
-    /**
-     * If true, the current element will have its own scrolling region.
-     * Otherwise, it will use the document scroll to control the header.
-     */
-    hasScrollingRegion: {
-      type: Boolean,
-      value: false,
-      reflectToAttribute: true
-    }
-  },
-
-  observers: ['resetLayout(isAttached, hasScrollingRegion)'],
-
-  /**
-   * A reference to the app-header element.
-   *
-   * @property header
-   */
-  get header() {
-    return (0, _polymerDom.dom)(this.$.headerSlot).getDistributedNodes()[0];
-  },
-
-  _updateLayoutStates: function () {
-    var header = this.header;
-    if (!this.isAttached || !header) {
-      return;
-    }
-    // Remove the initializing class, which staticly positions the header and the content
-    // until the height of the header can be read.
-    this.$.wrapper.classList.remove('initializing');
-    // Update scroll target.
-    header.scrollTarget = this.hasScrollingRegion ? this.$.contentContainer : this.ownerDocument.documentElement;
-    // Get header height here so that style reads are batched together before style writes
-    // (i.e. getBoundingClientRect() below).
-    var headerHeight = header.offsetHeight;
-    // Update the header position.
-    if (!this.hasScrollingRegion) {
-      requestAnimationFrame(function () {
-        var rect = this.getBoundingClientRect();
-        var rightOffset = document.documentElement.clientWidth - rect.right;
-        header.style.left = rect.left + 'px';
-        header.style.right = rightOffset + 'px';
-      }.bind(this));
-    } else {
-      header.style.left = '';
-      header.style.right = '';
-    }
-    // Update the content container position.
-    var containerStyle = this.$.contentContainer.style;
-    if (header.fixed && !header.condenses && this.hasScrollingRegion) {
-      // If the header size does not change and we're using a scrolling region, exclude
-      // the header area from the scrolling region so that the header doesn't overlap
-      // the scrollbar.
-      containerStyle.marginTop = headerHeight + 'px';
-      containerStyle.paddingTop = '';
-    } else {
-      containerStyle.paddingTop = headerHeight + 'px';
-      containerStyle.marginTop = '';
-    }
-  }
-});
-
-/***/ }),
-/* 81 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-__webpack_require__(0);
-
-__webpack_require__(7);
-
-var _polymerFn = __webpack_require__(1);
-
-(0, _polymerFn.Polymer)({
-  _template: `
-    <style>
-
-      :host {
-        @apply --layout-horizontal;
-        @apply --layout-center;
-        position: relative;
-        height: 64px;
-        padding: 0 16px;
-        pointer-events: none;
-        font-size: var(--app-toolbar-font-size, 20px);
-      }
-
-      :host ::slotted(*) {
-        pointer-events: auto;
-      }
-
-      :host ::slotted(paper-icon-button) {
-        /* paper-icon-button/issues/33 */
-        font-size: 0;
-      }
-
-      :host ::slotted([main-title]),
-      :host ::slotted([condensed-title]) {
-        pointer-events: none;
-        @apply --layout-flex;
-      }
-
-      :host ::slotted([bottom-item]) {
-        position: absolute;
-        right: 0;
-        bottom: 0;
-        left: 0;
-      }
-
-      :host ::slotted([top-item]) {
-        position: absolute;
-        top: 0;
-        right: 0;
-        left: 0;
-      }
-
-      :host ::slotted([spacer]) {
-        margin-left: 64px;
-      }
-    </style>
-
-    <slot></slot>
-`,
-
-  is: 'app-toolbar'
-});
-
-/***/ }),
-/* 82 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-__webpack_require__(0);
-
-__webpack_require__(27);
-
-var _paperInkyFocusBehavior = __webpack_require__(83);
-
-__webpack_require__(8);
-
-var _polymerFn = __webpack_require__(1);
-
-const $_documentContainer = document.createElement('div');
-$_documentContainer.setAttribute('style', 'display: none;');
-
-$_documentContainer.innerHTML = `<dom-module id="paper-icon-button">
-  <template strip-whitespace="">
-    <style>
-      :host {
-        display: inline-block;
-        position: relative;
-        padding: 8px;
-        outline: none;
-        -webkit-user-select: none;
-        -moz-user-select: none;
-        -ms-user-select: none;
-        user-select: none;
-        cursor: pointer;
-        z-index: 0;
-        line-height: 1;
-
-        width: 40px;
-        height: 40px;
-
-        /* NOTE: Both values are needed, since some phones require the value to be \`transparent\`. */
-        -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
-        -webkit-tap-highlight-color: transparent;
-
-        /* Because of polymer/2558, this style has lower specificity than * */
-        box-sizing: border-box !important;
-
-        @apply --paper-icon-button;
-      }
-
-      :host #ink {
-        color: var(--paper-icon-button-ink-color, var(--primary-text-color));
-        opacity: 0.6;
-      }
-
-      :host([disabled]) {
-        color: var(--paper-icon-button-disabled-text, var(--disabled-text-color));
-        pointer-events: none;
-        cursor: auto;
-
-        @apply --paper-icon-button-disabled;
-      }
-
-      :host([hidden]) {
-        display: none !important;
-      }
-
-      :host(:hover) {
-        @apply --paper-icon-button-hover;
-      }
-
-      iron-icon {
-        --iron-icon-width: 100%;
-        --iron-icon-height: 100%;
-      }
-    </style>
-
-    <iron-icon id="icon" src="[[src]]" icon="[[icon]]" alt\$="[[alt]]"></iron-icon>
-  </template>
-
-  
-</dom-module>`;
-
-document.head.appendChild($_documentContainer);
-(0, _polymerFn.Polymer)({
-  is: 'paper-icon-button',
-
-  hostAttributes: {
-    role: 'button',
-    tabindex: '0'
-  },
-
-  behaviors: [_paperInkyFocusBehavior.PaperInkyFocusBehavior],
-
-  properties: {
-    /**
-     * The URL of an image for the icon. If the src property is specified,
-     * the icon property should not be.
-     */
-    src: {
-      type: String
-    },
-
-    /**
-     * Specifies the icon name or index in the set of icons available in
-     * the icon's icon set. If the icon property is specified,
-     * the src property should not be.
-     */
-    icon: {
-      type: String
-    },
-
-    /**
-     * Specifies the alternate text for the button, for accessibility.
-     */
-    alt: {
-      type: String,
-      observer: "_altChanged"
-    }
-  },
-
-  _altChanged: function (newValue, oldValue) {
-    var label = this.getAttribute('aria-label');
-
-    // Don't stomp over a user-set aria-label.
-    if (!label || oldValue == label) {
-      this.setAttribute('aria-label', newValue);
-    }
-  }
-});
 
 /***/ }),
 /* 83 */
@@ -21497,7 +21495,7 @@ __webpack_require__(0);
 
 __webpack_require__(9);
 
-var _paperInputAddonBehavior = __webpack_require__(44);
+var _paperInputAddonBehavior = __webpack_require__(49);
 
 var _polymerFn = __webpack_require__(1);
 
@@ -22175,7 +22173,7 @@ __webpack_require__(8);
 
 __webpack_require__(9);
 
-var _paperInputAddonBehavior = __webpack_require__(44);
+var _paperInputAddonBehavior = __webpack_require__(49);
 
 var _polymerFn = __webpack_require__(1);
 
@@ -22948,7 +22946,7 @@ class CurrencyItem extends _polymerElement.Element {
                     display: block;
                     flex: 0 0 auto;
                     max-width: 50%;
-                    padding-left: 8px;
+                    padding-left: 16px;
                     text-overflow: ellipsis;
                     white-space: nowrap;
                     overflow: hidden;
@@ -22990,11 +22988,11 @@ class CurrencyItem extends _polymerElement.Element {
                     <img src$="https://files.coinmarketcap.com/static/img/coins/64x64/[[currency.id]].png" alt="" slot="item-icon">
                     <paper-item-body two-line>
                         <div class="header">
-                            <span class="name">[[currency.name]]</span>
+                            <span class="name"><b>[[currency.symbol]]</b>/[[currency.name]]</span>
                             <b class="price" depreciation$="[[isDepreciation(currency.percent_change_24h)]]">[[price(currency.price_usd)]]</b>
                         </div>
                         <div class="change" secondary>
-                            <span class="change__title">Change (24h)</span>
+                            <span class="change__title">24 hours</span>
                             <b class="change__percent" depreciation$="[[isDepreciation(currency.percent_change_24h)]]">[[currency.percent_change_24h]]%</b>
                         </div>
                     </paper-item-body>
@@ -23124,7 +23122,7 @@ const PaperItemBehavior = exports.PaperItemBehavior = [_ironButtonState.IronButt
 
 __webpack_require__(7);
 
-__webpack_require__(43);
+__webpack_require__(48);
 
 __webpack_require__(8);
 
@@ -23248,9 +23246,7 @@ var _polymerFn = __webpack_require__(1);
 });
 
 /***/ }),
-/* 105 */,
-/* 106 */,
-/* 107 */
+/* 105 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -23258,15 +23254,15 @@ var _polymerFn = __webpack_require__(1);
 
 var _polymerElement = __webpack_require__(4);
 
-__webpack_require__(76);
+__webpack_require__(43);
 
-__webpack_require__(80);
+__webpack_require__(45);
 
-__webpack_require__(81);
+__webpack_require__(46);
 
-__webpack_require__(69);
+__webpack_require__(41);
 
-__webpack_require__(82);
+__webpack_require__(47);
 
 // Libs
 class PageCurrency extends _polymerElement.Element {
@@ -23283,37 +23279,25 @@ class PageCurrency extends _polymerElement.Element {
                 }
 
                 .details {
-                    display: flex;
-                    flex-wrap: wrap;
-                    padding: 16px;
+                    color: var(--primary-text-color);
                     background-color: var(--primary-background-color);
                     box-shadow: var(--shadow-elevation-2dp_-_box-shadow);
                 }
 
-                img {
+                hr {
+                    margin: 4px 0;
+                    border: 1px solid var(--divider-color);
+                    border-bottom: 0;
+                }
+
+                .price {
                     display: block;
-                    width: 72px;
-                    height: 72px;
-                    margin-bottom: 16px;
-                    object-fit: contain;
-                }
-
-                .prices {
-                    flex: 0 0 calc(100% - 72px);
-                    margin-bottom: 16px;
-                    padding-left: 16px;
-                    box-sizing: border-box;
-                }
-
-                .price {}
-
-                .price + .price {
-                    margin-top: 8px;
                 }
 
                 .price__title {
                     display: block;
-                    font-size: 12px;
+                    font-size: 14px;
+                    line-height: 20px;
                     color: var(--secondary-text-color);
                 }
 
@@ -23324,32 +23308,45 @@ class PageCurrency extends _polymerElement.Element {
                     line-height: 28px;
                 }
 
-                .changes {
+                .price[positive] .price__value {
+                    color: var(--paper-green-500);
+                }
+
+                .price[negative] .price__value {
+                    color: var(--paper-red-500);
+                }
+
+                .card {
+                    position: relative;
+                    min-height: 104px;
+                    padding: 16px 16px 16px 104px;
+                    box-sizing: border-box;
+                }
+
+                .card img {
+                    position: absolute;
+                    top: 16px;
+                    left: 16px;
+                    display: block;
+                    width: 72px;
+                    height: 72px;
+                    object-fit: contain;
+                }
+
+                .card .price + .price {
+                    margin-top: 8px;
+                }
+
+                .change {
                     display: flex;
                     flex: 0 0 100%;
                 }
 
-                .change {
+                .change .price {
                     flex: 0 0 calc(100% / 3);
+                    padding: 16px;
                     text-align: center;
-                }
-
-                .change__title {
-                    display: block;
-                    font-size: 12px;
-                    color: var(--secondary-text-color);
-                }
-
-                .change__value {
-                    display: block;
-                    font-size: 20px;
-                    font-weight: 500;
-                    line-height: 28px;
-                    color: var(--paper-green-500);
-                }
-
-                .change__value[depreciation] {
-                    color: var(--paper-red-500);
+                    box-sizing: border-box;
                 }
             </style>
 
@@ -23362,34 +23359,44 @@ class PageCurrency extends _polymerElement.Element {
                 <app-header slot="header" fixed shadow>
                     <app-toolbar>
                         <paper-icon-button icon="arrow-back" on-tap="handleClickBack"></paper-icon-button>
-                        <div main-title>[[currency.name]]</div>
+                        <div main-title>[[currency.symbol]]/[[currency.name]]</div>
                     </app-toolbar>
                 </app-header>
 
                 <div class="details">
-                    <img src$="https://files.coinmarketcap.com/static/img/coins/128x128/[[currency.id]].png" alt="" slot="item-icon">
-                    <div class="prices">
+                    <div class="card">
+                        <img src$="https://files.coinmarketcap.com/static/img/coins/128x128/[[currency.id]].png" alt="" slot="item-icon">
                         <div class="price">
-                            <span class="change__title">Market cap</span>
-                            <b class="price__value">[[price(currency.market_cap_usd)]]</b>
-                        </div>
-                        <div class="price">
-                            <span class="change__title">Price</span>
+                            <span class="price__title">Price</span>
                             <b class="price__value">[[price(currency.price_usd)]]</b>
                         </div>
+                        <div class="price">
+                            <span class="price__title">Market cap</span>
+                            <b class="price__value">[[price(currency.market_cap_usd)]]</b>
+                        </div>
                     </div>
-                    <div class="changes">
-                        <div class="change">
-                            <span class="change__title">Change (1h)</span>
-                            <b class="change__value" depreciation$="[[isDepreciation(currency.percent_change_1h)]]">[[currency.percent_change_1h]]%</b>
+                    <hr>
+                    <div class="change">
+                        <div
+                            class="price"
+                            positive$="[[!isDepreciation(currency.percent_change_1h)]]"
+                            negative$="[[isDepreciation(currency.percent_change_1h)]]">
+                            <span class="price__title">1 hour</span>
+                            <b class="price__value">[[currency.percent_change_1h]]%</b>
                         </div>
-                        <div class="change">
-                            <span class="change__title">Change (24h)</span>
-                            <b class="change__value" depreciation$="[[isDepreciation(currency.percent_change_24h)]]">[[currency.percent_change_24h]]%</b>
+                        <div
+                            class="price"
+                            positive$="[[!isDepreciation(currency.percent_change_24h)]]"
+                            negative$="[[isDepreciation(currency.percent_change_24h)]]">
+                            <span class="price__title">24 hours</span>
+                            <b class="price__value">[[currency.percent_change_24h]]%</b>
                         </div>
-                        <div class="change">
-                            <span class="change__title">Change (7d)</span>
-                            <b class="change__value" depreciation$="[[isDepreciation(currency.percent_change_7d)]]">[[currency.percent_change_7d]]%</b>
+                        <div
+                            class="price"
+                            positive$="[[!isDepreciation(currency.percent_change_7d)]]"
+                            negative$="[[isDepreciation(currency.percent_change_7d)]]">
+                            <span class="price__title">7 days</span>
+                            <b class="price__value">[[currency.percent_change_7d]]%</b>
                         </div>
                     </div>
                 </div>
@@ -23425,6 +23432,10 @@ class PageCurrency extends _polymerElement.Element {
             minimumFractionDigits: 0,
             maximumFractionDigits: 10
         });
+    }
+
+    isNegativeValue(value) {
+        return value * 1 < 0;
     }
 
     isDepreciation(value) {
