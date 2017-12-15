@@ -13468,7 +13468,7 @@ class CoinApp extends _polymerElement.Element {
     }
 
     _isFavorite(favorites, id) {
-        return favorites ? favorites.includes(id) : false;
+        return favorites.includes(id);
     }
 
     handleFavorite(id) {
