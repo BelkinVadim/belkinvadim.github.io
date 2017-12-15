@@ -13123,7 +13123,10 @@ class CoinApp extends _polymerElement.Element {
             <app-store
                 currencies="{{currencies}}"
                 currency-id="[[currencyId]]"
-                currency="{{currency}}"></app-store>
+                currency="{{currency}}"
+                last-update="{{lastUpdate}}"
+                is-load="{{isLoad}}"
+                is-loading="{{isLoading}}"></app-store>
 
             <iron-pages
                 selected="[[routeData.page]]"
@@ -13133,13 +13136,17 @@ class CoinApp extends _polymerElement.Element {
 
                 <page-currencies
                     name="currencies"
-                    currencies="[[currencies]]"></page-currencies>
+                    currencies="[[currencies]]"
+                    last-update="[[lastUpdate]]"
+                    is-load="{{isLoad}}"
+                    is-loading="[[isLoading]]"></page-currencies>
 
                 <page-currency
                     name="currency"
                     currency-id="{{currencyId}}"
                     currency="[[currency]]"
-                    route="[[subroute]]"></page-currency>
+                    route="[[subroute]]"
+                    is-loading="[[isLoading]]"></page-currency>
 
             </iron-pages>
         `;
@@ -13147,6 +13154,9 @@ class CoinApp extends _polymerElement.Element {
 
     static get properties() {
         return {
+            lastUpdate: Number,
+            isLoad: Boolean,
+            isLoading: Boolean,
             currencies: Array,
             currencyId: String,
             currency: Object,
@@ -18548,6 +18558,22 @@ class AppStore extends _polymerElement.Element {
 
     static get properties() {
         return {
+            lastUpdate: {
+                type: Number,
+                value: null,
+                notify: true
+            },
+            isLoad: {
+                type: Boolean,
+                value: true,
+                notify: true,
+                observer: '_isLoadChanged'
+            },
+            isLoading: {
+                type: Boolean,
+                value: true,
+                notify: true
+            },
             currencies: {
                 type: Array,
                 value: [],
@@ -18576,16 +18602,26 @@ class AppStore extends _polymerElement.Element {
         var _this = this;
 
         return _asyncToGenerator(function* () {
-            const response = yield fetch('https://api.coinmarketcap.com/v1/ticker/?limit=50', {
+            _this.isLoading = true;
+            const response = yield fetch('https://api.coinmarketcap.com/v1/ticker/?limit=100', {
                 cache: 'force-cache'
             });
 
             _this.currencies = yield response.json();
+            _this.lastUpdate = Date.now();
+            _this.isLoading = false;
         })();
     }
 
     _computeCurrency(currencies, id) {
         return currencies.find(currency => currency.id === id);
+    }
+
+    _isLoadChanged(newValue, oldValue) {
+        if (newValue) {
+            this.isLoad = false;
+            this.load();
+        }
     }
 }
 
@@ -18610,9 +18646,11 @@ __webpack_require__(47);
 
 __webpack_require__(86);
 
+__webpack_require__(108);
+
 __webpack_require__(96);
 
-// Components
+// Libs
 class PageCurrencies extends _polymerElement.Element {
     static get is() {
         return 'page-currencies';
@@ -18636,6 +18674,19 @@ class PageCurrencies extends _polymerElement.Element {
                 app-toolbar[hidden] {
                     display: none;
                 }
+
+                paper-progress {
+                    position: absolute;
+                    bottom: 0;
+                    left: 0;
+                    width: 100%;
+                    --paper-progress-active-color: var(--accent-color);
+                    --paper-progress-container-color: transparent;
+                }
+
+                paper-progress[hidden] {
+                    display: none;
+                }
             </style>
 
             <app-header-layout>
@@ -18643,6 +18694,7 @@ class PageCurrencies extends _polymerElement.Element {
                     <app-toolbar hidden$="[[isOpenSearch]]">
                         <div main-title>Currencies</div>
                         <paper-icon-button icon="search" on-click="handleToggleSearch"></paper-icon-button>
+                        <paper-icon-button icon="update" on-click="handleUpdate"></paper-icon-button>
                     </app-toolbar>
                     <app-toolbar hidden$="[[!isOpenSearch]]">
                         <paper-input
@@ -18652,6 +18704,10 @@ class PageCurrencies extends _polymerElement.Element {
                             no-label-float></paper-input>
                         <paper-icon-button icon="close" on-click="handleToggleSearch"></paper-icon-button>
                     </app-toolbar>
+                    <paper-progress
+                        hidden$="[[!isLoading]]"
+                        indeterminate
+                        bottom-item></paper-progress>
                 </app-header>
 
                 <currencies-list currencies="[[filteredCurrencies]]"></currencies-list>
@@ -18661,6 +18717,9 @@ class PageCurrencies extends _polymerElement.Element {
 
     static get properties() {
         return {
+            lastUpdate: Number,
+            isLoad: Boolean,
+            isLoading: Boolean,
             currencies: {
                 type: Array,
                 value: [],
@@ -18689,6 +18748,10 @@ class PageCurrencies extends _polymerElement.Element {
         return searchValue ? currencies.filter(currency => currency.name.toLowerCase().indexOf(searchValue.toLowerCase()) >= 0 || currency.symbol.toLowerCase().indexOf(searchValue.toLowerCase()) >= 0) : currencies;
     }
 
+    handleUpdate() {
+        this.isLoad = true;
+    }
+
     handleToggleSearch() {
         this.isOpenSearch = !this.isOpenSearch;
 
@@ -18698,7 +18761,8 @@ class PageCurrencies extends _polymerElement.Element {
             this.$.search.focus();
         }
     }
-} // Libs
+}
+// Components
 
 
 customElements.define(PageCurrencies.is, PageCurrencies);
@@ -22988,7 +23052,7 @@ class CurrencyItem extends _polymerElement.Element {
                     <img src$="https://files.coinmarketcap.com/static/img/coins/64x64/[[currency.id]].png" alt="" slot="item-icon">
                     <paper-item-body two-line>
                         <div class="header">
-                            <span class="name"><b>[[currency.symbol]]</b>/[[currency.name]]</span>
+                            <span class="name"><b>[[currency.symbol]]</b>/[[currency.last_updated]]</span>
                             <b class="price" depreciation$="[[isDepreciation(currency.percent_change_24h)]]">[[price(currency.price_usd)]]</b>
                         </div>
                         <div class="change" secondary>
@@ -23264,7 +23328,9 @@ __webpack_require__(41);
 
 __webpack_require__(47);
 
-// Libs
+__webpack_require__(108);
+
+// Components
 class PageCurrency extends _polymerElement.Element {
     static get is() {
         return 'page-currency';
@@ -23276,6 +23342,19 @@ class PageCurrency extends _polymerElement.Element {
                 app-header {
                     color: var(--dark-theme-text-color);
                     background-color: var(--primary-color);
+                }
+
+                paper-progress {
+                    position: absolute;
+                    bottom: 0;
+                    left: 0;
+                    width: 100%;
+                    --paper-progress-active-color: var(--accent-color);
+                    --paper-progress-container-color: transparent;
+                }
+
+                paper-progress[hidden] {
+                    display: none;
                 }
 
                 .details {
@@ -23358,9 +23437,14 @@ class PageCurrency extends _polymerElement.Element {
             <app-header-layout>
                 <app-header slot="header" fixed shadow>
                     <app-toolbar>
-                        <paper-icon-button icon="arrow-back" on-tap="handleClickBack"></paper-icon-button>
+                        <paper-icon-button icon="arrow-back" on-tap="handleBack"></paper-icon-button>
                         <div main-title>[[currency.symbol]]/[[currency.name]]</div>
+                        <paper-icon-button icon="star-border" on-tap="handleFavorite"></paper-icon-button>
                     </app-toolbar>
+                    <paper-progress
+                        hidden$="[[!isLoading]]"
+                        indeterminate
+                        bottom-item></paper-progress>
                 </app-header>
 
                 <div class="details">
@@ -23406,8 +23490,9 @@ class PageCurrency extends _polymerElement.Element {
 
     static get properties() {
         return {
+            isLoading: Boolean,
             currencyId: {
-                type: Boolean,
+                type: String,
                 computed: '_currencyId(routeData)',
                 notify: true
             },
@@ -23442,14 +23527,408 @@ class PageCurrency extends _polymerElement.Element {
         return value * 1 < 0;
     }
 
-    handleClickBack() {
+    handleFavorite() {}
+
+    handleBack() {
         window.history.back();
     }
-}
-// Components
+} // Libs
 
 
 customElements.define(PageCurrency.is, PageCurrency);
+
+/***/ }),
+/* 106 */,
+/* 107 */,
+/* 108 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+__webpack_require__(0);
+
+__webpack_require__(7);
+
+var _ironRangeBehavior = __webpack_require__(109);
+
+__webpack_require__(48);
+
+var _polymerFn = __webpack_require__(1);
+
+(0, _polymerFn.Polymer)({
+  _template: `
+    <style>
+      :host {
+        display: block;
+        width: 200px;
+        position: relative;
+        overflow: hidden;
+      }
+
+      :host([hidden]), [hidden] {
+        display: none !important;
+      }
+
+      #progressContainer {
+        @apply --paper-progress-container;
+        position: relative;
+      }
+
+      #progressContainer,
+      /* the stripe for the indeterminate animation*/
+      .indeterminate::after {
+        height: var(--paper-progress-height, 4px);
+      }
+
+      #primaryProgress,
+      #secondaryProgress,
+      .indeterminate::after {
+        @apply --layout-fit;
+      }
+
+      #progressContainer,
+      .indeterminate::after {
+        background: var(--paper-progress-container-color, var(--google-grey-300));
+      }
+
+      :host(.transiting) #primaryProgress,
+      :host(.transiting) #secondaryProgress {
+        -webkit-transition-property: -webkit-transform;
+        transition-property: transform;
+
+        /* Duration */
+        -webkit-transition-duration: var(--paper-progress-transition-duration, 0.08s);
+        transition-duration: var(--paper-progress-transition-duration, 0.08s);
+
+        /* Timing function */
+        -webkit-transition-timing-function: var(--paper-progress-transition-timing-function, ease);
+        transition-timing-function: var(--paper-progress-transition-timing-function, ease);
+
+        /* Delay */
+        -webkit-transition-delay: var(--paper-progress-transition-delay, 0s);
+        transition-delay: var(--paper-progress-transition-delay, 0s);
+      }
+
+      #primaryProgress,
+      #secondaryProgress {
+        @apply --layout-fit;
+        -webkit-transform-origin: left center;
+        transform-origin: left center;
+        -webkit-transform: scaleX(0);
+        transform: scaleX(0);
+        will-change: transform;
+      }
+
+      #primaryProgress {
+        background: var(--paper-progress-active-color, var(--google-green-500));
+      }
+
+      #secondaryProgress {
+        background: var(--paper-progress-secondary-color, var(--google-green-100));
+      }
+
+      :host([disabled]) #primaryProgress {
+        background: var(--paper-progress-disabled-active-color, var(--google-grey-500));
+      }
+
+      :host([disabled]) #secondaryProgress {
+        background: var(--paper-progress-disabled-secondary-color, var(--google-grey-300));
+      }
+
+      :host(:not([disabled])) #primaryProgress.indeterminate {
+        -webkit-transform-origin: right center;
+        transform-origin: right center;
+        -webkit-animation: indeterminate-bar var(--paper-progress-indeterminate-cycle-duration, 2s) linear infinite;
+        animation: indeterminate-bar var(--paper-progress-indeterminate-cycle-duration, 2s) linear infinite;
+      }
+
+      :host(:not([disabled])) #primaryProgress.indeterminate::after {
+        content: "";
+        -webkit-transform-origin: center center;
+        transform-origin: center center;
+
+        -webkit-animation: indeterminate-splitter var(--paper-progress-indeterminate-cycle-duration, 2s) linear infinite;
+        animation: indeterminate-splitter var(--paper-progress-indeterminate-cycle-duration, 2s) linear infinite;
+      }
+
+      @-webkit-keyframes indeterminate-bar {
+        0% {
+          -webkit-transform: scaleX(1) translateX(-100%);
+        }
+        50% {
+          -webkit-transform: scaleX(1) translateX(0%);
+        }
+        75% {
+          -webkit-transform: scaleX(1) translateX(0%);
+          -webkit-animation-timing-function: cubic-bezier(.28,.62,.37,.91);
+        }
+        100% {
+          -webkit-transform: scaleX(0) translateX(0%);
+        }
+      }
+
+      @-webkit-keyframes indeterminate-splitter {
+        0% {
+          -webkit-transform: scaleX(.75) translateX(-125%);
+        }
+        30% {
+          -webkit-transform: scaleX(.75) translateX(-125%);
+          -webkit-animation-timing-function: cubic-bezier(.42,0,.6,.8);
+        }
+        90% {
+          -webkit-transform: scaleX(.75) translateX(125%);
+        }
+        100% {
+          -webkit-transform: scaleX(.75) translateX(125%);
+        }
+      }
+
+      @keyframes indeterminate-bar {
+        0% {
+          transform: scaleX(1) translateX(-100%);
+        }
+        50% {
+          transform: scaleX(1) translateX(0%);
+        }
+        75% {
+          transform: scaleX(1) translateX(0%);
+          animation-timing-function: cubic-bezier(.28,.62,.37,.91);
+        }
+        100% {
+          transform: scaleX(0) translateX(0%);
+        }
+      }
+
+      @keyframes indeterminate-splitter {
+        0% {
+          transform: scaleX(.75) translateX(-125%);
+        }
+        30% {
+          transform: scaleX(.75) translateX(-125%);
+          animation-timing-function: cubic-bezier(.42,0,.6,.8);
+        }
+        90% {
+          transform: scaleX(.75) translateX(125%);
+        }
+        100% {
+          transform: scaleX(.75) translateX(125%);
+        }
+      }
+    </style>
+
+    <div id="progressContainer">
+      <div id="secondaryProgress" hidden\$="[[_hideSecondaryProgress(secondaryRatio)]]"></div>
+      <div id="primaryProgress"></div>
+    </div>
+`,
+
+  is: 'paper-progress',
+
+  behaviors: [_ironRangeBehavior.IronRangeBehavior],
+
+  properties: {
+    /**
+     * The number that represents the current secondary progress.
+     */
+    secondaryProgress: {
+      type: Number,
+      value: 0
+    },
+
+    /**
+     * The secondary ratio
+     */
+    secondaryRatio: {
+      type: Number,
+      value: 0,
+      readOnly: true
+    },
+
+    /**
+     * Use an indeterminate progress indicator.
+     */
+    indeterminate: {
+      type: Boolean,
+      value: false,
+      observer: '_toggleIndeterminate'
+    },
+
+    /**
+     * True if the progress is disabled.
+     */
+    disabled: {
+      type: Boolean,
+      value: false,
+      reflectToAttribute: true,
+      observer: '_disabledChanged'
+    }
+  },
+
+  observers: ['_progressChanged(secondaryProgress, value, min, max, indeterminate)'],
+
+  hostAttributes: {
+    role: 'progressbar'
+  },
+
+  _toggleIndeterminate: function (indeterminate) {
+    // If we use attribute/class binding, the animation sometimes doesn't translate properly
+    // on Safari 7.1. So instead, we toggle the class here in the update method.
+    this.toggleClass('indeterminate', indeterminate, this.$.primaryProgress);
+  },
+
+  _transformProgress: function (progress, ratio) {
+    var transform = 'scaleX(' + ratio / 100 + ')';
+    progress.style.transform = progress.style.webkitTransform = transform;
+  },
+
+  _mainRatioChanged: function (ratio) {
+    this._transformProgress(this.$.primaryProgress, ratio);
+  },
+
+  _progressChanged: function (secondaryProgress, value, min, max, indeterminate) {
+    secondaryProgress = this._clampValue(secondaryProgress);
+    value = this._clampValue(value);
+
+    var secondaryRatio = this._calcRatio(secondaryProgress) * 100;
+    var mainRatio = this._calcRatio(value) * 100;
+
+    this._setSecondaryRatio(secondaryRatio);
+    this._transformProgress(this.$.secondaryProgress, secondaryRatio);
+    this._transformProgress(this.$.primaryProgress, mainRatio);
+
+    this.secondaryProgress = secondaryProgress;
+
+    if (indeterminate) {
+      this.removeAttribute('aria-valuenow');
+    } else {
+      this.setAttribute('aria-valuenow', value);
+    }
+    this.setAttribute('aria-valuemin', min);
+    this.setAttribute('aria-valuemax', max);
+  },
+
+  _disabledChanged: function (disabled) {
+    this.setAttribute('aria-disabled', disabled ? 'true' : 'false');
+  },
+
+  _hideSecondaryProgress: function (secondaryRatio) {
+    return secondaryRatio === 0;
+  }
+});
+
+/***/ }),
+/* 109 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.IronRangeBehavior = undefined;
+
+__webpack_require__(0);
+
+const IronRangeBehavior = exports.IronRangeBehavior = {
+
+  properties: {
+
+    /**
+     * The number that represents the current value.
+     */
+    value: {
+      type: Number,
+      value: 0,
+      notify: true,
+      reflectToAttribute: true
+    },
+
+    /**
+     * The number that indicates the minimum value of the range.
+     */
+    min: {
+      type: Number,
+      value: 0,
+      notify: true
+    },
+
+    /**
+     * The number that indicates the maximum value of the range.
+     */
+    max: {
+      type: Number,
+      value: 100,
+      notify: true
+    },
+
+    /**
+     * Specifies the value granularity of the range's value.
+     */
+    step: {
+      type: Number,
+      value: 1,
+      notify: true
+    },
+
+    /**
+     * Returns the ratio of the value.
+     */
+    ratio: {
+      type: Number,
+      value: 0,
+      readOnly: true,
+      notify: true
+    }
+  },
+
+  observers: ['_update(value, min, max, step)'],
+
+  _calcRatio: function (value) {
+    return (this._clampValue(value) - this.min) / (this.max - this.min);
+  },
+
+  _clampValue: function (value) {
+    return Math.min(this.max, Math.max(this.min, this._calcStep(value)));
+  },
+
+  _calcStep: function (value) {
+    // polymer/issues/2493
+    value = parseFloat(value);
+
+    if (!this.step) {
+      return value;
+    }
+
+    var numSteps = Math.round((value - this.min) / this.step);
+    if (this.step < 1) {
+      /**
+       * For small values of this.step, if we calculate the step using
+       * `Math.round(value / step) * step` we may hit a precision point issue
+       * eg. 0.1 * 0.2 =  0.020000000000000004
+       * http://docs.oracle.com/cd/E19957-01/806-3568/ncg_goldberg.html
+       *
+       * as a work around we can divide by the reciprocal of `step`
+       */
+      return numSteps / (1 / this.step) + this.min;
+    } else {
+      return numSteps * this.step + this.min;
+    }
+  },
+
+  _validateValue: function () {
+    var v = this._clampValue(this.value);
+    this.value = this.oldValue = isNaN(v) ? this.oldValue : v;
+    return this.value !== v;
+  },
+
+  _update: function () {
+    this._validateValue();
+    this._setRatio(this._calcRatio(this.value) * 100);
+  }
+
+};
 
 /***/ })
 /******/ ]);
