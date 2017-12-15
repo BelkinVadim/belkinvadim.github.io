@@ -60,7 +60,7 @@
 /******/ 	__webpack_require__.p = "/";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 50);
+/******/ 	return __webpack_require__(__webpack_require__.s = 51);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -75,23 +75,23 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.Base = undefined;
 
-var _legacyElementMixin = __webpack_require__(32);
+var _legacyElementMixin = __webpack_require__(33);
 
 __webpack_require__(1);
 
-__webpack_require__(64);
-
 __webpack_require__(65);
 
-__webpack_require__(40);
-
 __webpack_require__(66);
+
+__webpack_require__(41);
 
 __webpack_require__(67);
 
 __webpack_require__(68);
 
-__webpack_require__(70);
+__webpack_require__(69);
+
+__webpack_require__(71);
 
 const Base = exports.Base = (0, _legacyElementMixin.LegacyElementMixin)(HTMLElement).prototype;
 
@@ -107,7 +107,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.Polymer = undefined;
 
-var _class = __webpack_require__(63);
+var _class = __webpack_require__(64);
 
 const Polymer = exports.Polymer = function (info) {
   // if input is a `class` (aka a function with a prototype), use the prototype
@@ -152,7 +152,7 @@ __webpack_require__(2);
 
 __webpack_require__(12);
 
-var _flattenedNodesObserver = __webpack_require__(62);
+var _flattenedNodesObserver = __webpack_require__(63);
 
 var _flush = __webpack_require__(15);
 
@@ -522,156 +522,6 @@ const dedupingMixin = exports.dedupingMixin = function (mixin) {
 "use strict";
 
 
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.microTask = exports.idlePeriod = exports.animationFrame = exports.timeOut = undefined;
-
-__webpack_require__(2);
-
-/** @typedef {{run: function(function(), number=):number, cancel: function(number)}} */
-let AsyncInterface; // eslint-disable-line no-unused-vars
-
-// Microtask implemented using Mutation Observer
-let microtaskCurrHandle = 0;
-let microtaskLastHandle = 0;
-let microtaskCallbacks = [];
-let microtaskNodeContent = 0;
-let microtaskNode = document.createTextNode('');
-new window.MutationObserver(microtaskFlush).observe(microtaskNode, { characterData: true });
-
-function microtaskFlush() {
-  const len = microtaskCallbacks.length;
-  for (let i = 0; i < len; i++) {
-    let cb = microtaskCallbacks[i];
-    if (cb) {
-      try {
-        cb();
-      } catch (e) {
-        setTimeout(() => {
-          throw e;
-        });
-      }
-    }
-  }
-  microtaskCallbacks.splice(0, len);
-  microtaskLastHandle += len;
-}
-
-const timeOut = exports.timeOut = {
-  /**
-   * Returns a sub-module with the async interface providing the provided
-   * delay.
-   *
-   * @memberof Polymer.Async.timeOut
-   * @param {number} delay Time to wait before calling callbacks in ms
-   * @return {AsyncInterface} An async timeout interface
-   */
-  after(delay) {
-    return {
-      run(fn) {
-        return setTimeout(fn, delay);
-      },
-      cancel: window.clearTimeout.bind(window)
-    };
-  },
-  /**
-   * Enqueues a function called in the next task.
-   *
-   * @memberof Polymer.Async.timeOut
-   * @param {Function} fn Callback to run
-   * @return {number} Handle used for canceling task
-   */
-  run: window.setTimeout.bind(window),
-  /**
-   * Cancels a previously enqueued `timeOut` callback.
-   *
-   * @memberof Polymer.Async.timeOut
-   * @param {number} handle Handle returned from `run` of callback to cancel
-   */
-  cancel: window.clearTimeout.bind(window)
-};
-
-const animationFrame = exports.animationFrame = {
-  /**
-   * Enqueues a function called at `requestAnimationFrame` timing.
-   *
-   * @memberof Polymer.Async.animationFrame
-   * @param {Function} fn Callback to run
-   * @return {number} Handle used for canceling task
-   */
-  run: window.requestAnimationFrame.bind(window),
-  /**
-   * Cancels a previously enqueued `animationFrame` callback.
-   *
-   * @memberof Polymer.Async.timeOut
-   * @param {number} handle Handle returned from `run` of callback to cancel
-   */
-  cancel: window.cancelAnimationFrame.bind(window)
-};
-
-const idlePeriod = exports.idlePeriod = {
-  /**
-   * Enqueues a function called at `requestIdleCallback` timing.
-   *
-   * @memberof Polymer.Async.idlePeriod
-   * @param {function(IdleDeadline)} fn Callback to run
-   * @return {number} Handle used for canceling task
-   */
-  run(fn) {
-    return window.requestIdleCallback ? window.requestIdleCallback(fn) : window.setTimeout(fn, 16);
-  },
-  /**
-   * Cancels a previously enqueued `idlePeriod` callback.
-   *
-   * @memberof Polymer.Async.idlePeriod
-   * @param {number} handle Handle returned from `run` of callback to cancel
-   */
-  cancel(handle) {
-    window.cancelIdleCallback ? window.cancelIdleCallback(handle) : window.clearTimeout(handle);
-  }
-};
-
-const microTask = exports.microTask = {
-
-  /**
-   * Enqueues a function called at microtask timing.
-   *
-   * @memberof Polymer.Async.microTask
-   * @param {Function} callback Callback to run
-   * @return {number} Handle used for canceling task
-   */
-  run(callback) {
-    microtaskNode.textContent = microtaskNodeContent++;
-    microtaskCallbacks.push(callback);
-    return microtaskCurrHandle++;
-  },
-
-  /**
-   * Cancels a previously enqueued `microTask` callback.
-   *
-   * @memberof Polymer.Async.microTask
-   * @param {number} handle Handle returned from `run` of callback to cancel
-   */
-  cancel(handle) {
-    const idx = handle - microtaskLastHandle;
-    if (idx >= 0) {
-      if (!microtaskCallbacks[idx]) {
-        throw new Error('invalid async handle: ' + handle);
-      }
-      microtaskCallbacks[idx] = null;
-    }
-  }
-
-};
-
-/***/ }),
-/* 7 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
 __webpack_require__(0);
 
 const $_documentContainer = document.createElement('div');
@@ -1026,6 +876,156 @@ $_documentContainer.innerHTML = `<custom-style>
 document.head.appendChild($_documentContainer);
 
 /***/ }),
+/* 7 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.microTask = exports.idlePeriod = exports.animationFrame = exports.timeOut = undefined;
+
+__webpack_require__(2);
+
+/** @typedef {{run: function(function(), number=):number, cancel: function(number)}} */
+let AsyncInterface; // eslint-disable-line no-unused-vars
+
+// Microtask implemented using Mutation Observer
+let microtaskCurrHandle = 0;
+let microtaskLastHandle = 0;
+let microtaskCallbacks = [];
+let microtaskNodeContent = 0;
+let microtaskNode = document.createTextNode('');
+new window.MutationObserver(microtaskFlush).observe(microtaskNode, { characterData: true });
+
+function microtaskFlush() {
+  const len = microtaskCallbacks.length;
+  for (let i = 0; i < len; i++) {
+    let cb = microtaskCallbacks[i];
+    if (cb) {
+      try {
+        cb();
+      } catch (e) {
+        setTimeout(() => {
+          throw e;
+        });
+      }
+    }
+  }
+  microtaskCallbacks.splice(0, len);
+  microtaskLastHandle += len;
+}
+
+const timeOut = exports.timeOut = {
+  /**
+   * Returns a sub-module with the async interface providing the provided
+   * delay.
+   *
+   * @memberof Polymer.Async.timeOut
+   * @param {number} delay Time to wait before calling callbacks in ms
+   * @return {AsyncInterface} An async timeout interface
+   */
+  after(delay) {
+    return {
+      run(fn) {
+        return setTimeout(fn, delay);
+      },
+      cancel: window.clearTimeout.bind(window)
+    };
+  },
+  /**
+   * Enqueues a function called in the next task.
+   *
+   * @memberof Polymer.Async.timeOut
+   * @param {Function} fn Callback to run
+   * @return {number} Handle used for canceling task
+   */
+  run: window.setTimeout.bind(window),
+  /**
+   * Cancels a previously enqueued `timeOut` callback.
+   *
+   * @memberof Polymer.Async.timeOut
+   * @param {number} handle Handle returned from `run` of callback to cancel
+   */
+  cancel: window.clearTimeout.bind(window)
+};
+
+const animationFrame = exports.animationFrame = {
+  /**
+   * Enqueues a function called at `requestAnimationFrame` timing.
+   *
+   * @memberof Polymer.Async.animationFrame
+   * @param {Function} fn Callback to run
+   * @return {number} Handle used for canceling task
+   */
+  run: window.requestAnimationFrame.bind(window),
+  /**
+   * Cancels a previously enqueued `animationFrame` callback.
+   *
+   * @memberof Polymer.Async.timeOut
+   * @param {number} handle Handle returned from `run` of callback to cancel
+   */
+  cancel: window.cancelAnimationFrame.bind(window)
+};
+
+const idlePeriod = exports.idlePeriod = {
+  /**
+   * Enqueues a function called at `requestIdleCallback` timing.
+   *
+   * @memberof Polymer.Async.idlePeriod
+   * @param {function(IdleDeadline)} fn Callback to run
+   * @return {number} Handle used for canceling task
+   */
+  run(fn) {
+    return window.requestIdleCallback ? window.requestIdleCallback(fn) : window.setTimeout(fn, 16);
+  },
+  /**
+   * Cancels a previously enqueued `idlePeriod` callback.
+   *
+   * @memberof Polymer.Async.idlePeriod
+   * @param {number} handle Handle returned from `run` of callback to cancel
+   */
+  cancel(handle) {
+    window.cancelIdleCallback ? window.cancelIdleCallback(handle) : window.clearTimeout(handle);
+  }
+};
+
+const microTask = exports.microTask = {
+
+  /**
+   * Enqueues a function called at microtask timing.
+   *
+   * @memberof Polymer.Async.microTask
+   * @param {Function} callback Callback to run
+   * @return {number} Handle used for canceling task
+   */
+  run(callback) {
+    microtaskNode.textContent = microtaskNodeContent++;
+    microtaskCallbacks.push(callback);
+    return microtaskCurrHandle++;
+  },
+
+  /**
+   * Cancels a previously enqueued `microTask` callback.
+   *
+   * @memberof Polymer.Async.microTask
+   * @param {number} handle Handle returned from `run` of callback to cancel
+   */
+  cancel(handle) {
+    const idx = handle - microtaskLastHandle;
+    if (idx >= 0) {
+      if (!microtaskCallbacks[idx]) {
+        throw new Error('invalid async handle: ' + handle);
+      }
+      microtaskCallbacks[idx] = null;
+    }
+  }
+
+};
+
+/***/ }),
 /* 8 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -1034,7 +1034,7 @@ document.head.appendChild($_documentContainer);
 
 __webpack_require__(0);
 
-__webpack_require__(48);
+__webpack_require__(31);
 
 const $_documentContainer = document.createElement('div');
 $_documentContainer.setAttribute('style', 'display: none;');
@@ -1107,7 +1107,7 @@ document.head.appendChild($_documentContainer);
 
 __webpack_require__(0);
 
-__webpack_require__(93);
+__webpack_require__(94);
 
 const $_documentContainer = document.createElement('div');
 $_documentContainer.setAttribute('style', 'display: none;');
@@ -1315,7 +1315,7 @@ __webpack_require__(2);
 
 __webpack_require__(5);
 
-__webpack_require__(6);
+__webpack_require__(7);
 
 /** @typedef {{run: function(function(), number=):number, cancel: function(number)}} */
 let AsyncModule; // eslint-disable-line no-unused-vars
@@ -2445,7 +2445,7 @@ var _caseMap = __webpack_require__(10);
 
 var caseMap$0 = _interopRequireWildcard(_caseMap);
 
-var _styleGather = __webpack_require__(31);
+var _styleGather = __webpack_require__(32);
 
 var _resolveUrl = __webpack_require__(13);
 
@@ -3308,9 +3308,9 @@ var _caseMap = __webpack_require__(10);
 
 var caseMap = _interopRequireWildcard(_caseMap);
 
-var _propertyAccessors = __webpack_require__(52);
+var _propertyAccessors = __webpack_require__(53);
 
-var _templateStamp = __webpack_require__(53);
+var _templateStamp = __webpack_require__(54);
 
 var _settings = __webpack_require__(12);
 
@@ -6868,7 +6868,7 @@ var _polymer = __webpack_require__(0);
 
 __webpack_require__(28);
 
-__webpack_require__(7);
+__webpack_require__(6);
 
 var _polymerFn = __webpack_require__(1);
 
@@ -7170,7 +7170,7 @@ exports.IronSelectableBehavior = undefined;
 
 __webpack_require__(0);
 
-var _ironSelection = __webpack_require__(77);
+var _ironSelection = __webpack_require__(78);
 
 var _polymerDom = __webpack_require__(3);
 
@@ -7792,6 +7792,343 @@ const IronButtonState = exports.IronButtonState = [_ironA11yKeysBehavior.IronA11
 "use strict";
 
 
+__webpack_require__(0);
+
+const $_documentContainer = document.createElement('div');
+$_documentContainer.setAttribute('style', 'display: none;');
+
+$_documentContainer.innerHTML = `<custom-style>
+  <style is="custom-style">
+    html {
+
+      /* Material Design color palette for Google products */
+
+      --google-red-100: #f4c7c3;
+      --google-red-300: #e67c73;
+      --google-red-500: #db4437;
+      --google-red-700: #c53929;
+
+      --google-blue-100: #c6dafc;
+      --google-blue-300: #7baaf7;
+      --google-blue-500: #4285f4;
+      --google-blue-700: #3367d6;
+
+      --google-green-100: #b7e1cd;
+      --google-green-300: #57bb8a;
+      --google-green-500: #0f9d58;
+      --google-green-700: #0b8043;
+
+      --google-yellow-100: #fce8b2;
+      --google-yellow-300: #f7cb4d;
+      --google-yellow-500: #f4b400;
+      --google-yellow-700: #f09300;
+
+      --google-grey-100: #f5f5f5;
+      --google-grey-300: #e0e0e0;
+      --google-grey-500: #9e9e9e;
+      --google-grey-700: #616161;
+
+      /* Material Design color palette from online spec document */
+
+      --paper-red-50: #ffebee;
+      --paper-red-100: #ffcdd2;
+      --paper-red-200: #ef9a9a;
+      --paper-red-300: #e57373;
+      --paper-red-400: #ef5350;
+      --paper-red-500: #f44336;
+      --paper-red-600: #e53935;
+      --paper-red-700: #d32f2f;
+      --paper-red-800: #c62828;
+      --paper-red-900: #b71c1c;
+      --paper-red-a100: #ff8a80;
+      --paper-red-a200: #ff5252;
+      --paper-red-a400: #ff1744;
+      --paper-red-a700: #d50000;
+
+      --paper-pink-50: #fce4ec;
+      --paper-pink-100: #f8bbd0;
+      --paper-pink-200: #f48fb1;
+      --paper-pink-300: #f06292;
+      --paper-pink-400: #ec407a;
+      --paper-pink-500: #e91e63;
+      --paper-pink-600: #d81b60;
+      --paper-pink-700: #c2185b;
+      --paper-pink-800: #ad1457;
+      --paper-pink-900: #880e4f;
+      --paper-pink-a100: #ff80ab;
+      --paper-pink-a200: #ff4081;
+      --paper-pink-a400: #f50057;
+      --paper-pink-a700: #c51162;
+
+      --paper-purple-50: #f3e5f5;
+      --paper-purple-100: #e1bee7;
+      --paper-purple-200: #ce93d8;
+      --paper-purple-300: #ba68c8;
+      --paper-purple-400: #ab47bc;
+      --paper-purple-500: #9c27b0;
+      --paper-purple-600: #8e24aa;
+      --paper-purple-700: #7b1fa2;
+      --paper-purple-800: #6a1b9a;
+      --paper-purple-900: #4a148c;
+      --paper-purple-a100: #ea80fc;
+      --paper-purple-a200: #e040fb;
+      --paper-purple-a400: #d500f9;
+      --paper-purple-a700: #aa00ff;
+
+      --paper-deep-purple-50: #ede7f6;
+      --paper-deep-purple-100: #d1c4e9;
+      --paper-deep-purple-200: #b39ddb;
+      --paper-deep-purple-300: #9575cd;
+      --paper-deep-purple-400: #7e57c2;
+      --paper-deep-purple-500: #673ab7;
+      --paper-deep-purple-600: #5e35b1;
+      --paper-deep-purple-700: #512da8;
+      --paper-deep-purple-800: #4527a0;
+      --paper-deep-purple-900: #311b92;
+      --paper-deep-purple-a100: #b388ff;
+      --paper-deep-purple-a200: #7c4dff;
+      --paper-deep-purple-a400: #651fff;
+      --paper-deep-purple-a700: #6200ea;
+
+      --paper-indigo-50: #e8eaf6;
+      --paper-indigo-100: #c5cae9;
+      --paper-indigo-200: #9fa8da;
+      --paper-indigo-300: #7986cb;
+      --paper-indigo-400: #5c6bc0;
+      --paper-indigo-500: #3f51b5;
+      --paper-indigo-600: #3949ab;
+      --paper-indigo-700: #303f9f;
+      --paper-indigo-800: #283593;
+      --paper-indigo-900: #1a237e;
+      --paper-indigo-a100: #8c9eff;
+      --paper-indigo-a200: #536dfe;
+      --paper-indigo-a400: #3d5afe;
+      --paper-indigo-a700: #304ffe;
+
+      --paper-blue-50: #e3f2fd;
+      --paper-blue-100: #bbdefb;
+      --paper-blue-200: #90caf9;
+      --paper-blue-300: #64b5f6;
+      --paper-blue-400: #42a5f5;
+      --paper-blue-500: #2196f3;
+      --paper-blue-600: #1e88e5;
+      --paper-blue-700: #1976d2;
+      --paper-blue-800: #1565c0;
+      --paper-blue-900: #0d47a1;
+      --paper-blue-a100: #82b1ff;
+      --paper-blue-a200: #448aff;
+      --paper-blue-a400: #2979ff;
+      --paper-blue-a700: #2962ff;
+
+      --paper-light-blue-50: #e1f5fe;
+      --paper-light-blue-100: #b3e5fc;
+      --paper-light-blue-200: #81d4fa;
+      --paper-light-blue-300: #4fc3f7;
+      --paper-light-blue-400: #29b6f6;
+      --paper-light-blue-500: #03a9f4;
+      --paper-light-blue-600: #039be5;
+      --paper-light-blue-700: #0288d1;
+      --paper-light-blue-800: #0277bd;
+      --paper-light-blue-900: #01579b;
+      --paper-light-blue-a100: #80d8ff;
+      --paper-light-blue-a200: #40c4ff;
+      --paper-light-blue-a400: #00b0ff;
+      --paper-light-blue-a700: #0091ea;
+
+      --paper-cyan-50: #e0f7fa;
+      --paper-cyan-100: #b2ebf2;
+      --paper-cyan-200: #80deea;
+      --paper-cyan-300: #4dd0e1;
+      --paper-cyan-400: #26c6da;
+      --paper-cyan-500: #00bcd4;
+      --paper-cyan-600: #00acc1;
+      --paper-cyan-700: #0097a7;
+      --paper-cyan-800: #00838f;
+      --paper-cyan-900: #006064;
+      --paper-cyan-a100: #84ffff;
+      --paper-cyan-a200: #18ffff;
+      --paper-cyan-a400: #00e5ff;
+      --paper-cyan-a700: #00b8d4;
+
+      --paper-teal-50: #e0f2f1;
+      --paper-teal-100: #b2dfdb;
+      --paper-teal-200: #80cbc4;
+      --paper-teal-300: #4db6ac;
+      --paper-teal-400: #26a69a;
+      --paper-teal-500: #009688;
+      --paper-teal-600: #00897b;
+      --paper-teal-700: #00796b;
+      --paper-teal-800: #00695c;
+      --paper-teal-900: #004d40;
+      --paper-teal-a100: #a7ffeb;
+      --paper-teal-a200: #64ffda;
+      --paper-teal-a400: #1de9b6;
+      --paper-teal-a700: #00bfa5;
+
+      --paper-green-50: #e8f5e9;
+      --paper-green-100: #c8e6c9;
+      --paper-green-200: #a5d6a7;
+      --paper-green-300: #81c784;
+      --paper-green-400: #66bb6a;
+      --paper-green-500: #4caf50;
+      --paper-green-600: #43a047;
+      --paper-green-700: #388e3c;
+      --paper-green-800: #2e7d32;
+      --paper-green-900: #1b5e20;
+      --paper-green-a100: #b9f6ca;
+      --paper-green-a200: #69f0ae;
+      --paper-green-a400: #00e676;
+      --paper-green-a700: #00c853;
+
+      --paper-light-green-50: #f1f8e9;
+      --paper-light-green-100: #dcedc8;
+      --paper-light-green-200: #c5e1a5;
+      --paper-light-green-300: #aed581;
+      --paper-light-green-400: #9ccc65;
+      --paper-light-green-500: #8bc34a;
+      --paper-light-green-600: #7cb342;
+      --paper-light-green-700: #689f38;
+      --paper-light-green-800: #558b2f;
+      --paper-light-green-900: #33691e;
+      --paper-light-green-a100: #ccff90;
+      --paper-light-green-a200: #b2ff59;
+      --paper-light-green-a400: #76ff03;
+      --paper-light-green-a700: #64dd17;
+
+      --paper-lime-50: #f9fbe7;
+      --paper-lime-100: #f0f4c3;
+      --paper-lime-200: #e6ee9c;
+      --paper-lime-300: #dce775;
+      --paper-lime-400: #d4e157;
+      --paper-lime-500: #cddc39;
+      --paper-lime-600: #c0ca33;
+      --paper-lime-700: #afb42b;
+      --paper-lime-800: #9e9d24;
+      --paper-lime-900: #827717;
+      --paper-lime-a100: #f4ff81;
+      --paper-lime-a200: #eeff41;
+      --paper-lime-a400: #c6ff00;
+      --paper-lime-a700: #aeea00;
+
+      --paper-yellow-50: #fffde7;
+      --paper-yellow-100: #fff9c4;
+      --paper-yellow-200: #fff59d;
+      --paper-yellow-300: #fff176;
+      --paper-yellow-400: #ffee58;
+      --paper-yellow-500: #ffeb3b;
+      --paper-yellow-600: #fdd835;
+      --paper-yellow-700: #fbc02d;
+      --paper-yellow-800: #f9a825;
+      --paper-yellow-900: #f57f17;
+      --paper-yellow-a100: #ffff8d;
+      --paper-yellow-a200: #ffff00;
+      --paper-yellow-a400: #ffea00;
+      --paper-yellow-a700: #ffd600;
+
+      --paper-amber-50: #fff8e1;
+      --paper-amber-100: #ffecb3;
+      --paper-amber-200: #ffe082;
+      --paper-amber-300: #ffd54f;
+      --paper-amber-400: #ffca28;
+      --paper-amber-500: #ffc107;
+      --paper-amber-600: #ffb300;
+      --paper-amber-700: #ffa000;
+      --paper-amber-800: #ff8f00;
+      --paper-amber-900: #ff6f00;
+      --paper-amber-a100: #ffe57f;
+      --paper-amber-a200: #ffd740;
+      --paper-amber-a400: #ffc400;
+      --paper-amber-a700: #ffab00;
+
+      --paper-orange-50: #fff3e0;
+      --paper-orange-100: #ffe0b2;
+      --paper-orange-200: #ffcc80;
+      --paper-orange-300: #ffb74d;
+      --paper-orange-400: #ffa726;
+      --paper-orange-500: #ff9800;
+      --paper-orange-600: #fb8c00;
+      --paper-orange-700: #f57c00;
+      --paper-orange-800: #ef6c00;
+      --paper-orange-900: #e65100;
+      --paper-orange-a100: #ffd180;
+      --paper-orange-a200: #ffab40;
+      --paper-orange-a400: #ff9100;
+      --paper-orange-a700: #ff6500;
+
+      --paper-deep-orange-50: #fbe9e7;
+      --paper-deep-orange-100: #ffccbc;
+      --paper-deep-orange-200: #ffab91;
+      --paper-deep-orange-300: #ff8a65;
+      --paper-deep-orange-400: #ff7043;
+      --paper-deep-orange-500: #ff5722;
+      --paper-deep-orange-600: #f4511e;
+      --paper-deep-orange-700: #e64a19;
+      --paper-deep-orange-800: #d84315;
+      --paper-deep-orange-900: #bf360c;
+      --paper-deep-orange-a100: #ff9e80;
+      --paper-deep-orange-a200: #ff6e40;
+      --paper-deep-orange-a400: #ff3d00;
+      --paper-deep-orange-a700: #dd2c00;
+
+      --paper-brown-50: #efebe9;
+      --paper-brown-100: #d7ccc8;
+      --paper-brown-200: #bcaaa4;
+      --paper-brown-300: #a1887f;
+      --paper-brown-400: #8d6e63;
+      --paper-brown-500: #795548;
+      --paper-brown-600: #6d4c41;
+      --paper-brown-700: #5d4037;
+      --paper-brown-800: #4e342e;
+      --paper-brown-900: #3e2723;
+
+      --paper-grey-50: #fafafa;
+      --paper-grey-100: #f5f5f5;
+      --paper-grey-200: #eeeeee;
+      --paper-grey-300: #e0e0e0;
+      --paper-grey-400: #bdbdbd;
+      --paper-grey-500: #9e9e9e;
+      --paper-grey-600: #757575;
+      --paper-grey-700: #616161;
+      --paper-grey-800: #424242;
+      --paper-grey-900: #212121;
+
+      --paper-blue-grey-50: #eceff1;
+      --paper-blue-grey-100: #cfd8dc;
+      --paper-blue-grey-200: #b0bec5;
+      --paper-blue-grey-300: #90a4ae;
+      --paper-blue-grey-400: #78909c;
+      --paper-blue-grey-500: #607d8b;
+      --paper-blue-grey-600: #546e7a;
+      --paper-blue-grey-700: #455a64;
+      --paper-blue-grey-800: #37474f;
+      --paper-blue-grey-900: #263238;
+
+      /* opacity for dark text on a light background */
+      --dark-divider-opacity: 0.12;
+      --dark-disabled-opacity: 0.38; /* or hint text or icon */
+      --dark-secondary-opacity: 0.54;
+      --dark-primary-opacity: 0.87;
+
+      /* opacity for light text on a dark background */
+      --light-divider-opacity: 0.12;
+      --light-disabled-opacity: 0.3; /* or hint text or icon */
+      --light-secondary-opacity: 0.7;
+      --light-primary-opacity: 1.0;
+
+    }
+
+  </style>
+</custom-style>`;
+
+document.head.appendChild($_documentContainer);
+
+/***/ }),
+/* 32 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
@@ -7885,7 +8222,7 @@ function _cssFromModuleImports(module) {
 }
 
 /***/ }),
-/* 32 */
+/* 33 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -7896,27 +8233,27 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.LegacyElementMixin = undefined;
 
-__webpack_require__(55);
+__webpack_require__(56);
 
 var _elementMixin = __webpack_require__(19);
 
-var _gestureEventListeners = __webpack_require__(37);
+var _gestureEventListeners = __webpack_require__(38);
 
 var _mixin = __webpack_require__(5);
 
-var _importHref = __webpack_require__(59);
-
-__webpack_require__(60);
+var _importHref = __webpack_require__(60);
 
 __webpack_require__(61);
 
+__webpack_require__(62);
+
 var _polymerDom = __webpack_require__(3);
 
-var _gestures = __webpack_require__(38);
+var _gestures = __webpack_require__(39);
 
 var _debounce = __webpack_require__(11);
 
-var _async = __webpack_require__(6);
+var _async = __webpack_require__(7);
 
 var _path = __webpack_require__(14);
 
@@ -8828,7 +9165,7 @@ const LegacyElementMixin = exports.LegacyElementMixin = (0, _mixin.dedupingMixin
 });
 
 /***/ }),
-/* 33 */
+/* 34 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -8868,7 +9205,7 @@ var _cssParse = __webpack_require__(23);
 
 var _commonRegex = __webpack_require__(24);
 
-var _unscopedStyleHandler = __webpack_require__(57);
+var _unscopedStyleHandler = __webpack_require__(58);
 
 /**
  * @param {string|StyleNode} rules
@@ -9146,7 +9483,7 @@ function gatherStyleText(element) {
 }
 
 /***/ }),
-/* 34 */
+/* 35 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -9173,7 +9510,7 @@ const templateMap = {};
 exports.default = templateMap;
 
 /***/ }),
-/* 35 */
+/* 36 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -9233,7 +9570,7 @@ function documentWait(callback) {
 }
 
 /***/ }),
-/* 36 */
+/* 37 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -9254,7 +9591,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.CustomStyleInterfaceInterface = exports.CustomStyleProvider = undefined;
 
-var _documentWait = __webpack_require__(35);
+var _documentWait = __webpack_require__(36);
 
 var _documentWait2 = _interopRequireDefault(_documentWait);
 
@@ -9405,7 +9742,7 @@ Object.defineProperties(CustomStyleInterface.prototype, {
 let CustomStyleInterfaceInterface = exports.CustomStyleInterfaceInterface = undefined;
 
 /***/ }),
-/* 37 */
+/* 38 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -9420,7 +9757,7 @@ __webpack_require__(2);
 
 var _mixin = __webpack_require__(5);
 
-var _gestures = __webpack_require__(38);
+var _gestures = __webpack_require__(39);
 
 var gestures$0 = _interopRequireWildcard(_gestures);
 
@@ -9458,7 +9795,7 @@ const GestureEventListeners = exports.GestureEventListeners = (0, _mixin.dedupin
 });
 
 /***/ }),
-/* 38 */
+/* 39 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -9485,7 +9822,7 @@ exports.resetMouseCanceller = resetMouseCanceller;
 
 __webpack_require__(2);
 
-var _async = __webpack_require__(6);
+var _async = __webpack_require__(7);
 
 var _debounce = __webpack_require__(11);
 
@@ -10290,7 +10627,7 @@ const add = exports.add = addListener;
 const remove = exports.remove = removeListener;
 
 /***/ }),
-/* 39 */
+/* 40 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -10542,7 +10879,7 @@ function equals(currentValue, previousValue) {
 exports.calculateSplices = calculateSplices;
 
 /***/ }),
-/* 40 */
+/* 41 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -10565,7 +10902,7 @@ var _mutableData = __webpack_require__(16);
 
 var _path = __webpack_require__(14);
 
-var _async = __webpack_require__(6);
+var _async = __webpack_require__(7);
 
 let TemplateInstanceBase = _templatize.TemplateInstanceBase; // eslint-disable-line
 
@@ -11246,7 +11583,7 @@ customElements.define(DomRepeat.is, DomRepeat);
 exports.DomRepeat = DomRepeat;
 
 /***/ }),
-/* 41 */
+/* 42 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -11574,7 +11911,7 @@ var _polymerFn = __webpack_require__(1);
 });
 
 /***/ }),
-/* 42 */
+/* 43 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -11776,7 +12113,7 @@ const IronResizableBehavior = exports.IronResizableBehavior = {
 };
 
 /***/ }),
-/* 43 */
+/* 44 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -11784,11 +12121,11 @@ const IronResizableBehavior = exports.IronResizableBehavior = {
 
 __webpack_require__(0);
 
-__webpack_require__(7);
+__webpack_require__(6);
 
-var _appScrollEffectsBehavior = __webpack_require__(80);
+var _appScrollEffectsBehavior = __webpack_require__(81);
 
-var _appLayoutBehavior = __webpack_require__(44);
+var _appLayoutBehavior = __webpack_require__(45);
 
 var _polymerFn = __webpack_require__(1);
 
@@ -12231,7 +12568,7 @@ var _polymerDom = __webpack_require__(3);
 });
 
 /***/ }),
-/* 44 */
+/* 45 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -12244,11 +12581,11 @@ exports.AppLayoutBehavior = undefined;
 
 __webpack_require__(0);
 
-var _ironResizableBehavior = __webpack_require__(42);
+var _ironResizableBehavior = __webpack_require__(43);
 
 var _polymerDom = __webpack_require__(3);
 
-var _async = __webpack_require__(6);
+var _async = __webpack_require__(7);
 
 var async = _interopRequireWildcard(_async);
 
@@ -12326,7 +12663,7 @@ const AppLayoutBehavior = exports.AppLayoutBehavior = [_ironResizableBehavior.Ir
 }];
 
 /***/ }),
-/* 45 */
+/* 46 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -12334,9 +12671,9 @@ const AppLayoutBehavior = exports.AppLayoutBehavior = [_ironResizableBehavior.Ir
 
 __webpack_require__(0);
 
-__webpack_require__(7);
+__webpack_require__(6);
 
-var _appLayoutBehavior = __webpack_require__(44);
+var _appLayoutBehavior = __webpack_require__(45);
 
 var _polymerFn = __webpack_require__(1);
 
@@ -12490,7 +12827,7 @@ var _polymerDom = __webpack_require__(3);
 });
 
 /***/ }),
-/* 46 */
+/* 47 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -12498,7 +12835,7 @@ var _polymerDom = __webpack_require__(3);
 
 __webpack_require__(0);
 
-__webpack_require__(7);
+__webpack_require__(6);
 
 var _polymerFn = __webpack_require__(1);
 
@@ -12557,7 +12894,7 @@ var _polymerFn = __webpack_require__(1);
 });
 
 /***/ }),
-/* 47 */
+/* 48 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -12567,7 +12904,7 @@ __webpack_require__(0);
 
 __webpack_require__(27);
 
-var _paperInkyFocusBehavior = __webpack_require__(83);
+var _paperInkyFocusBehavior = __webpack_require__(84);
 
 __webpack_require__(8);
 
@@ -12687,343 +13024,6 @@ document.head.appendChild($_documentContainer);
 });
 
 /***/ }),
-/* 48 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-__webpack_require__(0);
-
-const $_documentContainer = document.createElement('div');
-$_documentContainer.setAttribute('style', 'display: none;');
-
-$_documentContainer.innerHTML = `<custom-style>
-  <style is="custom-style">
-    html {
-
-      /* Material Design color palette for Google products */
-
-      --google-red-100: #f4c7c3;
-      --google-red-300: #e67c73;
-      --google-red-500: #db4437;
-      --google-red-700: #c53929;
-
-      --google-blue-100: #c6dafc;
-      --google-blue-300: #7baaf7;
-      --google-blue-500: #4285f4;
-      --google-blue-700: #3367d6;
-
-      --google-green-100: #b7e1cd;
-      --google-green-300: #57bb8a;
-      --google-green-500: #0f9d58;
-      --google-green-700: #0b8043;
-
-      --google-yellow-100: #fce8b2;
-      --google-yellow-300: #f7cb4d;
-      --google-yellow-500: #f4b400;
-      --google-yellow-700: #f09300;
-
-      --google-grey-100: #f5f5f5;
-      --google-grey-300: #e0e0e0;
-      --google-grey-500: #9e9e9e;
-      --google-grey-700: #616161;
-
-      /* Material Design color palette from online spec document */
-
-      --paper-red-50: #ffebee;
-      --paper-red-100: #ffcdd2;
-      --paper-red-200: #ef9a9a;
-      --paper-red-300: #e57373;
-      --paper-red-400: #ef5350;
-      --paper-red-500: #f44336;
-      --paper-red-600: #e53935;
-      --paper-red-700: #d32f2f;
-      --paper-red-800: #c62828;
-      --paper-red-900: #b71c1c;
-      --paper-red-a100: #ff8a80;
-      --paper-red-a200: #ff5252;
-      --paper-red-a400: #ff1744;
-      --paper-red-a700: #d50000;
-
-      --paper-pink-50: #fce4ec;
-      --paper-pink-100: #f8bbd0;
-      --paper-pink-200: #f48fb1;
-      --paper-pink-300: #f06292;
-      --paper-pink-400: #ec407a;
-      --paper-pink-500: #e91e63;
-      --paper-pink-600: #d81b60;
-      --paper-pink-700: #c2185b;
-      --paper-pink-800: #ad1457;
-      --paper-pink-900: #880e4f;
-      --paper-pink-a100: #ff80ab;
-      --paper-pink-a200: #ff4081;
-      --paper-pink-a400: #f50057;
-      --paper-pink-a700: #c51162;
-
-      --paper-purple-50: #f3e5f5;
-      --paper-purple-100: #e1bee7;
-      --paper-purple-200: #ce93d8;
-      --paper-purple-300: #ba68c8;
-      --paper-purple-400: #ab47bc;
-      --paper-purple-500: #9c27b0;
-      --paper-purple-600: #8e24aa;
-      --paper-purple-700: #7b1fa2;
-      --paper-purple-800: #6a1b9a;
-      --paper-purple-900: #4a148c;
-      --paper-purple-a100: #ea80fc;
-      --paper-purple-a200: #e040fb;
-      --paper-purple-a400: #d500f9;
-      --paper-purple-a700: #aa00ff;
-
-      --paper-deep-purple-50: #ede7f6;
-      --paper-deep-purple-100: #d1c4e9;
-      --paper-deep-purple-200: #b39ddb;
-      --paper-deep-purple-300: #9575cd;
-      --paper-deep-purple-400: #7e57c2;
-      --paper-deep-purple-500: #673ab7;
-      --paper-deep-purple-600: #5e35b1;
-      --paper-deep-purple-700: #512da8;
-      --paper-deep-purple-800: #4527a0;
-      --paper-deep-purple-900: #311b92;
-      --paper-deep-purple-a100: #b388ff;
-      --paper-deep-purple-a200: #7c4dff;
-      --paper-deep-purple-a400: #651fff;
-      --paper-deep-purple-a700: #6200ea;
-
-      --paper-indigo-50: #e8eaf6;
-      --paper-indigo-100: #c5cae9;
-      --paper-indigo-200: #9fa8da;
-      --paper-indigo-300: #7986cb;
-      --paper-indigo-400: #5c6bc0;
-      --paper-indigo-500: #3f51b5;
-      --paper-indigo-600: #3949ab;
-      --paper-indigo-700: #303f9f;
-      --paper-indigo-800: #283593;
-      --paper-indigo-900: #1a237e;
-      --paper-indigo-a100: #8c9eff;
-      --paper-indigo-a200: #536dfe;
-      --paper-indigo-a400: #3d5afe;
-      --paper-indigo-a700: #304ffe;
-
-      --paper-blue-50: #e3f2fd;
-      --paper-blue-100: #bbdefb;
-      --paper-blue-200: #90caf9;
-      --paper-blue-300: #64b5f6;
-      --paper-blue-400: #42a5f5;
-      --paper-blue-500: #2196f3;
-      --paper-blue-600: #1e88e5;
-      --paper-blue-700: #1976d2;
-      --paper-blue-800: #1565c0;
-      --paper-blue-900: #0d47a1;
-      --paper-blue-a100: #82b1ff;
-      --paper-blue-a200: #448aff;
-      --paper-blue-a400: #2979ff;
-      --paper-blue-a700: #2962ff;
-
-      --paper-light-blue-50: #e1f5fe;
-      --paper-light-blue-100: #b3e5fc;
-      --paper-light-blue-200: #81d4fa;
-      --paper-light-blue-300: #4fc3f7;
-      --paper-light-blue-400: #29b6f6;
-      --paper-light-blue-500: #03a9f4;
-      --paper-light-blue-600: #039be5;
-      --paper-light-blue-700: #0288d1;
-      --paper-light-blue-800: #0277bd;
-      --paper-light-blue-900: #01579b;
-      --paper-light-blue-a100: #80d8ff;
-      --paper-light-blue-a200: #40c4ff;
-      --paper-light-blue-a400: #00b0ff;
-      --paper-light-blue-a700: #0091ea;
-
-      --paper-cyan-50: #e0f7fa;
-      --paper-cyan-100: #b2ebf2;
-      --paper-cyan-200: #80deea;
-      --paper-cyan-300: #4dd0e1;
-      --paper-cyan-400: #26c6da;
-      --paper-cyan-500: #00bcd4;
-      --paper-cyan-600: #00acc1;
-      --paper-cyan-700: #0097a7;
-      --paper-cyan-800: #00838f;
-      --paper-cyan-900: #006064;
-      --paper-cyan-a100: #84ffff;
-      --paper-cyan-a200: #18ffff;
-      --paper-cyan-a400: #00e5ff;
-      --paper-cyan-a700: #00b8d4;
-
-      --paper-teal-50: #e0f2f1;
-      --paper-teal-100: #b2dfdb;
-      --paper-teal-200: #80cbc4;
-      --paper-teal-300: #4db6ac;
-      --paper-teal-400: #26a69a;
-      --paper-teal-500: #009688;
-      --paper-teal-600: #00897b;
-      --paper-teal-700: #00796b;
-      --paper-teal-800: #00695c;
-      --paper-teal-900: #004d40;
-      --paper-teal-a100: #a7ffeb;
-      --paper-teal-a200: #64ffda;
-      --paper-teal-a400: #1de9b6;
-      --paper-teal-a700: #00bfa5;
-
-      --paper-green-50: #e8f5e9;
-      --paper-green-100: #c8e6c9;
-      --paper-green-200: #a5d6a7;
-      --paper-green-300: #81c784;
-      --paper-green-400: #66bb6a;
-      --paper-green-500: #4caf50;
-      --paper-green-600: #43a047;
-      --paper-green-700: #388e3c;
-      --paper-green-800: #2e7d32;
-      --paper-green-900: #1b5e20;
-      --paper-green-a100: #b9f6ca;
-      --paper-green-a200: #69f0ae;
-      --paper-green-a400: #00e676;
-      --paper-green-a700: #00c853;
-
-      --paper-light-green-50: #f1f8e9;
-      --paper-light-green-100: #dcedc8;
-      --paper-light-green-200: #c5e1a5;
-      --paper-light-green-300: #aed581;
-      --paper-light-green-400: #9ccc65;
-      --paper-light-green-500: #8bc34a;
-      --paper-light-green-600: #7cb342;
-      --paper-light-green-700: #689f38;
-      --paper-light-green-800: #558b2f;
-      --paper-light-green-900: #33691e;
-      --paper-light-green-a100: #ccff90;
-      --paper-light-green-a200: #b2ff59;
-      --paper-light-green-a400: #76ff03;
-      --paper-light-green-a700: #64dd17;
-
-      --paper-lime-50: #f9fbe7;
-      --paper-lime-100: #f0f4c3;
-      --paper-lime-200: #e6ee9c;
-      --paper-lime-300: #dce775;
-      --paper-lime-400: #d4e157;
-      --paper-lime-500: #cddc39;
-      --paper-lime-600: #c0ca33;
-      --paper-lime-700: #afb42b;
-      --paper-lime-800: #9e9d24;
-      --paper-lime-900: #827717;
-      --paper-lime-a100: #f4ff81;
-      --paper-lime-a200: #eeff41;
-      --paper-lime-a400: #c6ff00;
-      --paper-lime-a700: #aeea00;
-
-      --paper-yellow-50: #fffde7;
-      --paper-yellow-100: #fff9c4;
-      --paper-yellow-200: #fff59d;
-      --paper-yellow-300: #fff176;
-      --paper-yellow-400: #ffee58;
-      --paper-yellow-500: #ffeb3b;
-      --paper-yellow-600: #fdd835;
-      --paper-yellow-700: #fbc02d;
-      --paper-yellow-800: #f9a825;
-      --paper-yellow-900: #f57f17;
-      --paper-yellow-a100: #ffff8d;
-      --paper-yellow-a200: #ffff00;
-      --paper-yellow-a400: #ffea00;
-      --paper-yellow-a700: #ffd600;
-
-      --paper-amber-50: #fff8e1;
-      --paper-amber-100: #ffecb3;
-      --paper-amber-200: #ffe082;
-      --paper-amber-300: #ffd54f;
-      --paper-amber-400: #ffca28;
-      --paper-amber-500: #ffc107;
-      --paper-amber-600: #ffb300;
-      --paper-amber-700: #ffa000;
-      --paper-amber-800: #ff8f00;
-      --paper-amber-900: #ff6f00;
-      --paper-amber-a100: #ffe57f;
-      --paper-amber-a200: #ffd740;
-      --paper-amber-a400: #ffc400;
-      --paper-amber-a700: #ffab00;
-
-      --paper-orange-50: #fff3e0;
-      --paper-orange-100: #ffe0b2;
-      --paper-orange-200: #ffcc80;
-      --paper-orange-300: #ffb74d;
-      --paper-orange-400: #ffa726;
-      --paper-orange-500: #ff9800;
-      --paper-orange-600: #fb8c00;
-      --paper-orange-700: #f57c00;
-      --paper-orange-800: #ef6c00;
-      --paper-orange-900: #e65100;
-      --paper-orange-a100: #ffd180;
-      --paper-orange-a200: #ffab40;
-      --paper-orange-a400: #ff9100;
-      --paper-orange-a700: #ff6500;
-
-      --paper-deep-orange-50: #fbe9e7;
-      --paper-deep-orange-100: #ffccbc;
-      --paper-deep-orange-200: #ffab91;
-      --paper-deep-orange-300: #ff8a65;
-      --paper-deep-orange-400: #ff7043;
-      --paper-deep-orange-500: #ff5722;
-      --paper-deep-orange-600: #f4511e;
-      --paper-deep-orange-700: #e64a19;
-      --paper-deep-orange-800: #d84315;
-      --paper-deep-orange-900: #bf360c;
-      --paper-deep-orange-a100: #ff9e80;
-      --paper-deep-orange-a200: #ff6e40;
-      --paper-deep-orange-a400: #ff3d00;
-      --paper-deep-orange-a700: #dd2c00;
-
-      --paper-brown-50: #efebe9;
-      --paper-brown-100: #d7ccc8;
-      --paper-brown-200: #bcaaa4;
-      --paper-brown-300: #a1887f;
-      --paper-brown-400: #8d6e63;
-      --paper-brown-500: #795548;
-      --paper-brown-600: #6d4c41;
-      --paper-brown-700: #5d4037;
-      --paper-brown-800: #4e342e;
-      --paper-brown-900: #3e2723;
-
-      --paper-grey-50: #fafafa;
-      --paper-grey-100: #f5f5f5;
-      --paper-grey-200: #eeeeee;
-      --paper-grey-300: #e0e0e0;
-      --paper-grey-400: #bdbdbd;
-      --paper-grey-500: #9e9e9e;
-      --paper-grey-600: #757575;
-      --paper-grey-700: #616161;
-      --paper-grey-800: #424242;
-      --paper-grey-900: #212121;
-
-      --paper-blue-grey-50: #eceff1;
-      --paper-blue-grey-100: #cfd8dc;
-      --paper-blue-grey-200: #b0bec5;
-      --paper-blue-grey-300: #90a4ae;
-      --paper-blue-grey-400: #78909c;
-      --paper-blue-grey-500: #607d8b;
-      --paper-blue-grey-600: #546e7a;
-      --paper-blue-grey-700: #455a64;
-      --paper-blue-grey-800: #37474f;
-      --paper-blue-grey-900: #263238;
-
-      /* opacity for dark text on a light background */
-      --dark-divider-opacity: 0.12;
-      --dark-disabled-opacity: 0.38; /* or hint text or icon */
-      --dark-secondary-opacity: 0.54;
-      --dark-primary-opacity: 0.87;
-
-      /* opacity for light text on a dark background */
-      --light-divider-opacity: 0.12;
-      --light-disabled-opacity: 0.3; /* or hint text or icon */
-      --light-secondary-opacity: 0.7;
-      --light-primary-opacity: 1.0;
-
-    }
-
-  </style>
-</custom-style>`;
-
-document.head.appendChild($_documentContainer);
-
-/***/ }),
 /* 49 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -13068,7 +13068,276 @@ const PaperInputAddonBehavior = exports.PaperInputAddonBehavior = {
 "use strict";
 
 
-__webpack_require__(51);
+__webpack_require__(0);
+
+__webpack_require__(6);
+
+var _ironRangeBehavior = __webpack_require__(97);
+
+__webpack_require__(31);
+
+var _polymerFn = __webpack_require__(1);
+
+(0, _polymerFn.Polymer)({
+  _template: `
+    <style>
+      :host {
+        display: block;
+        width: 200px;
+        position: relative;
+        overflow: hidden;
+      }
+
+      :host([hidden]), [hidden] {
+        display: none !important;
+      }
+
+      #progressContainer {
+        @apply --paper-progress-container;
+        position: relative;
+      }
+
+      #progressContainer,
+      /* the stripe for the indeterminate animation*/
+      .indeterminate::after {
+        height: var(--paper-progress-height, 4px);
+      }
+
+      #primaryProgress,
+      #secondaryProgress,
+      .indeterminate::after {
+        @apply --layout-fit;
+      }
+
+      #progressContainer,
+      .indeterminate::after {
+        background: var(--paper-progress-container-color, var(--google-grey-300));
+      }
+
+      :host(.transiting) #primaryProgress,
+      :host(.transiting) #secondaryProgress {
+        -webkit-transition-property: -webkit-transform;
+        transition-property: transform;
+
+        /* Duration */
+        -webkit-transition-duration: var(--paper-progress-transition-duration, 0.08s);
+        transition-duration: var(--paper-progress-transition-duration, 0.08s);
+
+        /* Timing function */
+        -webkit-transition-timing-function: var(--paper-progress-transition-timing-function, ease);
+        transition-timing-function: var(--paper-progress-transition-timing-function, ease);
+
+        /* Delay */
+        -webkit-transition-delay: var(--paper-progress-transition-delay, 0s);
+        transition-delay: var(--paper-progress-transition-delay, 0s);
+      }
+
+      #primaryProgress,
+      #secondaryProgress {
+        @apply --layout-fit;
+        -webkit-transform-origin: left center;
+        transform-origin: left center;
+        -webkit-transform: scaleX(0);
+        transform: scaleX(0);
+        will-change: transform;
+      }
+
+      #primaryProgress {
+        background: var(--paper-progress-active-color, var(--google-green-500));
+      }
+
+      #secondaryProgress {
+        background: var(--paper-progress-secondary-color, var(--google-green-100));
+      }
+
+      :host([disabled]) #primaryProgress {
+        background: var(--paper-progress-disabled-active-color, var(--google-grey-500));
+      }
+
+      :host([disabled]) #secondaryProgress {
+        background: var(--paper-progress-disabled-secondary-color, var(--google-grey-300));
+      }
+
+      :host(:not([disabled])) #primaryProgress.indeterminate {
+        -webkit-transform-origin: right center;
+        transform-origin: right center;
+        -webkit-animation: indeterminate-bar var(--paper-progress-indeterminate-cycle-duration, 2s) linear infinite;
+        animation: indeterminate-bar var(--paper-progress-indeterminate-cycle-duration, 2s) linear infinite;
+      }
+
+      :host(:not([disabled])) #primaryProgress.indeterminate::after {
+        content: "";
+        -webkit-transform-origin: center center;
+        transform-origin: center center;
+
+        -webkit-animation: indeterminate-splitter var(--paper-progress-indeterminate-cycle-duration, 2s) linear infinite;
+        animation: indeterminate-splitter var(--paper-progress-indeterminate-cycle-duration, 2s) linear infinite;
+      }
+
+      @-webkit-keyframes indeterminate-bar {
+        0% {
+          -webkit-transform: scaleX(1) translateX(-100%);
+        }
+        50% {
+          -webkit-transform: scaleX(1) translateX(0%);
+        }
+        75% {
+          -webkit-transform: scaleX(1) translateX(0%);
+          -webkit-animation-timing-function: cubic-bezier(.28,.62,.37,.91);
+        }
+        100% {
+          -webkit-transform: scaleX(0) translateX(0%);
+        }
+      }
+
+      @-webkit-keyframes indeterminate-splitter {
+        0% {
+          -webkit-transform: scaleX(.75) translateX(-125%);
+        }
+        30% {
+          -webkit-transform: scaleX(.75) translateX(-125%);
+          -webkit-animation-timing-function: cubic-bezier(.42,0,.6,.8);
+        }
+        90% {
+          -webkit-transform: scaleX(.75) translateX(125%);
+        }
+        100% {
+          -webkit-transform: scaleX(.75) translateX(125%);
+        }
+      }
+
+      @keyframes indeterminate-bar {
+        0% {
+          transform: scaleX(1) translateX(-100%);
+        }
+        50% {
+          transform: scaleX(1) translateX(0%);
+        }
+        75% {
+          transform: scaleX(1) translateX(0%);
+          animation-timing-function: cubic-bezier(.28,.62,.37,.91);
+        }
+        100% {
+          transform: scaleX(0) translateX(0%);
+        }
+      }
+
+      @keyframes indeterminate-splitter {
+        0% {
+          transform: scaleX(.75) translateX(-125%);
+        }
+        30% {
+          transform: scaleX(.75) translateX(-125%);
+          animation-timing-function: cubic-bezier(.42,0,.6,.8);
+        }
+        90% {
+          transform: scaleX(.75) translateX(125%);
+        }
+        100% {
+          transform: scaleX(.75) translateX(125%);
+        }
+      }
+    </style>
+
+    <div id="progressContainer">
+      <div id="secondaryProgress" hidden\$="[[_hideSecondaryProgress(secondaryRatio)]]"></div>
+      <div id="primaryProgress"></div>
+    </div>
+`,
+
+  is: 'paper-progress',
+
+  behaviors: [_ironRangeBehavior.IronRangeBehavior],
+
+  properties: {
+    /**
+     * The number that represents the current secondary progress.
+     */
+    secondaryProgress: {
+      type: Number,
+      value: 0
+    },
+
+    /**
+     * The secondary ratio
+     */
+    secondaryRatio: {
+      type: Number,
+      value: 0,
+      readOnly: true
+    },
+
+    /**
+     * Use an indeterminate progress indicator.
+     */
+    indeterminate: {
+      type: Boolean,
+      value: false,
+      observer: '_toggleIndeterminate'
+    },
+
+    /**
+     * True if the progress is disabled.
+     */
+    disabled: {
+      type: Boolean,
+      value: false,
+      reflectToAttribute: true,
+      observer: '_disabledChanged'
+    }
+  },
+
+  observers: ['_progressChanged(secondaryProgress, value, min, max, indeterminate)'],
+
+  hostAttributes: {
+    role: 'progressbar'
+  },
+
+  _toggleIndeterminate: function (indeterminate) {
+    // If we use attribute/class binding, the animation sometimes doesn't translate properly
+    // on Safari 7.1. So instead, we toggle the class here in the update method.
+    this.toggleClass('indeterminate', indeterminate, this.$.primaryProgress);
+  },
+
+  _transformProgress: function (progress, ratio) {
+    var transform = 'scaleX(' + ratio / 100 + ')';
+    progress.style.transform = progress.style.webkitTransform = transform;
+  },
+
+  _mainRatioChanged: function (ratio) {
+    this._transformProgress(this.$.primaryProgress, ratio);
+  },
+
+  _progressChanged: function (secondaryProgress, value, min, max, indeterminate) {
+    secondaryProgress = this._clampValue(secondaryProgress);
+    value = this._clampValue(value);
+
+    var secondaryRatio = this._calcRatio(secondaryProgress) * 100;
+    var mainRatio = this._calcRatio(value) * 100;
+
+    this._setSecondaryRatio(secondaryRatio);
+    this._transformProgress(this.$.secondaryProgress, secondaryRatio);
+    this._transformProgress(this.$.primaryProgress, mainRatio);
+
+    this.secondaryProgress = secondaryProgress;
+
+    if (indeterminate) {
+      this.removeAttribute('aria-valuenow');
+    } else {
+      this.setAttribute('aria-valuenow', value);
+    }
+    this.setAttribute('aria-valuemin', min);
+    this.setAttribute('aria-valuemax', max);
+  },
+
+  _disabledChanged: function (disabled) {
+    this.setAttribute('aria-disabled', disabled ? 'true' : 'false');
+  },
+
+  _hideSecondaryProgress: function (secondaryRatio) {
+    return secondaryRatio === 0;
+  }
+});
 
 /***/ }),
 /* 51 */
@@ -13077,21 +13346,30 @@ __webpack_require__(51);
 "use strict";
 
 
+__webpack_require__(52);
+
+/***/ }),
+/* 52 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
 var _polymerElement = __webpack_require__(4);
 
-__webpack_require__(54);
+__webpack_require__(55);
 
-__webpack_require__(41);
+__webpack_require__(42);
 
-__webpack_require__(74);
+__webpack_require__(75);
 
-__webpack_require__(76);
-
-__webpack_require__(78);
+__webpack_require__(77);
 
 __webpack_require__(79);
 
-__webpack_require__(105);
+__webpack_require__(80);
+
+__webpack_require__(107);
 
 // Libs
 class CoinApp extends _polymerElement.Element {
@@ -13124,6 +13402,7 @@ class CoinApp extends _polymerElement.Element {
                 currencies="{{currencies}}"
                 currency-id="[[currencyId]]"
                 currency="{{currency}}"
+                favorites="{{favorites}}"
                 last-update="{{lastUpdate}}"
                 is-load="{{isLoad}}"
                 is-loading="{{isLoading}}"></app-store>
@@ -13137,6 +13416,7 @@ class CoinApp extends _polymerElement.Element {
                 <page-currencies
                     name="currencies"
                     currencies="[[currencies]]"
+                    favorites="[[favorites]]"
                     last-update="[[lastUpdate]]"
                     is-load="{{isLoad}}"
                     is-loading="[[isLoading]]"></page-currencies>
@@ -13146,7 +13426,9 @@ class CoinApp extends _polymerElement.Element {
                     currency-id="{{currencyId}}"
                     currency="[[currency]]"
                     route="[[subroute]]"
-                    is-loading="[[isLoading]]"></page-currency>
+                    is-favorite="[[isFavorite]]"
+                    is-loading="[[isLoading]]"
+                    on-toggle-favorite="[[handleFavorite]]"></page-currency>
 
             </iron-pages>
         `;
@@ -13157,9 +13439,14 @@ class CoinApp extends _polymerElement.Element {
             lastUpdate: Number,
             isLoad: Boolean,
             isLoading: Boolean,
+            isFavorite: {
+                type: Boolean,
+                computed: '_isFavorite(favorites, currencyId)'
+            },
             currencies: Array,
             currencyId: String,
             currency: Object,
+            favorites: Array,
             route: Object,
             subroute: Object,
             routeData: Object
@@ -13168,6 +13455,8 @@ class CoinApp extends _polymerElement.Element {
 
     constructor() {
         super();
+
+        this.handleFavorite = this.handleFavorite.bind(this);
     }
 
     connectedCallback() {
@@ -13177,6 +13466,23 @@ class CoinApp extends _polymerElement.Element {
             location.href = '#/currencies';
         }
     }
+
+    _isFavorite(favorites, id) {
+        return favorites.includes(id);
+    }
+
+    handleFavorite(id) {
+        const favorites = [...this.favorites];
+        const index = favorites.findIndex(favorite => favorite === id);
+
+        if (index === -1) {
+            favorites.push(id);
+        } else {
+            favorites.splice(index, 1);
+        }
+
+        this.favorites = favorites;
+    }
 }
 // Components
 
@@ -13184,7 +13490,7 @@ class CoinApp extends _polymerElement.Element {
 customElements.define(CoinApp.is, CoinApp);
 
 /***/ }),
-/* 52 */
+/* 53 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -13203,7 +13509,7 @@ var _caseMap = __webpack_require__(10);
 
 var caseMap$0 = _interopRequireWildcard(_caseMap);
 
-var _async = __webpack_require__(6);
+var _async = __webpack_require__(7);
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
@@ -13785,7 +14091,7 @@ const PropertyAccessors = exports.PropertyAccessors = (0, _mixin.dedupingMixin)(
 });
 
 /***/ }),
-/* 53 */
+/* 54 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -14247,7 +14553,7 @@ const TemplateStamp = exports.TemplateStamp = (0, _mixin.dedupingMixin)(superCla
 });
 
 /***/ }),
-/* 54 */
+/* 55 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -14255,11 +14561,11 @@ const TemplateStamp = exports.TemplateStamp = (0, _mixin.dedupingMixin)(superCla
 
 __webpack_require__(0);
 
-__webpack_require__(71);
-
 __webpack_require__(72);
 
-var _appRouteConverterBehavior = __webpack_require__(73);
+__webpack_require__(73);
+
+var _appRouteConverterBehavior = __webpack_require__(74);
 
 var _polymerFn = __webpack_require__(1);
 
@@ -14388,7 +14694,7 @@ var _polymerFn = __webpack_require__(1);
 });
 
 /***/ }),
-/* 55 */
+/* 56 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -14404,27 +14710,27 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
 
 
-var _applyShim = __webpack_require__(56);
+var _applyShim = __webpack_require__(57);
 
 var _applyShim2 = _interopRequireDefault(_applyShim);
 
-var _templateMap = __webpack_require__(34);
+var _templateMap = __webpack_require__(35);
 
 var _templateMap2 = _interopRequireDefault(_templateMap);
 
-var _styleUtil = __webpack_require__(33);
+var _styleUtil = __webpack_require__(34);
 
-var _applyShimUtils = __webpack_require__(58);
+var _applyShimUtils = __webpack_require__(59);
 
 var ApplyShimUtils = _interopRequireWildcard(_applyShimUtils);
 
-var _documentWait = __webpack_require__(35);
+var _documentWait = __webpack_require__(36);
 
 var _documentWait2 = _interopRequireDefault(_documentWait);
 
 var _commonUtils = __webpack_require__(25);
 
-var _customStyleInterface = __webpack_require__(36);
+var _customStyleInterface = __webpack_require__(37);
 
 var _styleSettings = __webpack_require__(22);
 
@@ -14609,7 +14915,7 @@ if (!window.ShadyCSS || !window.ShadyCSS.ScopingShim) {
 window.ShadyCSS.ApplyShim = applyShim;
 
 /***/ }),
-/* 56 */
+/* 57 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -14690,7 +14996,7 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _styleUtil = __webpack_require__(33);
+var _styleUtil = __webpack_require__(34);
 
 var _commonRegex = __webpack_require__(24);
 
@@ -15100,7 +15406,7 @@ Object.defineProperty(ApplyShim.prototype, 'invalidCallback', {
 exports.default = ApplyShim;
 
 /***/ }),
-/* 57 */
+/* 58 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -15152,7 +15458,7 @@ function isUnscopedStyle(style) {
 }
 
 /***/ }),
-/* 58 */
+/* 59 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -15181,7 +15487,7 @@ exports.startValidating = startValidating;
 exports.startValidatingTemplate = startValidatingTemplate;
 exports.elementsAreInvalid = elementsAreInvalid;
 
-var _templateMap = __webpack_require__(34);
+var _templateMap = __webpack_require__(35);
 
 var _templateMap2 = _interopRequireDefault(_templateMap);
 
@@ -15328,7 +15634,7 @@ function elementsAreInvalid() {
 }
 
 /***/ }),
-/* 59 */
+/* 60 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -15411,7 +15717,7 @@ const importHref = exports.importHref = function (href, onload, onerror, optAsyn
 };
 
 /***/ }),
-/* 60 */
+/* 61 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -15493,7 +15799,7 @@ function afterNextRender(context, callback, args) {
 exports.flush = flush;
 
 /***/ }),
-/* 61 */
+/* 62 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -15510,7 +15816,7 @@ if (document.readyState === 'interactive' || document.readyState === 'complete')
 }
 
 /***/ }),
-/* 62 */
+/* 63 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -15523,9 +15829,9 @@ exports.FlattenedNodesObserver = undefined;
 
 __webpack_require__(2);
 
-var _arraySplice = __webpack_require__(39);
+var _arraySplice = __webpack_require__(40);
 
-var _async = __webpack_require__(6);
+var _async = __webpack_require__(7);
 
 /**
  * Returns true if `node` is a slot element
@@ -15760,7 +16066,7 @@ class FlattenedNodesObserver {
 exports.FlattenedNodesObserver = FlattenedNodesObserver;
 
 /***/ }),
-/* 63 */
+/* 64 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -15771,7 +16077,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.mixinBehaviors = exports.Class = undefined;
 
-var _legacyElementMixin = __webpack_require__(32);
+var _legacyElementMixin = __webpack_require__(33);
 
 var _domModule = __webpack_require__(20);
 
@@ -16031,7 +16337,7 @@ const Class = exports.Class = function (info) {
 exports.mixinBehaviors = mixinBehaviors;
 
 /***/ }),
-/* 64 */
+/* 65 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -16180,7 +16486,7 @@ let Templatizer = {
 exports.Templatizer = Templatizer;
 
 /***/ }),
-/* 65 */
+/* 66 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -16197,7 +16503,7 @@ var _propertyEffects = __webpack_require__(21);
 
 var _mutableData = __webpack_require__(16);
 
-var _gestureEventListeners = __webpack_require__(37);
+var _gestureEventListeners = __webpack_require__(38);
 
 /**
  * @constructor
@@ -16310,7 +16616,7 @@ customElements.define('dom-bind', DomBind);
 exports.DomBind = DomBind;
 
 /***/ }),
-/* 66 */
+/* 67 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -16329,7 +16635,7 @@ var _debounce = __webpack_require__(11);
 
 var _flush = __webpack_require__(15);
 
-var _async = __webpack_require__(6);
+var _async = __webpack_require__(7);
 
 var _path = __webpack_require__(14);
 
@@ -16583,7 +16889,7 @@ customElements.define(DomIf.is, DomIf);
 exports.DomIf = DomIf;
 
 /***/ }),
-/* 67 */
+/* 68 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -16598,7 +16904,7 @@ var _polymerElement = __webpack_require__(4);
 
 var _mixin = __webpack_require__(5);
 
-var _arraySplice = __webpack_require__(39);
+var _arraySplice = __webpack_require__(40);
 
 var _elementMixin = __webpack_require__(19);
 
@@ -17009,7 +17315,7 @@ customElements.define(ArraySelector.is, ArraySelector);
 exports.ArraySelector = ArraySelector;
 
 /***/ }),
-/* 68 */
+/* 69 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -17020,9 +17326,9 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.CustomStyle = undefined;
 
-__webpack_require__(69);
+__webpack_require__(70);
 
-var _styleGather = __webpack_require__(31);
+var _styleGather = __webpack_require__(32);
 
 const attr = 'include';
 
@@ -17110,7 +17416,7 @@ window.customElements.define('custom-style', CustomStyle);
 exports.CustomStyle = CustomStyle;
 
 /***/ }),
-/* 69 */
+/* 70 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -17126,7 +17432,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
 
 
-var _customStyleInterface = __webpack_require__(36);
+var _customStyleInterface = __webpack_require__(37);
 
 var _customStyleInterface2 = _interopRequireDefault(_customStyleInterface);
 
@@ -17188,7 +17494,7 @@ if (!window.ShadyCSS) {
 window.ShadyCSS.CustomStyleInterface = customStyleInterface;
 
 /***/ }),
-/* 70 */
+/* 71 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -17267,7 +17573,7 @@ const OptionalMutableDataBehavior = exports.OptionalMutableDataBehavior = {
 };
 
 /***/ }),
-/* 71 */
+/* 72 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -17618,7 +17924,7 @@ function resolveURL(path, base) {
 });
 
 /***/ }),
-/* 72 */
+/* 73 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -17705,7 +18011,7 @@ var _polymerFn = __webpack_require__(1);
 });
 
 /***/ }),
-/* 73 */
+/* 74 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -17799,7 +18105,7 @@ const AppRouteConverterBehavior = exports.AppRouteConverterBehavior = {
 };
 
 /***/ }),
-/* 74 */
+/* 75 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -17807,7 +18113,7 @@ const AppRouteConverterBehavior = exports.AppRouteConverterBehavior = {
 
 __webpack_require__(27);
 
-__webpack_require__(75);
+__webpack_require__(76);
 
 const $_documentContainer = document.createElement('div');
 $_documentContainer.setAttribute('style', 'display: none;');
@@ -18129,7 +18435,7 @@ $_documentContainer.innerHTML = `<iron-iconset-svg name="icons" size="24">
 document.head.appendChild($_documentContainer);
 
 /***/ }),
-/* 75 */
+/* 76 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -18373,7 +18679,7 @@ var _polymerDom = __webpack_require__(3);
 });
 
 /***/ }),
-/* 76 */
+/* 77 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -18381,7 +18687,7 @@ var _polymerDom = __webpack_require__(3);
 
 __webpack_require__(0);
 
-var _ironResizableBehavior = __webpack_require__(42);
+var _ironResizableBehavior = __webpack_require__(43);
 
 var _ironSelectable = __webpack_require__(29);
 
@@ -18427,7 +18733,7 @@ var _polymerFn = __webpack_require__(1);
 });
 
 /***/ }),
-/* 77 */
+/* 78 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -18540,7 +18846,7 @@ IronSelection.prototype = {
 };
 
 /***/ }),
-/* 78 */
+/* 79 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -18584,6 +18890,11 @@ class AppStore extends _polymerElement.Element {
                 type: Object,
                 computed: '_computeCurrency(currencies, currencyId)',
                 notify: true
+            },
+            favorites: {
+                type: Array,
+                notify: true,
+                observer: '_favoriteChanged'
             }
         };
     }
@@ -18594,8 +18905,10 @@ class AppStore extends _polymerElement.Element {
 
     connectedCallback() {
         super.connectedCallback();
+        const favorites = localStorage.getItem('favorites');
 
         this.load();
+        this.favorites = favorites ? favorites.split(',') : [];
     }
 
     load() {
@@ -18623,12 +18936,16 @@ class AppStore extends _polymerElement.Element {
             this.load();
         }
     }
+
+    _favoriteChanged(newValue, oldValue) {
+        localStorage.setItem('favorites', newValue);
+    }
 }
 
 customElements.define(AppStore.is, AppStore);
 
 /***/ }),
-/* 79 */
+/* 80 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -18636,21 +18953,23 @@ customElements.define(AppStore.is, AppStore);
 
 var _polymerElement = __webpack_require__(4);
 
-__webpack_require__(43);
-
-__webpack_require__(45);
+__webpack_require__(44);
 
 __webpack_require__(46);
 
 __webpack_require__(47);
 
-__webpack_require__(86);
+__webpack_require__(48);
 
-__webpack_require__(108);
+__webpack_require__(87);
 
-__webpack_require__(96);
+__webpack_require__(50);
 
-// Libs
+__webpack_require__(67);
+
+__webpack_require__(98);
+
+// Components
 class PageCurrencies extends _polymerElement.Element {
     static get is() {
         return 'page-currencies';
@@ -18687,6 +19006,15 @@ class PageCurrencies extends _polymerElement.Element {
                 paper-progress[hidden] {
                     display: none;
                 }
+
+                .sub-header {
+                    display: block;
+                    height: 48px;
+                    padding: 0 16px;
+                    font-weight: 500;
+                    line-height: 48px;
+                    color: var(--secondary-clor);
+                }
             </style>
 
             <app-header-layout>
@@ -18710,7 +19038,24 @@ class PageCurrencies extends _polymerElement.Element {
                         bottom-item></paper-progress>
                 </app-header>
 
-                <currencies-list currencies="[[filteredCurrencies]]"></currencies-list>
+                <dom-if if="[[!searchValue]]">
+                    <template>
+                        <dom-if if="[[hasFavoritesCurrencies]]">
+                            <template>
+                                <div class="sub-header">Favorites</div>
+                                <currencies-list currencies="[[favoritesCurrencies]]"></currencies-list>
+                                <div class="sub-header">Others</div>
+                            </template>
+                        </dom-if>
+                        <currencies-list currencies="[[noFavoritesCurrencies]]"></currencies-list>
+                    </template>
+                </dom-if>
+
+                <dom-if if="[[searchValue]]">
+                    <template>
+                        <currencies-list currencies="[[searchResults]]"></currencies-list>
+                    </template>
+                </dom-if>
             </app-header-layout>
         `;
     }
@@ -18725,9 +19070,26 @@ class PageCurrencies extends _polymerElement.Element {
                 value: [],
                 notify: true
             },
-            filteredCurrencies: {
+            noFavoritesCurrencies: {
                 type: Array,
-                computed: '_filteredCurrencies(currencies, searchValue)'
+                computed: '_noFavoritesCurrencies(currencies, favorites)'
+            },
+            favorites: {
+                type: Array,
+                value: [],
+                notify: true
+            },
+            favoritesCurrencies: {
+                type: Array,
+                computed: '_favoritesCurrencies(currencies, favorites)'
+            },
+            hasFavoritesCurrencies: {
+                type: Boolean,
+                computed: '_hasFavoritesCurrencies(favoritesCurrencies)'
+            },
+            searchResults: {
+                type: Array,
+                computed: '_searchResults(currencies, searchValue)'
             },
             searchValue: {
                 type: String,
@@ -18744,7 +19106,19 @@ class PageCurrencies extends _polymerElement.Element {
         super();
     }
 
-    _filteredCurrencies(currencies, searchValue) {
+    _noFavoritesCurrencies(currencies, favorites) {
+        return currencies.filter(currency => !favorites.includes(currency.id));
+    }
+
+    _favoritesCurrencies(currencies, favorites) {
+        return currencies.filter(currency => favorites.includes(currency.id));
+    }
+
+    _hasFavoritesCurrencies(favoritesCurrencies) {
+        return !!favoritesCurrencies.length;
+    }
+
+    _searchResults(currencies, searchValue) {
         return searchValue ? currencies.filter(currency => currency.name.toLowerCase().indexOf(searchValue.toLowerCase()) >= 0 || currency.symbol.toLowerCase().indexOf(searchValue.toLowerCase()) >= 0) : currencies;
     }
 
@@ -18761,14 +19135,13 @@ class PageCurrencies extends _polymerElement.Element {
             this.$.search.focus();
         }
     }
-}
-// Components
+} // Libs
 
 
 customElements.define(PageCurrencies.is, PageCurrencies);
 
 /***/ }),
-/* 80 */
+/* 81 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -18781,9 +19154,9 @@ exports.AppScrollEffectsBehavior = undefined;
 
 __webpack_require__(0);
 
-var _ironScrollTargetBehavior = __webpack_require__(81);
+var _ironScrollTargetBehavior = __webpack_require__(82);
 
-var _helpers = __webpack_require__(82);
+var _helpers = __webpack_require__(83);
 
 const AppScrollEffectsBehavior = exports.AppScrollEffectsBehavior = [_ironScrollTargetBehavior.IronScrollTargetBehavior, {
 
@@ -19068,7 +19441,7 @@ const AppScrollEffectsBehavior = exports.AppScrollEffectsBehavior = [_ironScroll
 }];
 
 /***/ }),
-/* 81 */
+/* 82 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -19316,7 +19689,7 @@ const IronScrollTargetBehavior = exports.IronScrollTargetBehavior = {
 };
 
 /***/ }),
-/* 82 */
+/* 83 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -19431,7 +19804,7 @@ const scroll = exports.scroll = function scroll(options) {
 };
 
 /***/ }),
-/* 83 */
+/* 84 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -19446,7 +19819,7 @@ __webpack_require__(0);
 
 var _ironButtonState = __webpack_require__(30);
 
-var _paperRippleBehavior = __webpack_require__(84);
+var _paperRippleBehavior = __webpack_require__(85);
 
 var _ironControlState = __webpack_require__(18);
 
@@ -19474,7 +19847,7 @@ const PaperInkyFocusBehaviorImpl = exports.PaperInkyFocusBehaviorImpl = {
 const PaperInkyFocusBehavior = exports.PaperInkyFocusBehavior = [_ironButtonState.IronButtonState, _ironControlState.IronControlState, _paperRippleBehavior.PaperRippleBehavior, PaperInkyFocusBehaviorImpl];
 
 /***/ }),
-/* 84 */
+/* 85 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -19487,7 +19860,7 @@ exports.PaperRippleBehavior = undefined;
 
 __webpack_require__(0);
 
-__webpack_require__(85);
+__webpack_require__(86);
 
 var _ironButtonState = __webpack_require__(30);
 
@@ -19597,7 +19970,7 @@ const PaperRippleBehavior = exports.PaperRippleBehavior = {
 };
 
 /***/ }),
-/* 85 */
+/* 86 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -20259,7 +20632,7 @@ Ripple.prototype = {
 });
 
 /***/ }),
-/* 86 */
+/* 87 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -20267,17 +20640,17 @@ Ripple.prototype = {
 
 __webpack_require__(0);
 
-var _ironFormElementBehavior = __webpack_require__(87);
+var _ironFormElementBehavior = __webpack_require__(88);
 
-__webpack_require__(88);
+__webpack_require__(89);
 
-var _paperInputBehavior = __webpack_require__(91);
+var _paperInputBehavior = __webpack_require__(92);
 
-__webpack_require__(92);
-
-__webpack_require__(94);
+__webpack_require__(93);
 
 __webpack_require__(95);
+
+__webpack_require__(96);
 
 var _polymerFn = __webpack_require__(1);
 
@@ -20447,7 +20820,7 @@ document.head.appendChild($_documentContainer);
 });
 
 /***/ }),
-/* 87 */
+/* 88 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -20528,7 +20901,7 @@ const IronFormElementBehavior = exports.IronFormElementBehavior = {
 };
 
 /***/ }),
-/* 88 */
+/* 89 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -20536,9 +20909,9 @@ const IronFormElementBehavior = exports.IronFormElementBehavior = {
 
 __webpack_require__(0);
 
-var _ironA11yAnnouncer = __webpack_require__(89);
+var _ironA11yAnnouncer = __webpack_require__(90);
 
-var _ironValidatableBehavior = __webpack_require__(90);
+var _ironValidatableBehavior = __webpack_require__(91);
 
 var _polymerFn = __webpack_require__(1);
 
@@ -20816,7 +21189,7 @@ var _polymerDom = __webpack_require__(3);
 });
 
 /***/ }),
-/* 89 */
+/* 90 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -20901,7 +21274,7 @@ IronA11yAnnouncer.requestAvailability = function () {
 };
 
 /***/ }),
-/* 90 */
+/* 91 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -21001,7 +21374,7 @@ const IronValidatableBehavior = exports.IronValidatableBehavior = {
 };
 
 /***/ }),
-/* 91 */
+/* 92 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -21549,7 +21922,7 @@ const PaperInputBehaviorImpl = exports.PaperInputBehaviorImpl = {
 const PaperInputBehavior = exports.PaperInputBehavior = [_ironControlState.IronControlState, _ironA11yKeysBehavior.IronA11yKeysBehavior, PaperInputBehaviorImpl];
 
 /***/ }),
-/* 92 */
+/* 93 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -21626,7 +21999,7 @@ var _polymerFn = __webpack_require__(1);
 });
 
 /***/ }),
-/* 93 */
+/* 94 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -21641,7 +22014,7 @@ $_documentContainer.innerHTML = `
 document.head.appendChild($_documentContainer);
 
 /***/ }),
-/* 94 */
+/* 95 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -21649,7 +22022,7 @@ document.head.appendChild($_documentContainer);
 
 __webpack_require__(0);
 
-__webpack_require__(7);
+__webpack_require__(6);
 
 __webpack_require__(8);
 
@@ -22225,7 +22598,7 @@ var _polymerDom = __webpack_require__(3);
 });
 
 /***/ }),
-/* 95 */
+/* 96 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -22297,7 +22670,120 @@ var _polymerFn = __webpack_require__(1);
 });
 
 /***/ }),
-/* 96 */
+/* 97 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.IronRangeBehavior = undefined;
+
+__webpack_require__(0);
+
+const IronRangeBehavior = exports.IronRangeBehavior = {
+
+  properties: {
+
+    /**
+     * The number that represents the current value.
+     */
+    value: {
+      type: Number,
+      value: 0,
+      notify: true,
+      reflectToAttribute: true
+    },
+
+    /**
+     * The number that indicates the minimum value of the range.
+     */
+    min: {
+      type: Number,
+      value: 0,
+      notify: true
+    },
+
+    /**
+     * The number that indicates the maximum value of the range.
+     */
+    max: {
+      type: Number,
+      value: 100,
+      notify: true
+    },
+
+    /**
+     * Specifies the value granularity of the range's value.
+     */
+    step: {
+      type: Number,
+      value: 1,
+      notify: true
+    },
+
+    /**
+     * Returns the ratio of the value.
+     */
+    ratio: {
+      type: Number,
+      value: 0,
+      readOnly: true,
+      notify: true
+    }
+  },
+
+  observers: ['_update(value, min, max, step)'],
+
+  _calcRatio: function (value) {
+    return (this._clampValue(value) - this.min) / (this.max - this.min);
+  },
+
+  _clampValue: function (value) {
+    return Math.min(this.max, Math.max(this.min, this._calcStep(value)));
+  },
+
+  _calcStep: function (value) {
+    // polymer/issues/2493
+    value = parseFloat(value);
+
+    if (!this.step) {
+      return value;
+    }
+
+    var numSteps = Math.round((value - this.min) / this.step);
+    if (this.step < 1) {
+      /**
+       * For small values of this.step, if we calculate the step using
+       * `Math.round(value / step) * step` we may hit a precision point issue
+       * eg. 0.1 * 0.2 =  0.020000000000000004
+       * http://docs.oracle.com/cd/E19957-01/806-3568/ncg_goldberg.html
+       *
+       * as a work around we can divide by the reciprocal of `step`
+       */
+      return numSteps / (1 / this.step) + this.min;
+    } else {
+      return numSteps * this.step + this.min;
+    }
+  },
+
+  _validateValue: function () {
+    var v = this._clampValue(this.value);
+    this.value = this.oldValue = isNaN(v) ? this.oldValue : v;
+    return this.value !== v;
+  },
+
+  _update: function () {
+    this._validateValue();
+    this._setRatio(this._calcRatio(this.value) * 100);
+  }
+
+};
+
+/***/ }),
+/* 98 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -22305,11 +22791,11 @@ var _polymerFn = __webpack_require__(1);
 
 var _polymerElement = __webpack_require__(4);
 
-__webpack_require__(97);
+__webpack_require__(99);
 
-__webpack_require__(40);
+__webpack_require__(41);
 
-__webpack_require__(100);
+__webpack_require__(102);
 
 // Libs
 class CurrenciesList extends _polymerElement.Element {
@@ -22355,7 +22841,7 @@ class CurrenciesList extends _polymerElement.Element {
 customElements.define(CurrenciesList.is, CurrenciesList);
 
 /***/ }),
-/* 97 */
+/* 99 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -22363,7 +22849,7 @@ customElements.define(CurrenciesList.is, CurrenciesList);
 
 __webpack_require__(0);
 
-var _ironMenuBehavior = __webpack_require__(98);
+var _ironMenuBehavior = __webpack_require__(100);
 
 __webpack_require__(8);
 
@@ -22396,7 +22882,7 @@ var _polymerFn = __webpack_require__(1);
 });
 
 /***/ }),
-/* 98 */
+/* 100 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -22409,7 +22895,7 @@ exports.IronMenuBehavior = exports.IronMenuBehaviorImpl = undefined;
 
 __webpack_require__(0);
 
-var _ironMultiSelectable = __webpack_require__(99);
+var _ironMultiSelectable = __webpack_require__(101);
 
 var _ironA11yKeysBehavior = __webpack_require__(17);
 
@@ -22792,7 +23278,7 @@ IronMenuBehaviorImpl._shiftTabPressed = false;
 const IronMenuBehavior = exports.IronMenuBehavior = [_ironMultiSelectable.IronMultiSelectableBehavior, _ironA11yKeysBehavior.IronA11yKeysBehavior, IronMenuBehaviorImpl];
 
 /***/ }),
-/* 99 */
+/* 101 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -22952,7 +23438,7 @@ const IronMultiSelectableBehaviorImpl = exports.IronMultiSelectableBehaviorImpl 
 const IronMultiSelectableBehavior = exports.IronMultiSelectableBehavior = [_ironSelectable.IronSelectableBehavior, IronMultiSelectableBehaviorImpl];
 
 /***/ }),
-/* 100 */
+/* 102 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -22962,9 +23448,9 @@ var _polymerElement = __webpack_require__(4);
 
 __webpack_require__(27);
 
-__webpack_require__(101);
+__webpack_require__(103);
 
-__webpack_require__(104);
+__webpack_require__(106);
 
 // Libs
 class CurrencyItem extends _polymerElement.Element {
@@ -23052,7 +23538,7 @@ class CurrencyItem extends _polymerElement.Element {
                     <img src$="https://files.coinmarketcap.com/static/img/coins/64x64/[[currency.id]].png" alt="" slot="item-icon">
                     <paper-item-body two-line>
                         <div class="header">
-                            <span class="name"><b>[[currency.symbol]]</b>/[[currency.last_updated]]</span>
+                            <span class="name"><b>[[currency.symbol]]</b>/[[currency.name]]</span>
                             <b class="price" depreciation$="[[isDepreciation(currency.percent_change_24h)]]">[[price(currency.price_usd)]]</b>
                         </div>
                         <div class="change" secondary>
@@ -23099,7 +23585,7 @@ class CurrencyItem extends _polymerElement.Element {
 customElements.define(CurrencyItem.is, CurrencyItem);
 
 /***/ }),
-/* 101 */
+/* 103 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -23107,13 +23593,13 @@ customElements.define(CurrencyItem.is, CurrencyItem);
 
 __webpack_require__(0);
 
-__webpack_require__(7);
+__webpack_require__(6);
 
 __webpack_require__(9);
 
-var _paperItemBehavior = __webpack_require__(102);
+var _paperItemBehavior = __webpack_require__(104);
 
-__webpack_require__(103);
+__webpack_require__(105);
 
 var _polymerFn = __webpack_require__(1);
 
@@ -23151,7 +23637,7 @@ var _polymerFn = __webpack_require__(1);
 });
 
 /***/ }),
-/* 102 */
+/* 104 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -23178,15 +23664,15 @@ const PaperItemBehaviorImpl = exports.PaperItemBehaviorImpl = {
 const PaperItemBehavior = exports.PaperItemBehavior = [_ironButtonState.IronButtonState, _ironControlState.IronControlState, PaperItemBehaviorImpl];
 
 /***/ }),
-/* 103 */
+/* 105 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-__webpack_require__(7);
+__webpack_require__(6);
 
-__webpack_require__(48);
+__webpack_require__(31);
 
 __webpack_require__(8);
 
@@ -23254,7 +23740,7 @@ $_documentContainer.innerHTML = `<dom-module id="paper-item-shared-styles">
 document.head.appendChild($_documentContainer);
 
 /***/ }),
-/* 104 */
+/* 106 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -23262,7 +23748,7 @@ document.head.appendChild($_documentContainer);
 
 __webpack_require__(0);
 
-__webpack_require__(7);
+__webpack_require__(6);
 
 __webpack_require__(8);
 
@@ -23310,7 +23796,7 @@ var _polymerFn = __webpack_require__(1);
 });
 
 /***/ }),
-/* 105 */
+/* 107 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -23318,17 +23804,17 @@ var _polymerFn = __webpack_require__(1);
 
 var _polymerElement = __webpack_require__(4);
 
-__webpack_require__(43);
-
-__webpack_require__(45);
+__webpack_require__(44);
 
 __webpack_require__(46);
 
-__webpack_require__(41);
-
 __webpack_require__(47);
 
-__webpack_require__(108);
+__webpack_require__(42);
+
+__webpack_require__(48);
+
+__webpack_require__(50);
 
 // Components
 class PageCurrency extends _polymerElement.Element {
@@ -23342,6 +23828,10 @@ class PageCurrency extends _polymerElement.Element {
                 app-header {
                     color: var(--dark-theme-text-color);
                     background-color: var(--primary-color);
+                }
+
+                paper-icon-button[hidden] {
+                    display: none;
                 }
 
                 paper-progress {
@@ -23439,7 +23929,8 @@ class PageCurrency extends _polymerElement.Element {
                     <app-toolbar>
                         <paper-icon-button icon="arrow-back" on-tap="handleBack"></paper-icon-button>
                         <div main-title>[[currency.symbol]]/[[currency.name]]</div>
-                        <paper-icon-button icon="star-border" on-tap="handleFavorite"></paper-icon-button>
+                        <paper-icon-button icon="star" on-tap="handleFavorite" hidden$="[[!isFavorite]]"></paper-icon-button>
+                        <paper-icon-button icon="star-border" on-tap="handleFavorite" hidden$="[[isFavorite]]"></paper-icon-button>
                     </app-toolbar>
                     <paper-progress
                         hidden$="[[!isLoading]]"
@@ -23491,6 +23982,7 @@ class PageCurrency extends _polymerElement.Element {
     static get properties() {
         return {
             isLoading: Boolean,
+            isFavorite: Boolean,
             currencyId: {
                 type: String,
                 computed: '_currencyId(routeData)',
@@ -23498,7 +23990,8 @@ class PageCurrency extends _polymerElement.Element {
             },
             currency: Object,
             route: Object,
-            routeData: Object
+            routeData: Object,
+            onToggleFavorite: Function
         };
     }
 
@@ -23527,7 +24020,9 @@ class PageCurrency extends _polymerElement.Element {
         return value * 1 < 0;
     }
 
-    handleFavorite() {}
+    handleFavorite() {
+        this.onToggleFavorite(this.currencyId);
+    }
 
     handleBack() {
         window.history.back();
@@ -23536,399 +24031,6 @@ class PageCurrency extends _polymerElement.Element {
 
 
 customElements.define(PageCurrency.is, PageCurrency);
-
-/***/ }),
-/* 106 */,
-/* 107 */,
-/* 108 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-__webpack_require__(0);
-
-__webpack_require__(7);
-
-var _ironRangeBehavior = __webpack_require__(109);
-
-__webpack_require__(48);
-
-var _polymerFn = __webpack_require__(1);
-
-(0, _polymerFn.Polymer)({
-  _template: `
-    <style>
-      :host {
-        display: block;
-        width: 200px;
-        position: relative;
-        overflow: hidden;
-      }
-
-      :host([hidden]), [hidden] {
-        display: none !important;
-      }
-
-      #progressContainer {
-        @apply --paper-progress-container;
-        position: relative;
-      }
-
-      #progressContainer,
-      /* the stripe for the indeterminate animation*/
-      .indeterminate::after {
-        height: var(--paper-progress-height, 4px);
-      }
-
-      #primaryProgress,
-      #secondaryProgress,
-      .indeterminate::after {
-        @apply --layout-fit;
-      }
-
-      #progressContainer,
-      .indeterminate::after {
-        background: var(--paper-progress-container-color, var(--google-grey-300));
-      }
-
-      :host(.transiting) #primaryProgress,
-      :host(.transiting) #secondaryProgress {
-        -webkit-transition-property: -webkit-transform;
-        transition-property: transform;
-
-        /* Duration */
-        -webkit-transition-duration: var(--paper-progress-transition-duration, 0.08s);
-        transition-duration: var(--paper-progress-transition-duration, 0.08s);
-
-        /* Timing function */
-        -webkit-transition-timing-function: var(--paper-progress-transition-timing-function, ease);
-        transition-timing-function: var(--paper-progress-transition-timing-function, ease);
-
-        /* Delay */
-        -webkit-transition-delay: var(--paper-progress-transition-delay, 0s);
-        transition-delay: var(--paper-progress-transition-delay, 0s);
-      }
-
-      #primaryProgress,
-      #secondaryProgress {
-        @apply --layout-fit;
-        -webkit-transform-origin: left center;
-        transform-origin: left center;
-        -webkit-transform: scaleX(0);
-        transform: scaleX(0);
-        will-change: transform;
-      }
-
-      #primaryProgress {
-        background: var(--paper-progress-active-color, var(--google-green-500));
-      }
-
-      #secondaryProgress {
-        background: var(--paper-progress-secondary-color, var(--google-green-100));
-      }
-
-      :host([disabled]) #primaryProgress {
-        background: var(--paper-progress-disabled-active-color, var(--google-grey-500));
-      }
-
-      :host([disabled]) #secondaryProgress {
-        background: var(--paper-progress-disabled-secondary-color, var(--google-grey-300));
-      }
-
-      :host(:not([disabled])) #primaryProgress.indeterminate {
-        -webkit-transform-origin: right center;
-        transform-origin: right center;
-        -webkit-animation: indeterminate-bar var(--paper-progress-indeterminate-cycle-duration, 2s) linear infinite;
-        animation: indeterminate-bar var(--paper-progress-indeterminate-cycle-duration, 2s) linear infinite;
-      }
-
-      :host(:not([disabled])) #primaryProgress.indeterminate::after {
-        content: "";
-        -webkit-transform-origin: center center;
-        transform-origin: center center;
-
-        -webkit-animation: indeterminate-splitter var(--paper-progress-indeterminate-cycle-duration, 2s) linear infinite;
-        animation: indeterminate-splitter var(--paper-progress-indeterminate-cycle-duration, 2s) linear infinite;
-      }
-
-      @-webkit-keyframes indeterminate-bar {
-        0% {
-          -webkit-transform: scaleX(1) translateX(-100%);
-        }
-        50% {
-          -webkit-transform: scaleX(1) translateX(0%);
-        }
-        75% {
-          -webkit-transform: scaleX(1) translateX(0%);
-          -webkit-animation-timing-function: cubic-bezier(.28,.62,.37,.91);
-        }
-        100% {
-          -webkit-transform: scaleX(0) translateX(0%);
-        }
-      }
-
-      @-webkit-keyframes indeterminate-splitter {
-        0% {
-          -webkit-transform: scaleX(.75) translateX(-125%);
-        }
-        30% {
-          -webkit-transform: scaleX(.75) translateX(-125%);
-          -webkit-animation-timing-function: cubic-bezier(.42,0,.6,.8);
-        }
-        90% {
-          -webkit-transform: scaleX(.75) translateX(125%);
-        }
-        100% {
-          -webkit-transform: scaleX(.75) translateX(125%);
-        }
-      }
-
-      @keyframes indeterminate-bar {
-        0% {
-          transform: scaleX(1) translateX(-100%);
-        }
-        50% {
-          transform: scaleX(1) translateX(0%);
-        }
-        75% {
-          transform: scaleX(1) translateX(0%);
-          animation-timing-function: cubic-bezier(.28,.62,.37,.91);
-        }
-        100% {
-          transform: scaleX(0) translateX(0%);
-        }
-      }
-
-      @keyframes indeterminate-splitter {
-        0% {
-          transform: scaleX(.75) translateX(-125%);
-        }
-        30% {
-          transform: scaleX(.75) translateX(-125%);
-          animation-timing-function: cubic-bezier(.42,0,.6,.8);
-        }
-        90% {
-          transform: scaleX(.75) translateX(125%);
-        }
-        100% {
-          transform: scaleX(.75) translateX(125%);
-        }
-      }
-    </style>
-
-    <div id="progressContainer">
-      <div id="secondaryProgress" hidden\$="[[_hideSecondaryProgress(secondaryRatio)]]"></div>
-      <div id="primaryProgress"></div>
-    </div>
-`,
-
-  is: 'paper-progress',
-
-  behaviors: [_ironRangeBehavior.IronRangeBehavior],
-
-  properties: {
-    /**
-     * The number that represents the current secondary progress.
-     */
-    secondaryProgress: {
-      type: Number,
-      value: 0
-    },
-
-    /**
-     * The secondary ratio
-     */
-    secondaryRatio: {
-      type: Number,
-      value: 0,
-      readOnly: true
-    },
-
-    /**
-     * Use an indeterminate progress indicator.
-     */
-    indeterminate: {
-      type: Boolean,
-      value: false,
-      observer: '_toggleIndeterminate'
-    },
-
-    /**
-     * True if the progress is disabled.
-     */
-    disabled: {
-      type: Boolean,
-      value: false,
-      reflectToAttribute: true,
-      observer: '_disabledChanged'
-    }
-  },
-
-  observers: ['_progressChanged(secondaryProgress, value, min, max, indeterminate)'],
-
-  hostAttributes: {
-    role: 'progressbar'
-  },
-
-  _toggleIndeterminate: function (indeterminate) {
-    // If we use attribute/class binding, the animation sometimes doesn't translate properly
-    // on Safari 7.1. So instead, we toggle the class here in the update method.
-    this.toggleClass('indeterminate', indeterminate, this.$.primaryProgress);
-  },
-
-  _transformProgress: function (progress, ratio) {
-    var transform = 'scaleX(' + ratio / 100 + ')';
-    progress.style.transform = progress.style.webkitTransform = transform;
-  },
-
-  _mainRatioChanged: function (ratio) {
-    this._transformProgress(this.$.primaryProgress, ratio);
-  },
-
-  _progressChanged: function (secondaryProgress, value, min, max, indeterminate) {
-    secondaryProgress = this._clampValue(secondaryProgress);
-    value = this._clampValue(value);
-
-    var secondaryRatio = this._calcRatio(secondaryProgress) * 100;
-    var mainRatio = this._calcRatio(value) * 100;
-
-    this._setSecondaryRatio(secondaryRatio);
-    this._transformProgress(this.$.secondaryProgress, secondaryRatio);
-    this._transformProgress(this.$.primaryProgress, mainRatio);
-
-    this.secondaryProgress = secondaryProgress;
-
-    if (indeterminate) {
-      this.removeAttribute('aria-valuenow');
-    } else {
-      this.setAttribute('aria-valuenow', value);
-    }
-    this.setAttribute('aria-valuemin', min);
-    this.setAttribute('aria-valuemax', max);
-  },
-
-  _disabledChanged: function (disabled) {
-    this.setAttribute('aria-disabled', disabled ? 'true' : 'false');
-  },
-
-  _hideSecondaryProgress: function (secondaryRatio) {
-    return secondaryRatio === 0;
-  }
-});
-
-/***/ }),
-/* 109 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.IronRangeBehavior = undefined;
-
-__webpack_require__(0);
-
-const IronRangeBehavior = exports.IronRangeBehavior = {
-
-  properties: {
-
-    /**
-     * The number that represents the current value.
-     */
-    value: {
-      type: Number,
-      value: 0,
-      notify: true,
-      reflectToAttribute: true
-    },
-
-    /**
-     * The number that indicates the minimum value of the range.
-     */
-    min: {
-      type: Number,
-      value: 0,
-      notify: true
-    },
-
-    /**
-     * The number that indicates the maximum value of the range.
-     */
-    max: {
-      type: Number,
-      value: 100,
-      notify: true
-    },
-
-    /**
-     * Specifies the value granularity of the range's value.
-     */
-    step: {
-      type: Number,
-      value: 1,
-      notify: true
-    },
-
-    /**
-     * Returns the ratio of the value.
-     */
-    ratio: {
-      type: Number,
-      value: 0,
-      readOnly: true,
-      notify: true
-    }
-  },
-
-  observers: ['_update(value, min, max, step)'],
-
-  _calcRatio: function (value) {
-    return (this._clampValue(value) - this.min) / (this.max - this.min);
-  },
-
-  _clampValue: function (value) {
-    return Math.min(this.max, Math.max(this.min, this._calcStep(value)));
-  },
-
-  _calcStep: function (value) {
-    // polymer/issues/2493
-    value = parseFloat(value);
-
-    if (!this.step) {
-      return value;
-    }
-
-    var numSteps = Math.round((value - this.min) / this.step);
-    if (this.step < 1) {
-      /**
-       * For small values of this.step, if we calculate the step using
-       * `Math.round(value / step) * step` we may hit a precision point issue
-       * eg. 0.1 * 0.2 =  0.020000000000000004
-       * http://docs.oracle.com/cd/E19957-01/806-3568/ncg_goldberg.html
-       *
-       * as a work around we can divide by the reciprocal of `step`
-       */
-      return numSteps / (1 / this.step) + this.min;
-    } else {
-      return numSteps * this.step + this.min;
-    }
-  },
-
-  _validateValue: function () {
-    var v = this._clampValue(this.value);
-    this.value = this.oldValue = isNaN(v) ? this.oldValue : v;
-    return this.value !== v;
-  },
-
-  _update: function () {
-    this._validateValue();
-    this._setRatio(this._calcRatio(this.value) * 100);
-  }
-
-};
 
 /***/ })
 /******/ ]);
