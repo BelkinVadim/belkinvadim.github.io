@@ -18894,6 +18894,7 @@ class AppStore extends _polymerElement.Element {
             favorites: {
                 type: Array,
                 notify: true,
+                value: localStorage.getItem('favorites') ? localStorage.getItem('favorites').split(',') : [],
                 observer: '_favoriteChanged'
             }
         };
@@ -18905,10 +18906,8 @@ class AppStore extends _polymerElement.Element {
 
     connectedCallback() {
         super.connectedCallback();
-        const favorites = localStorage.getItem('favorites');
 
         this.load();
-        this.favorites = favorites ? favorites.split(',') : [];
     }
 
     load() {
