@@ -19063,7 +19063,10 @@ class PageCurrencies extends _polymerElement.Element {
     static get properties() {
         return {
             lastUpdate: Number,
-            isLoad: Boolean,
+            isLoad: {
+                type: Boolean,
+                notify: true
+            },
             isLoading: Boolean,
             currencies: {
                 type: Array,
