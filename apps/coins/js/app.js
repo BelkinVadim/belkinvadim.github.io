@@ -60,7 +60,7 @@
 /******/ 	__webpack_require__.p = "/";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 51);
+/******/ 	return __webpack_require__(__webpack_require__.s = 52);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -79,13 +79,13 @@ var _legacyElementMixin = __webpack_require__(33);
 
 __webpack_require__(1);
 
-__webpack_require__(65);
-
 __webpack_require__(66);
+
+__webpack_require__(67);
 
 __webpack_require__(41);
 
-__webpack_require__(67);
+__webpack_require__(42);
 
 __webpack_require__(68);
 
@@ -107,7 +107,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.Polymer = undefined;
 
-var _class = __webpack_require__(64);
+var _class = __webpack_require__(65);
 
 const Polymer = exports.Polymer = function (info) {
   // if input is a `class` (aka a function with a prototype), use the prototype
@@ -152,7 +152,7 @@ __webpack_require__(2);
 
 __webpack_require__(12);
 
-var _flattenedNodesObserver = __webpack_require__(63);
+var _flattenedNodesObserver = __webpack_require__(64);
 
 var _flush = __webpack_require__(15);
 
@@ -3308,9 +3308,9 @@ var _caseMap = __webpack_require__(10);
 
 var caseMap = _interopRequireWildcard(_caseMap);
 
-var _propertyAccessors = __webpack_require__(53);
+var _propertyAccessors = __webpack_require__(54);
 
-var _templateStamp = __webpack_require__(54);
+var _templateStamp = __webpack_require__(55);
 
 var _settings = __webpack_require__(12);
 
@@ -8233,7 +8233,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.LegacyElementMixin = undefined;
 
-__webpack_require__(56);
+__webpack_require__(57);
 
 var _elementMixin = __webpack_require__(19);
 
@@ -8241,11 +8241,11 @@ var _gestureEventListeners = __webpack_require__(38);
 
 var _mixin = __webpack_require__(5);
 
-var _importHref = __webpack_require__(60);
-
-__webpack_require__(61);
+var _importHref = __webpack_require__(61);
 
 __webpack_require__(62);
+
+__webpack_require__(63);
 
 var _polymerDom = __webpack_require__(3);
 
@@ -9205,7 +9205,7 @@ var _cssParse = __webpack_require__(23);
 
 var _commonRegex = __webpack_require__(24);
 
-var _unscopedStyleHandler = __webpack_require__(58);
+var _unscopedStyleHandler = __webpack_require__(59);
 
 /**
  * @param {string|StyleNode} rules
@@ -11589,6 +11589,279 @@ exports.DomRepeat = DomRepeat;
 "use strict";
 
 
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.DomIf = undefined;
+
+var _polymerElement = __webpack_require__(4);
+
+var _templatize = __webpack_require__(26);
+
+var _debounce = __webpack_require__(11);
+
+var _flush = __webpack_require__(15);
+
+var _async = __webpack_require__(7);
+
+var _path = __webpack_require__(14);
+
+/**
+ * The `<dom-if>` element will stamp a light-dom `<template>` child when
+ * the `if` property becomes truthy, and the template can use Polymer
+ * data-binding and declarative event features when used in the context of
+ * a Polymer element's template.
+ *
+ * When `if` becomes falsey, the stamped content is hidden but not
+ * removed from dom. When `if` subsequently becomes truthy again, the content
+ * is simply re-shown. This approach is used due to its favorable performance
+ * characteristics: the expense of creating template content is paid only
+ * once and lazily.
+ *
+ * Set the `restamp` property to true to force the stamped content to be
+ * created / destroyed when the `if` condition changes.
+ *
+ * @customElement
+ * @polymer
+ * @extends Polymer.Element
+ * @memberof Polymer
+ * @summary Custom element that conditionally stamps and hides or removes
+ *   template content based on a boolean flag.
+ */
+class DomIf extends _polymerElement.Element {
+
+  // Not needed to find template; can be removed once the analyzer
+  // can find the tag name from customElements.define call
+  static get is() {
+    return 'dom-if';
+  }
+
+  static get template() {
+    return null;
+  }
+
+  static get properties() {
+
+    return {
+
+      /**
+       * Fired whenever DOM is added or removed/hidden by this template (by
+       * default, rendering occurs lazily).  To force immediate rendering, call
+       * `render`.
+       *
+       * @event dom-change
+       */
+
+      /**
+       * A boolean indicating whether this template should stamp.
+       */
+      if: {
+        type: Boolean,
+        observer: '__debounceRender'
+      },
+
+      /**
+       * When true, elements will be removed from DOM and discarded when `if`
+       * becomes false and re-created and added back to the DOM when `if`
+       * becomes true.  By default, stamped elements will be hidden but left
+       * in the DOM when `if` becomes false, which is generally results
+       * in better performance.
+       */
+      restamp: {
+        type: Boolean,
+        observer: '__debounceRender'
+      }
+
+    };
+  }
+
+  constructor() {
+    super();
+    this.__renderDebouncer = null;
+    this.__invalidProps = null;
+    this.__instance = null;
+    this._lastIf = false;
+    this.__ctor = null;
+  }
+
+  __debounceRender() {
+    // Render is async for 2 reasons:
+    // 1. To eliminate dom creation trashing if user code thrashes `if` in the
+    //    same turn. This was more common in 1.x where a compound computed
+    //    property could result in the result changing multiple times, but is
+    //    mitigated to a large extent by batched property processing in 2.x.
+    // 2. To avoid double object propagation when a bag including values bound
+    //    to the `if` property as well as one or more hostProps could enqueue
+    //    the <dom-if> to flush before the <template>'s host property
+    //    forwarding. In that scenario creating an instance would result in
+    //    the host props being set once, and then the enqueued changes on the
+    //    template would set properties a second time, potentially causing an
+    //    object to be set to an instance more than once.  Creating the
+    //    instance async from flushing data ensures this doesn't happen. If
+    //    we wanted a sync option in the future, simply having <dom-if> flush
+    //    (or clear) its template's pending host properties before creating
+    //    the instance would also avoid the problem.
+    this.__renderDebouncer = _debounce.Debouncer.debounce(this.__renderDebouncer, _async.microTask, () => this.__render());
+    (0, _flush.enqueueDebouncer)(this.__renderDebouncer);
+  }
+
+  disconnectedCallback() {
+    super.disconnectedCallback();
+    if (!this.parentNode || this.parentNode.nodeType == Node.DOCUMENT_FRAGMENT_NODE && !this.parentNode.host) {
+      this.__teardownInstance();
+    }
+  }
+
+  connectedCallback() {
+    super.connectedCallback();
+    if (this.if) {
+      this.__debounceRender();
+    }
+  }
+
+  /**
+   * Forces the element to render its content. Normally rendering is
+   * asynchronous to a provoking change. This is done for efficiency so
+   * that multiple changes trigger only a single render. The render method
+   * should be called if, for example, template rendering is required to
+   * validate application state.
+   */
+  render() {
+    (0, _flush.flush)();
+  }
+
+  __render() {
+    if (this.if) {
+      if (!this.__ensureInstance()) {
+        // No template found yet
+        return;
+      }
+      this._showHideChildren();
+    } else if (this.restamp) {
+      this.__teardownInstance();
+    }
+    if (!this.restamp && this.__instance) {
+      this._showHideChildren();
+    }
+    if (this.if != this._lastIf) {
+      this.dispatchEvent(new CustomEvent('dom-change', {
+        bubbles: true,
+        composed: true
+      }));
+      this._lastIf = this.if;
+    }
+  }
+
+  __ensureInstance() {
+    let parentNode = this.parentNode;
+    // Guard against element being detached while render was queued
+    if (parentNode) {
+      if (!this.__ctor) {
+        let template = this.querySelector('template');
+        if (!template) {
+          // Wait until childList changes and template should be there by then
+          let observer = new MutationObserver(() => {
+            if (this.querySelector('template')) {
+              observer.disconnect();
+              this.__render();
+            } else {
+              throw new Error('dom-if requires a <template> child');
+            }
+          });
+          observer.observe(this, { childList: true });
+          return false;
+        }
+        this.__ctor = _templatize.Templatize.templatize(template, this, {
+          // dom-if templatizer instances require `mutable: true`, as
+          // `__syncHostProperties` relies on that behavior to sync objects
+          mutableData: true,
+          /**
+           * @param {string} prop Property to forward
+           * @param {*} value Value of property
+           * @this {this}
+           */
+          forwardHostProp: function (prop, value) {
+            if (this.__instance) {
+              if (this.if) {
+                this.__instance.forwardHostProp(prop, value);
+              } else {
+                // If we have an instance but are squelching host property
+                // forwarding due to if being false, note the invalidated
+                // properties so `__syncHostProperties` can sync them the next
+                // time `if` becomes true
+                this.__invalidProps = this.__invalidProps || Object.create(null);
+                this.__invalidProps[(0, _path.root)(prop)] = true;
+              }
+            }
+          }
+        });
+      }
+      if (!this.__instance) {
+        this.__instance = new this.__ctor();
+        parentNode.insertBefore(this.__instance.root, this);
+      } else {
+        this.__syncHostProperties();
+        let c$ = this.__instance.children;
+        if (c$ && c$.length) {
+          // Detect case where dom-if was re-attached in new position
+          let lastChild = this.previousSibling;
+          if (lastChild !== c$[c$.length - 1]) {
+            for (let i = 0, n; i < c$.length && (n = c$[i]); i++) {
+              parentNode.insertBefore(n, this);
+            }
+          }
+        }
+      }
+    }
+    return true;
+  }
+
+  __syncHostProperties() {
+    let props = this.__invalidProps;
+    if (props) {
+      for (let prop in props) {
+        this.__instance._setPendingProperty(prop, this.__dataHost[prop]);
+      }
+      this.__invalidProps = null;
+      this.__instance._flushProperties();
+    }
+  }
+
+  __teardownInstance() {
+    if (this.__instance) {
+      let c$ = this.__instance.children;
+      if (c$ && c$.length) {
+        // use first child parent, for case when dom-if may have been detached
+        let parent = c$[0].parentNode;
+        for (let i = 0, n; i < c$.length && (n = c$[i]); i++) {
+          parent.removeChild(n);
+        }
+      }
+      this.__instance = null;
+      this.__invalidProps = null;
+    }
+  }
+
+  _showHideChildren() {
+    let hidden = this.__hideTemplateChildren__ || !this.if;
+    if (this.__instance) {
+      this.__instance._showHideChildren(hidden);
+    }
+  }
+
+}
+
+customElements.define(DomIf.is, DomIf);
+
+exports.DomIf = DomIf;
+
+/***/ }),
+/* 43 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
 __webpack_require__(0);
 
 var _polymerFn = __webpack_require__(1);
@@ -11911,7 +12184,7 @@ var _polymerFn = __webpack_require__(1);
 });
 
 /***/ }),
-/* 43 */
+/* 44 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -12113,7 +12386,7 @@ const IronResizableBehavior = exports.IronResizableBehavior = {
 };
 
 /***/ }),
-/* 44 */
+/* 45 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -12125,7 +12398,7 @@ __webpack_require__(6);
 
 var _appScrollEffectsBehavior = __webpack_require__(81);
 
-var _appLayoutBehavior = __webpack_require__(45);
+var _appLayoutBehavior = __webpack_require__(46);
 
 var _polymerFn = __webpack_require__(1);
 
@@ -12568,7 +12841,7 @@ var _polymerDom = __webpack_require__(3);
 });
 
 /***/ }),
-/* 45 */
+/* 46 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -12581,7 +12854,7 @@ exports.AppLayoutBehavior = undefined;
 
 __webpack_require__(0);
 
-var _ironResizableBehavior = __webpack_require__(43);
+var _ironResizableBehavior = __webpack_require__(44);
 
 var _polymerDom = __webpack_require__(3);
 
@@ -12663,7 +12936,7 @@ const AppLayoutBehavior = exports.AppLayoutBehavior = [_ironResizableBehavior.Ir
 }];
 
 /***/ }),
-/* 46 */
+/* 47 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -12673,7 +12946,7 @@ __webpack_require__(0);
 
 __webpack_require__(6);
 
-var _appLayoutBehavior = __webpack_require__(45);
+var _appLayoutBehavior = __webpack_require__(46);
 
 var _polymerFn = __webpack_require__(1);
 
@@ -12827,7 +13100,7 @@ var _polymerDom = __webpack_require__(3);
 });
 
 /***/ }),
-/* 47 */
+/* 48 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -12894,7 +13167,7 @@ var _polymerFn = __webpack_require__(1);
 });
 
 /***/ }),
-/* 48 */
+/* 49 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -13024,7 +13297,7 @@ document.head.appendChild($_documentContainer);
 });
 
 /***/ }),
-/* 49 */
+/* 50 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -13062,7 +13335,7 @@ const PaperInputAddonBehavior = exports.PaperInputAddonBehavior = {
 };
 
 /***/ }),
-/* 50 */
+/* 51 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -13340,16 +13613,16 @@ var _polymerFn = __webpack_require__(1);
 });
 
 /***/ }),
-/* 51 */
+/* 52 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-__webpack_require__(52);
+__webpack_require__(53);
 
 /***/ }),
-/* 52 */
+/* 53 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -13357,9 +13630,9 @@ __webpack_require__(52);
 
 var _polymerElement = __webpack_require__(4);
 
-__webpack_require__(55);
+__webpack_require__(56);
 
-__webpack_require__(42);
+__webpack_require__(43);
 
 __webpack_require__(75);
 
@@ -13490,7 +13763,7 @@ class CoinApp extends _polymerElement.Element {
 customElements.define(CoinApp.is, CoinApp);
 
 /***/ }),
-/* 53 */
+/* 54 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -14091,7 +14364,7 @@ const PropertyAccessors = exports.PropertyAccessors = (0, _mixin.dedupingMixin)(
 });
 
 /***/ }),
-/* 54 */
+/* 55 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -14553,7 +14826,7 @@ const TemplateStamp = exports.TemplateStamp = (0, _mixin.dedupingMixin)(superCla
 });
 
 /***/ }),
-/* 55 */
+/* 56 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -14694,7 +14967,7 @@ var _polymerFn = __webpack_require__(1);
 });
 
 /***/ }),
-/* 56 */
+/* 57 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -14710,7 +14983,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
 
 
-var _applyShim = __webpack_require__(57);
+var _applyShim = __webpack_require__(58);
 
 var _applyShim2 = _interopRequireDefault(_applyShim);
 
@@ -14720,7 +14993,7 @@ var _templateMap2 = _interopRequireDefault(_templateMap);
 
 var _styleUtil = __webpack_require__(34);
 
-var _applyShimUtils = __webpack_require__(59);
+var _applyShimUtils = __webpack_require__(60);
 
 var ApplyShimUtils = _interopRequireWildcard(_applyShimUtils);
 
@@ -14915,7 +15188,7 @@ if (!window.ShadyCSS || !window.ShadyCSS.ScopingShim) {
 window.ShadyCSS.ApplyShim = applyShim;
 
 /***/ }),
-/* 57 */
+/* 58 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -15406,7 +15679,7 @@ Object.defineProperty(ApplyShim.prototype, 'invalidCallback', {
 exports.default = ApplyShim;
 
 /***/ }),
-/* 58 */
+/* 59 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -15458,7 +15731,7 @@ function isUnscopedStyle(style) {
 }
 
 /***/ }),
-/* 59 */
+/* 60 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -15634,7 +15907,7 @@ function elementsAreInvalid() {
 }
 
 /***/ }),
-/* 60 */
+/* 61 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -15717,7 +15990,7 @@ const importHref = exports.importHref = function (href, onload, onerror, optAsyn
 };
 
 /***/ }),
-/* 61 */
+/* 62 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -15799,7 +16072,7 @@ function afterNextRender(context, callback, args) {
 exports.flush = flush;
 
 /***/ }),
-/* 62 */
+/* 63 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -15816,7 +16089,7 @@ if (document.readyState === 'interactive' || document.readyState === 'complete')
 }
 
 /***/ }),
-/* 63 */
+/* 64 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -16066,7 +16339,7 @@ class FlattenedNodesObserver {
 exports.FlattenedNodesObserver = FlattenedNodesObserver;
 
 /***/ }),
-/* 64 */
+/* 65 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -16337,7 +16610,7 @@ const Class = exports.Class = function (info) {
 exports.mixinBehaviors = mixinBehaviors;
 
 /***/ }),
-/* 65 */
+/* 66 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -16486,7 +16759,7 @@ let Templatizer = {
 exports.Templatizer = Templatizer;
 
 /***/ }),
-/* 66 */
+/* 67 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -16614,279 +16887,6 @@ class DomBind extends domBindBase {
 customElements.define('dom-bind', DomBind);
 
 exports.DomBind = DomBind;
-
-/***/ }),
-/* 67 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.DomIf = undefined;
-
-var _polymerElement = __webpack_require__(4);
-
-var _templatize = __webpack_require__(26);
-
-var _debounce = __webpack_require__(11);
-
-var _flush = __webpack_require__(15);
-
-var _async = __webpack_require__(7);
-
-var _path = __webpack_require__(14);
-
-/**
- * The `<dom-if>` element will stamp a light-dom `<template>` child when
- * the `if` property becomes truthy, and the template can use Polymer
- * data-binding and declarative event features when used in the context of
- * a Polymer element's template.
- *
- * When `if` becomes falsey, the stamped content is hidden but not
- * removed from dom. When `if` subsequently becomes truthy again, the content
- * is simply re-shown. This approach is used due to its favorable performance
- * characteristics: the expense of creating template content is paid only
- * once and lazily.
- *
- * Set the `restamp` property to true to force the stamped content to be
- * created / destroyed when the `if` condition changes.
- *
- * @customElement
- * @polymer
- * @extends Polymer.Element
- * @memberof Polymer
- * @summary Custom element that conditionally stamps and hides or removes
- *   template content based on a boolean flag.
- */
-class DomIf extends _polymerElement.Element {
-
-  // Not needed to find template; can be removed once the analyzer
-  // can find the tag name from customElements.define call
-  static get is() {
-    return 'dom-if';
-  }
-
-  static get template() {
-    return null;
-  }
-
-  static get properties() {
-
-    return {
-
-      /**
-       * Fired whenever DOM is added or removed/hidden by this template (by
-       * default, rendering occurs lazily).  To force immediate rendering, call
-       * `render`.
-       *
-       * @event dom-change
-       */
-
-      /**
-       * A boolean indicating whether this template should stamp.
-       */
-      if: {
-        type: Boolean,
-        observer: '__debounceRender'
-      },
-
-      /**
-       * When true, elements will be removed from DOM and discarded when `if`
-       * becomes false and re-created and added back to the DOM when `if`
-       * becomes true.  By default, stamped elements will be hidden but left
-       * in the DOM when `if` becomes false, which is generally results
-       * in better performance.
-       */
-      restamp: {
-        type: Boolean,
-        observer: '__debounceRender'
-      }
-
-    };
-  }
-
-  constructor() {
-    super();
-    this.__renderDebouncer = null;
-    this.__invalidProps = null;
-    this.__instance = null;
-    this._lastIf = false;
-    this.__ctor = null;
-  }
-
-  __debounceRender() {
-    // Render is async for 2 reasons:
-    // 1. To eliminate dom creation trashing if user code thrashes `if` in the
-    //    same turn. This was more common in 1.x where a compound computed
-    //    property could result in the result changing multiple times, but is
-    //    mitigated to a large extent by batched property processing in 2.x.
-    // 2. To avoid double object propagation when a bag including values bound
-    //    to the `if` property as well as one or more hostProps could enqueue
-    //    the <dom-if> to flush before the <template>'s host property
-    //    forwarding. In that scenario creating an instance would result in
-    //    the host props being set once, and then the enqueued changes on the
-    //    template would set properties a second time, potentially causing an
-    //    object to be set to an instance more than once.  Creating the
-    //    instance async from flushing data ensures this doesn't happen. If
-    //    we wanted a sync option in the future, simply having <dom-if> flush
-    //    (or clear) its template's pending host properties before creating
-    //    the instance would also avoid the problem.
-    this.__renderDebouncer = _debounce.Debouncer.debounce(this.__renderDebouncer, _async.microTask, () => this.__render());
-    (0, _flush.enqueueDebouncer)(this.__renderDebouncer);
-  }
-
-  disconnectedCallback() {
-    super.disconnectedCallback();
-    if (!this.parentNode || this.parentNode.nodeType == Node.DOCUMENT_FRAGMENT_NODE && !this.parentNode.host) {
-      this.__teardownInstance();
-    }
-  }
-
-  connectedCallback() {
-    super.connectedCallback();
-    if (this.if) {
-      this.__debounceRender();
-    }
-  }
-
-  /**
-   * Forces the element to render its content. Normally rendering is
-   * asynchronous to a provoking change. This is done for efficiency so
-   * that multiple changes trigger only a single render. The render method
-   * should be called if, for example, template rendering is required to
-   * validate application state.
-   */
-  render() {
-    (0, _flush.flush)();
-  }
-
-  __render() {
-    if (this.if) {
-      if (!this.__ensureInstance()) {
-        // No template found yet
-        return;
-      }
-      this._showHideChildren();
-    } else if (this.restamp) {
-      this.__teardownInstance();
-    }
-    if (!this.restamp && this.__instance) {
-      this._showHideChildren();
-    }
-    if (this.if != this._lastIf) {
-      this.dispatchEvent(new CustomEvent('dom-change', {
-        bubbles: true,
-        composed: true
-      }));
-      this._lastIf = this.if;
-    }
-  }
-
-  __ensureInstance() {
-    let parentNode = this.parentNode;
-    // Guard against element being detached while render was queued
-    if (parentNode) {
-      if (!this.__ctor) {
-        let template = this.querySelector('template');
-        if (!template) {
-          // Wait until childList changes and template should be there by then
-          let observer = new MutationObserver(() => {
-            if (this.querySelector('template')) {
-              observer.disconnect();
-              this.__render();
-            } else {
-              throw new Error('dom-if requires a <template> child');
-            }
-          });
-          observer.observe(this, { childList: true });
-          return false;
-        }
-        this.__ctor = _templatize.Templatize.templatize(template, this, {
-          // dom-if templatizer instances require `mutable: true`, as
-          // `__syncHostProperties` relies on that behavior to sync objects
-          mutableData: true,
-          /**
-           * @param {string} prop Property to forward
-           * @param {*} value Value of property
-           * @this {this}
-           */
-          forwardHostProp: function (prop, value) {
-            if (this.__instance) {
-              if (this.if) {
-                this.__instance.forwardHostProp(prop, value);
-              } else {
-                // If we have an instance but are squelching host property
-                // forwarding due to if being false, note the invalidated
-                // properties so `__syncHostProperties` can sync them the next
-                // time `if` becomes true
-                this.__invalidProps = this.__invalidProps || Object.create(null);
-                this.__invalidProps[(0, _path.root)(prop)] = true;
-              }
-            }
-          }
-        });
-      }
-      if (!this.__instance) {
-        this.__instance = new this.__ctor();
-        parentNode.insertBefore(this.__instance.root, this);
-      } else {
-        this.__syncHostProperties();
-        let c$ = this.__instance.children;
-        if (c$ && c$.length) {
-          // Detect case where dom-if was re-attached in new position
-          let lastChild = this.previousSibling;
-          if (lastChild !== c$[c$.length - 1]) {
-            for (let i = 0, n; i < c$.length && (n = c$[i]); i++) {
-              parentNode.insertBefore(n, this);
-            }
-          }
-        }
-      }
-    }
-    return true;
-  }
-
-  __syncHostProperties() {
-    let props = this.__invalidProps;
-    if (props) {
-      for (let prop in props) {
-        this.__instance._setPendingProperty(prop, this.__dataHost[prop]);
-      }
-      this.__invalidProps = null;
-      this.__instance._flushProperties();
-    }
-  }
-
-  __teardownInstance() {
-    if (this.__instance) {
-      let c$ = this.__instance.children;
-      if (c$ && c$.length) {
-        // use first child parent, for case when dom-if may have been detached
-        let parent = c$[0].parentNode;
-        for (let i = 0, n; i < c$.length && (n = c$[i]); i++) {
-          parent.removeChild(n);
-        }
-      }
-      this.__instance = null;
-      this.__invalidProps = null;
-    }
-  }
-
-  _showHideChildren() {
-    let hidden = this.__hideTemplateChildren__ || !this.if;
-    if (this.__instance) {
-      this.__instance._showHideChildren(hidden);
-    }
-  }
-
-}
-
-customElements.define(DomIf.is, DomIf);
-
-exports.DomIf = DomIf;
 
 /***/ }),
 /* 68 */
@@ -18687,7 +18687,7 @@ var _polymerDom = __webpack_require__(3);
 
 __webpack_require__(0);
 
-var _ironResizableBehavior = __webpack_require__(43);
+var _ironResizableBehavior = __webpack_require__(44);
 
 var _ironSelectable = __webpack_require__(29);
 
@@ -18953,19 +18953,19 @@ customElements.define(AppStore.is, AppStore);
 
 var _polymerElement = __webpack_require__(4);
 
-__webpack_require__(44);
-
-__webpack_require__(46);
+__webpack_require__(45);
 
 __webpack_require__(47);
 
 __webpack_require__(48);
 
+__webpack_require__(49);
+
 __webpack_require__(87);
 
-__webpack_require__(50);
+__webpack_require__(51);
 
-__webpack_require__(67);
+__webpack_require__(42);
 
 __webpack_require__(98);
 
@@ -19047,7 +19047,11 @@ class PageCurrencies extends _polymerElement.Element {
                                 <div class="sub-header">Others</div>
                             </template>
                         </dom-if>
-                        <currencies-list currencies="[[noFavoritesCurrencies]]"></currencies-list>
+                        <dom-if if="[[hasNoFavoritesCurrencies]]">
+                            <template>
+                                <currencies-list currencies="[[noFavoritesCurrencies]]"></currencies-list>
+                            </template>
+                        </dom-if>
                     </template>
                 </dom-if>
 
@@ -19076,6 +19080,10 @@ class PageCurrencies extends _polymerElement.Element {
             noFavoritesCurrencies: {
                 type: Array,
                 computed: '_noFavoritesCurrencies(currencies, favorites)'
+            },
+            hasNoFavoritesCurrencies: {
+                type: Boolean,
+                computed: '_hasNoFavoritesCurrencies(noFavoritesCurrencies)'
             },
             favorites: {
                 type: Array,
@@ -19111,6 +19119,10 @@ class PageCurrencies extends _polymerElement.Element {
 
     _noFavoritesCurrencies(currencies, favorites) {
         return currencies.filter(currency => !favorites.includes(currency.id));
+    }
+
+    _hasNoFavoritesCurrencies(noFavoritesCurrencies) {
+        return !!noFavoritesCurrencies.length;
     }
 
     _favoritesCurrencies(currencies, favorites) {
@@ -21935,7 +21947,7 @@ __webpack_require__(0);
 
 __webpack_require__(9);
 
-var _paperInputAddonBehavior = __webpack_require__(49);
+var _paperInputAddonBehavior = __webpack_require__(50);
 
 var _polymerFn = __webpack_require__(1);
 
@@ -22613,7 +22625,7 @@ __webpack_require__(8);
 
 __webpack_require__(9);
 
-var _paperInputAddonBehavior = __webpack_require__(49);
+var _paperInputAddonBehavior = __webpack_require__(50);
 
 var _polymerFn = __webpack_require__(1);
 
@@ -22811,6 +22823,9 @@ class CurrenciesList extends _polymerElement.Element {
             <style>
                 :host {
                     display: block;
+                }
+
+                paper-listbox {
                     box-shadow: var(--shadow-elevation-2dp_-_box-shadow);
                 }
             </style>
@@ -23807,17 +23822,17 @@ var _polymerFn = __webpack_require__(1);
 
 var _polymerElement = __webpack_require__(4);
 
-__webpack_require__(44);
-
-__webpack_require__(46);
+__webpack_require__(45);
 
 __webpack_require__(47);
 
-__webpack_require__(42);
-
 __webpack_require__(48);
 
-__webpack_require__(50);
+__webpack_require__(43);
+
+__webpack_require__(49);
+
+__webpack_require__(51);
 
 // Components
 class PageCurrency extends _polymerElement.Element {
