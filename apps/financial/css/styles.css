@@ -110,6 +110,7 @@
     --secondary-text-color:       rgba(0, 0, 0, .54);
     --disabled-text-color:        rgba(0, 0, 0, .38);
     --divider-color:              rgba(0, 0, 0, .12);
+    --error-color:                #f00;
 
     /* Shadow */
     --shadow-elevation-1:
@@ -277,6 +278,7 @@ body {
     background-repeat: no-repeat;
     border: none;
     border-bottom: 1px solid rgba(0, 0, 0, .42);
+    border-radius: 0;
     box-shadow: none;
     outline: none;
     -webkit-tap-highlight-color: rgba(255, 255, 255, 0);
@@ -317,6 +319,14 @@ body {
     transform:
             scale(.75)
             translateY(-28px);
+}
+.md-select--error {
+}
+.md-select--error .md-select__label {
+    color: var(--error-color);
+}
+.md-select--error .md-select__select {
+    border-color: var(--error-color);
 }
 .md-text-field {
     position: relative;
@@ -379,6 +389,14 @@ body {
     transform:
             scale(.75)
             translateY(-28px);
+}
+.md-text-field--error {
+}
+.md-text-field--error .md-text-field__label {
+    color: var(--error-color);
+}
+.md-text-field--error .md-text-field__input {
+    border-color: var(--error-color);
 }
 .md-toolbar {
     position: relative;
@@ -473,8 +491,7 @@ body {
     grid-template-areas:
             "category amount"
             "note note";
-    grid-auto-columns: minmax(auto, 1fr) minmax(auto, -webkit-max-content);
-    grid-auto-columns: minmax(auto, 1fr) minmax(auto, max-content);
+    grid-auto-columns: minmax(auto, 1fr) minmax(auto, 40%);
     grid-column-gap: 8px;
 }
 .transaction-item__category,
