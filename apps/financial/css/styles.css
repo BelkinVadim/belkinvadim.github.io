@@ -584,6 +584,10 @@ body {
     font-size: 16px;
     font-weight: 500;
     text-align: right;
+    color: #0a0;
+}
+.transaction-item__amount--expense {
+    color: #a00;
 }
 .transaction-item__note {
     grid-area: note;
@@ -609,9 +613,25 @@ body {
     background-color: var(--disabled-text-color);
     border-radius: 50%;
 }
+.wallet-item__body {
+    display: grid;
+    grid-template-areas: "name balance";
+    grid-auto-columns: minmax(auto, 1fr) minmax(auto, 40%);
+    grid-column-gap: 8px;
+}
 .wallet-item__name {
     font-size: 16px;
     text-overflow: ellipsis;
     white-space: nowrap;
     overflow: hidden;
+}
+.wallet-item__balance {
+    grid-area: balance;
+    font-size: 16px;
+    font-weight: 500;
+    text-align: right;
+    color: #0a0;
+}
+.wallet-item__balance--expense {
+    color: #a00;
 }
