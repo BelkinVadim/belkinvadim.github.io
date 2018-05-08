@@ -1,0 +1,480 @@
+.loader {
+  display: block;
+  width: 1em;
+  height: 1em;
+  margin: auto;
+  font-size: 100px;
+}
+
+.loader__svg {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: 100%;
+  animation: rotate 2s linear infinite;
+}
+
+.loader__circle {
+  stroke: var(--secondary-color-500);
+  stroke-dasharray: 1,200;
+  stroke-dashoffset: 0;
+  stroke-linecap: round;
+  animation: dash 1.5s ease-in-out infinite;
+}
+
+@keyframes rotate {
+  100%{
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes dash {
+  0%{
+    stroke-dasharray: 1,200;
+    stroke-dashoffset: 0;
+  }
+  50%{
+    stroke-dasharray: 89,200;
+    stroke-dashoffset: -35px;
+  }
+  100%{
+    stroke-dasharray: 89,200;
+    stroke-dashoffset: -124px;
+  }
+}
+.icon {
+  position: relative;
+  display: inline-block;
+  width: 1em;
+  height: 1em;
+  font-size: 24px;
+  vertical-align: top;
+  opacity: 1;
+  backface-visibility: hidden;
+  fill: currentColor;
+  stroke: currentColor;
+  stroke-width: 0;
+}
+.icon-button {
+  box-sizing: border-box;
+  position: relative;
+  display: inline-flex;
+  margin: 0;
+  align-items: center;
+  justify-content: center;
+  width: auto;
+  height: auto;
+  padding: 12px;
+  color: var(--secondary-text-color);
+  background-color: transparent;
+  border: none;
+  box-shadow: none;
+  user-select: none;
+  outline: none;
+  cursor: pointer;
+  transition: color .3s ease;
+}
+.weather-icon {
+  --size: 80px;
+  display: block;
+  width: var(--size);
+  height: var(--size);
+}
+
+.weather-icon__image {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.weather-icon--small {
+  --size: 24px;
+}
+.weather-card {
+  position: relative;
+  display: grid;
+  grid-template-areas:
+    "header header"
+    "icon info";
+  grid-template-columns: min-content auto;
+  grid-column-gap: var(--pad);
+  grid-row-gap: var(--pad-sm);
+  align-items: center;
+  padding: var(--pad);
+  background-color: var(--primary-background-color);
+  border-radius: var(--corner-radius);
+  box-shadow: var(--shadow-elevation-2);
+  transition: box-shadow .3s var(--transition-standart-easing);
+}
+
+.weather-card:hover {
+  box-shadow: var(--shadow-elevation-4);
+}
+
+.weather-card__header {
+  grid-area: header;
+  padding-right: 48px;
+}
+
+.weather-card__name {
+  font-size: 24px;
+  line-height: 32px;
+}
+
+.weather-card__desc {
+  font-size: 14px;
+  line-height: 20px;
+  color: var(--secondary-text-color)
+}
+
+.weather-card__icon {
+  grid-area: icon;
+}
+
+.weather-card__info {
+  grid-area: info;
+  text-align: right;
+}
+
+.weather-card__temp {
+  font-size: 56px;
+  font-weight: 300;
+  line-height: 60px;
+}
+
+.weather-card__button {
+  position: absolute;
+  top: 8px;
+  right: 0;
+}
+.current {}
+
+.current__error {
+  padding: var(--pad);
+  font-size: 16px;
+  line-height: 24px;
+  text-align: center;
+  color: var(--error-color);
+  background-color: var(--primary-background-color);
+  border-radius: var(--corner-radius);
+  box-shadow: var(--shadow-elevation-2);
+}
+.search-result-list-item {
+  position: relative;
+  display: grid;
+  grid-template-areas:
+    "icon title temperature"
+    "icon description temperature";
+  grid-template-columns: 40px auto 72px;
+  grid-column-gap: var(--pad);
+  align-items: center;
+  min-height: 48px;
+  padding: 12px var(--pad);
+  cursor: pointer;
+}
+
+.search-result-list-item:focus {
+  outline: none;
+}
+
+.search-result-list-item:hover,
+.search-result-list-item:focus {
+  background-color: rgba(0, 0, 0, .06);
+}
+
+.search-result-list-item__icon {
+  grid-area: icon;
+}
+
+.search-result-list-item__name,
+.search-result-list-item__temperature {
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.search-result-list-item__name {
+  grid-area: title;
+  font-size: 16px;
+  line-height: 24px;
+}
+
+.search-result-list-item__description {
+  grid-area: description;
+  font-size: 14px;
+  line-height: 20px;
+  color: var(--secondary-text-color);
+}
+
+.search-result-list-item__temperature {
+  grid-area: temperature;
+  font-size: 20px;
+  font-weight: 500;
+  line-height: 24px;
+  text-align: right;
+}
+.search-form {
+  position: relative;
+  background-color: var(--primary-background-color);
+  border-radius: var(--corner-radius);
+  box-shadow: var(--shadow-elevation-2);
+  transition: box-shadow .3s var(--transition-standart-easing);
+}
+
+.search-form:focus-within {
+  box-shadow: var(--shadow-elevation-4);
+}
+
+.search-form__field {
+  position: relative;
+  display: grid;
+  grid-template-areas: "input button";
+  grid-template-columns: auto min-content;
+  align-items: center;
+}
+
+.search-form__icon {
+  position: absolute;
+  top: 50%;
+  left: 16px;
+  transform: translateY(-50%);
+  z-index: 2;
+  color: var(--secondary-text-color);
+  pointer-events: none;
+}
+
+.search-form__input {
+  display: block;
+  grid-area: input;
+  width: 100%;
+  height: 48px;
+  padding: 12px var(--pad) 12px 72px;
+  font-size: 16px;
+  line-height: 24px;
+  color: var(--primary-text-color);
+  background-color: transparent;
+  border: none;
+  box-shadow: none;
+  outline: none;
+  -webkit-appearance: textfield;
+}
+
+.search-form__input::-webkit-search-cancel-button {
+  -webkit-appearance: none;
+}
+
+.search-form__input::-ms-clear {
+  display: none;
+}
+
+.search-form__input::placeholder {
+  color: var(--secondary-text-color);
+}
+
+.search-form__button {
+  grid-area: button;
+}
+
+.search-form__button[hidden] {
+  display: none;
+}
+
+.search-form__results {
+  max-height: calc(100vh - 48px - (var(--layout-gap) * 2));
+  border-top: 1px solid var(--divider-color);
+  overflow: auto;
+}
+
+.search-form__results:empty {
+  display: none;
+}
+.weather-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  grid-gap: var(--pad-sm);
+}
+
+@media (min-width: 768px) {
+  .weather-grid {
+    grid-gap: var(--pad);
+  }
+}
+:root {
+  /* Primary color */
+  --primary-color-50:   #e8f5e9;
+  --primary-color-100:  #c8e6c9;
+  --primary-color-200:  #a5d6a7;
+  --primary-color-300:  #81c784;
+  --primary-color-400:  #66bb6a;
+  --primary-color-500:  #4caf50;
+  --primary-color-600:  #43a047;
+  --primary-color-700:  #388e3c;
+  --primary-color-800:  #2e7d32;
+  --primary-color-900:  #1b5e20;
+  --primary-color-A100: #b9f6ca;
+  --primary-color-A200: #69f0ae;
+  --primary-color-A400: #00e676;
+  --primary-color-A700: #00c853;
+
+  /* Primary contrast color */
+  --primary-color-50-contrast:   rgba(0, 0, 0, .87);
+  --primary-color-100-contrast:  rgba(0, 0, 0, .87);
+  --primary-color-200-contrast:  rgba(0, 0, 0, .87);
+  --primary-color-300-contrast:  rgba(0, 0, 0, .87);
+  --primary-color-400-contrast:  rgba(0, 0, 0, .87);
+  --primary-color-500-contrast:  rgba(0, 0, 0, .87);
+  --primary-color-600-contrast:  rgba(255, 255, 255, .87);
+  --primary-color-700-contrast:  rgba(255, 255, 255, .87);
+  --primary-color-800-contrast:  rgba(255, 255, 255, .87);
+  --primary-color-900-contrast:  rgba(255, 255, 255, .87);
+  --primary-color-A100-contrast: rgba(0, 0, 0, .87);
+  --primary-color-A200-contrast: rgba(0, 0, 0, .87);
+  --primary-color-A400-contrast: rgba(0, 0, 0, .87);
+  --primary-color-A700-contrast: rgba(0, 0, 0, .87);
+
+  /* Secondary color */
+  --secondary-color-50:   #fce4ec;
+  --secondary-color-100:  #f8bbd0;
+  --secondary-color-200:  #f48fb1;
+  --secondary-color-300:  #f06292;
+  --secondary-color-400:  #ec407a;
+  --secondary-color-500:  #e91e63;
+  --secondary-color-600:  #d81b60;
+  --secondary-color-700:  #c2185b;
+  --secondary-color-800:  #ad1457;
+  --secondary-color-900:  #880e4f;
+  --secondary-color-A100: #ff80ab;
+  --secondary-color-A200: #ff4081;
+  --secondary-color-A400: #f50057;
+  --secondary-color-A700: #c51162;
+
+  /* Secondary contrast color */
+  --secondary-color-50-contrast:   rgba(0, 0, 0, .87);
+  --secondary-color-100-contrast:  rgba(0, 0, 0, .87);
+  --secondary-color-200-contrast:  rgba(0, 0, 0, .87);
+  --secondary-color-300-contrast:  rgba(0, 0, 0, .87);
+  --secondary-color-400-contrast:  rgba(255, 255, 255, .87);
+  --secondary-color-500-contrast:  rgba(255, 255, 255, .87);
+  --secondary-color-600-contrast:  rgba(255, 255, 255, .87);
+  --secondary-color-700-contrast:  rgba(255, 255, 255, .87);
+  --secondary-color-800-contrast:  rgba(255, 255, 255, .87);
+  --secondary-color-900-contrast:  rgba(255, 255, 255, .87);
+  --secondary-color-A100-contrast: rgba(0, 0, 0, .87);
+  --secondary-color-A200-contrast: rgba(255, 255, 255, .87);
+  --secondary-color-A400-contrast: rgba(255, 255, 255, .87);
+  --secondary-color-A700-contrast: rgba(255, 255, 255, .87);
+
+  /* Цвета текста в светлой теме (светлый фон, темный текс) */
+  --page-background-color:      #efefef;
+  --primary-background-color:   #fefefe;
+  --primary-text-color:         rgba(0, 0, 0, .87);
+  --secondary-text-color:       rgba(0, 0, 0, .54);
+  --disabled-text-color:        rgba(0, 0, 0, .38);
+  --divider-color:              rgba(0, 0, 0, .12);
+  --error-color:                #f00;
+
+  /* Shadow */
+  --shadow-elevation-1:
+    0 0 2px rgba(0, 0, 0, .14),
+    0 2px 2px rgba(0, 0, 0, .12),
+    0 1px 3px rgba(0, 0, 0, .2);
+  --shadow-elevation-2:
+    0 0 4px rgba(0, 0, 0, .14),
+    0 3px 4px rgba(0, 0, 0, .12),
+    0 1px 5px rgba(0, 0, 0, .2);
+  --shadow-elevation-3:
+    0 3px 3px rgba(0, 0, 0, .14),
+    0 3px 4px rgba(0, 0, 0, .12),
+    0 1px 8px rgba(0, 0, 0, .2);
+  --shadow-elevation-4:
+    0 2px 4px rgba(0, 0, 0, .14),
+    0 4px 5px rgba(0, 0, 0, .12),
+    0 1px 10px rgba(0, 0, 0, .2);
+  --shadow-elevation-6:
+    0 6px 10px rgba(0, 0, 0, .14),
+    0 1px 18px rgba(0, 0, 0, .12),
+    0 3px 5px rgba(0, 0, 0, .2);
+  --shadow-elevation-8:
+    0 8px 10px 1px rgba(0, 0, 0, .14),
+    0 3px 14px 3px rgba(0, 0, 0, .12),
+    0 4px 15px rgba(0, 0, 0, .2);
+  --shadow-elevation-9:
+    0 9px 12px 1px rgba(0, 0, 0, .14),
+    0 3px 16px 2px rgba(0, 0, 0, .12),
+    0 5px 6px rgba(0, 0, 0, .2);
+  --shadow-elevation-12:
+    0 12px 17px 2px rgba(0, 0, 0, .14),
+    0 5px 22px 4px rgba(0, 0, 0, .12),
+    0 7px 8px rgba(0, 0, 0, .2);
+  --shadow-elevation-16:
+    0 16px 24px 2px rgba(0, 0, 0, .14),
+    0 6px 30px 5px rgba(0, 0, 0, .12),
+    0 8px 10px rgba(0, 0, 0, .2);
+  --shadow-elevation-24:
+    0 24px 38px 3px rgba(0, 0, 0, .14),
+    0 9px 46px 8px rgba(0, 0, 0, .12),
+    0 11px 15px rgba(0, 0, 0, .2);
+
+  /* Transition */
+  --transition-standart-easing: 	  cubic-bezier(.4, 0, .2, 1);
+  --transition-deceleration-easing: cubic-bezier(0, 0, .2, 1);
+  --transition-acceleration-easing: cubic-bezier(.4, 0, 1, 1);
+  --transition-sharp-easing: 		  cubic-bezier(.4, 0, .6, 1);
+
+  /* Fonts */
+  --font-family-base: Roboto, Arial, sans-seri;
+  --font-size-base: 14px;
+
+  /* Padding */
+  --pad-sm: 8px;
+  --pad: 16px;
+
+  /* Corner radius */
+  --corner-radius: 2px;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: inherit;
+}
+
+html {
+  box-sizing: border-box;
+  height: 100%;
+  font-size: var(--font-size-base);
+  line-height: calc(20 / 14);
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  min-width: 320px;
+  min-height: 100%;
+  margin: 0;
+  font-family: var(--font-family-base);
+  color: var(--primary-text-color);
+  background-color: var(--page-background-color);
+}
+
+.app {
+  --layout-gap: var(--pad-sm);
+  display: grid;
+  grid-template-columns: minmax(auto, 640px);
+  grid-gap: calc(var(--layout-gap) * 2);
+  justify-content: center;
+  padding: var(--layout-gap);
+}
+
+.app__header {}
+
+.app__body {
+  display: grid;
+  grid-row-gap: var(--layout-gap);
+}
+
+@media (min-width: 768px) {
+  .app {
+    --layout-gap: var(--pad);
+  }
+}
