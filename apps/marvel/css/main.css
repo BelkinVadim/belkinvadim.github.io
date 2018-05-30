@@ -134,19 +134,7 @@
 	/* Container */
 	--container-width-tablet: 		720px;
 	--container-width-desktop-sm: 	940px;
-
-
-
-	/* Icon
-       ========================================================================== */
-	/* Light backgrounds */
-	--md-icon-opacity: 	  		.54;
-	--md-icon-focused-opacity:	.87;
-	--md-icon-disabled-opacity:	.38;
-	/* Dark backgrounds */
-	--md-icon-light-opacity: 	  		.7;
-	--md-icon-light-focused-opacity:	1;
-	--md-icon-light-disabled-opacity:	.5;
+	--container-width-desktop: 		1200px;
 }
 
 
@@ -225,8 +213,30 @@ body {
 	-webkit-tap-highlight-color: transparent;
 }
 
+b {
+	font-weight: 500;
+}
+
+strong {
+	font-weight: 700;
+}
+
 hr {
 	margin: 4px 0;
 	border-top: 1px solid var(--divider-color);
 	border-bottom: none;
+}
+
+[hidden] {
+	display: none;
+}
+
+.fade-enter-active,
+.fade-leave-active {
+	transition: opacity .5s
+}
+
+.fade-enter,
+.fade-leave-to {
+	opacity: 0
 }
