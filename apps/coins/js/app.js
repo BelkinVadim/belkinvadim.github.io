@@ -18481,7 +18481,7 @@ var _polymerDom = __webpack_require__(3);
  *     iconset.applyIcon(iconNode, 'car');
  *
  * @element iron-iconset-svg
- * @demo demo/index2.html
+ * @demo demo/index.html
  * @implements {Polymer.Iconset}
  */
 (0, _polymerFn.Polymer)({

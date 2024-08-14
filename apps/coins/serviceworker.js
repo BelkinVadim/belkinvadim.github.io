@@ -3,7 +3,7 @@ const PARAMETERS = {
     lifetime: 86400000, // 1 день
     app_cache: [
         './',
-        './index2.html',
+        './index.html',
         './js/webcomponents-sd-ce.js',
         './js/app.js',
     ]
